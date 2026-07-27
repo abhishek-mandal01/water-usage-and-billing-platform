@@ -1,0 +1,23 @@
+server.port=8081
+spring.application.name=water-usage-backend
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/water_usage_and_billing_db
+spring.datasource.username=postgres
+spring.datasource.password=YOUR_DATABASE_PASSWORD
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+# Email Settings
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=YOUR_EMAIL@gmail.com
+spring.mail.password=YOUR_GMAIL_APP_PASSWORD
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+spring.jpa.properties.hibernate.format_sql=true
+
+# Razorpay Configuration
+razorpay.key.id=YOUR_RAZORPAY_KEY_ID
+razorpay.key.secret=YOUR_RAZORPAY_KEY_SECRET
