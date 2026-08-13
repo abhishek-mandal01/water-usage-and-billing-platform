@@ -17,4 +17,6 @@ public class DashboardSummaryDTO {
     private List<ChartData> weeklyUsage;
     private List<String> recentAlerts;
     private Double apartmentAverageComparison; // e.g. -12.0 for 12% below average
+    private List<String> waterTipsFeed;
+    private String waterFact;
 }

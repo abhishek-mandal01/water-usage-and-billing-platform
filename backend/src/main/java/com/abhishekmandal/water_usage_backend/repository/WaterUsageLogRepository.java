@@ -22,4 +22,20 @@ public interface WaterUsageLogRepository extends JpaRepository<WaterUsageLog, Lo
 
     @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(w.consumption), 0) FROM WaterUsageLog w WHERE w.household.id = :householdId AND w.readingDate >= :startDate AND w.readingDate <= :endDate")
     Double sumConsumptionByHouseholdIdAndDateRange(@org.springframework.data.repository.query.Param("householdId") Long householdId, @org.springframework.data.repository.query.Param("startDate") java.time.LocalDate startDate, @org.springframework.data.repository.query.Param("endDate") java.time.LocalDate endDate);
+
+    // RAG: Total consumption for a specific apartment in a date range
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(w.consumption), 0) FROM WaterUsageLog w WHERE w.household.apartment.id = :apartmentId AND w.readingDate >= :startDate AND w.readingDate <= :endDate")
+    Double sumConsumptionByApartmentIdAndDateRange(@org.springframework.data.repository.query.Param("apartmentId") Long apartmentId, @org.springframework.data.repository.query.Param("startDate") java.time.LocalDate startDate, @org.springframework.data.repository.query.Param("endDate") java.time.LocalDate endDate);
+
+    // RAG: Platform-wide total consumption
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(w.consumption), 0) FROM WaterUsageLog w")
+    Double sumAllConsumption();
+
+    // RAG: Top consuming households in an apartment (returns householdId, householdNumber, total consumption)
+    @org.springframework.data.jpa.repository.Query("SELECT w.household.id, w.household.householdNumber, SUM(w.consumption) as total FROM WaterUsageLog w WHERE w.household.apartment.id = :apartmentId GROUP BY w.household.id, w.household.householdNumber ORDER BY total DESC")
+    java.util.List<Object[]> findTopConsumingHouseholdsByApartmentId(@org.springframework.data.repository.query.Param("apartmentId") Long apartmentId);
+
+    List<WaterUsageLog> findByHouseholdApartmentCommunityAdminIdAndReadingDateGreaterThanEqual(Long adminId, java.time.LocalDate date);
+
+    List<WaterUsageLog> findByReadingDateGreaterThanEqual(java.time.LocalDate date);
 }

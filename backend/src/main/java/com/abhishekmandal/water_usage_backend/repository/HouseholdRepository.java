@@ -14,4 +14,12 @@ public interface HouseholdRepository extends JpaRepository<Household, Long> {
     int countByApartmentCommunityAdminId(Long adminId);
     int countByResidentIsNotNullAndApartmentCommunityAdminId(Long adminId);
     Optional<Household> findByHouseholdNumberAndApartmentCommunityAdminId(String householdNumber, Long adminId);
+
+    // RAG: Find households by apartment ID
+    java.util.List<Household> findByApartmentId(Long apartmentId);
+
+    // RAG: Count occupied flats in a specific apartment
+    int countByApartmentIdAndResidentIsNotNull(Long apartmentId);
+
+    long countByResidentIsNotNull();
 }

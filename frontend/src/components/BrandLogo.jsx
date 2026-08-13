@@ -8,7 +8,6 @@ function BrandLogo({ style = {} }) {
       aria-label="Smart Water — go to landing page"
       style={{
         padding: 'var(--space-4) var(--space-5)',
-        borderBottom: '1px solid var(--border-light)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -32,7 +31,7 @@ function BrandLogo({ style = {} }) {
       <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
         <div style={{
           color: 'var(--text-primary)',
-          fontFamily: '"Trebuchet MS", "Arial Rounded MT Bold", sans-serif',
+          fontFamily: 'var(--font-family)',
           fontSize: '25px',
           fontWeight: 800,
           letterSpacing: '-0.7px',

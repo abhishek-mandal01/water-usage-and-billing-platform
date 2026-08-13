@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Building2 } from 'lucide-react';
-import logoImg from '../assets/water_usage_and_billing_logo.png';
+import AuthSidePanel from '../components/AuthSidePanel';
+import ThemeToggle from '../components/ThemeToggle';
+import LanguageSelector from '../components/LanguageSelector';
+import { useTheme } from '../context/ThemeContext';
+import BrandLogo from '../components/BrandLogo';
+import { WaterBackground } from '../components/WaterBackground';
 
 const Register = () => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'ADMIN', gender: '', dateOfBirth: '', phoneNumber: '' });
@@ -9,6 +14,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -40,40 +46,45 @@ const Register = () => {
 
   return (
     <div className="auth-container">
-      {/* Left Marketing Side */}
-      <div className="auth-left">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-          <Building2 size={32} color="var(--color-primary-600)" />
-          <span style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-extrabold)', color: 'var(--text-primary)', letterSpacing: '-1px' }}>SmartWater</span>
+      <WaterBackground darkMode={theme === 'dark'} />
+      <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column' }}>
+      {/* Top Navbar Strip */}
+      <nav style={{ 
+        position: 'relative', 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        padding: '0 var(--space-6)',
+        margin: 'var(--space-6) 5%',
+        backgroundColor: theme === 'dark' ? 'var(--bg-card)' : 'var(--color-primary-50)', 
+        borderRadius: 'var(--radius-2xl)',
+        boxShadow: 'var(--shadow-card)',
+        zIndex: 100,
+        minHeight: '76px'
+      }}>
+        <div style={{ transform: 'scale(0.8)', transformOrigin: 'left center', display: 'flex', alignItems: 'center' }}>
+          <BrandLogo style={{ borderBottom: 'none', padding: 0, margin: 0 }} />
         </div>
         
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-10) 0', gap: 'var(--space-5)', transform: 'translateX(-30px)' }}>
-          <img src={logoImg} alt="Smart Water Logo" style={{ width: '130px', height: '130px', objectFit: 'contain' }} />
-          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
-            <div style={{ color: 'var(--text-primary)', fontFamily: '"Trebuchet MS", "Arial Rounded MT Bold", sans-serif', fontSize: '48px', fontWeight: 800, letterSpacing: '-1px', whiteSpace: 'nowrap' }}>
-              Smart <span style={{ color: 'var(--color-primary-500)' }}>Water</span>
-            </div>
-            <div style={{ marginTop: 'var(--space-3)', color: 'var(--text-secondary)', fontFamily: 'var(--font-family)', fontSize: 'var(--text-lg)', fontWeight: 700, letterSpacing: '4px', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
-              Smarter Bills
-            </div>
-          </div>
+        {/* Center Links (hidden on mobile) */}
+        <div className="landing-nav-links" style={{ display: 'flex', gap: 'var(--space-8)', position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontWeight: 'var(--font-semibold)', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
+           <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>Home</Link>
+           <a href="/#features" style={{ color: 'inherit', textDecoration: 'none' }}>Features</a>
+           <Link to="/pricing" style={{ color: 'inherit', textDecoration: 'none' }}>Pricing</Link>
+           <Link to="/about" style={{ color: 'inherit', textDecoration: 'none' }}>About Us</Link>
         </div>
-
-        <div style={{ paddingBottom: 'var(--space-10)', maxWidth: '600px' }}>
-          <h1 style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-bold)', color: 'var(--color-accent-700)', marginBottom: 'var(--space-6)', lineHeight: '1.3', letterSpacing: '-0.5px' }}>
-            Register your community and start managing water resources efficiently
-          </h1>
-          <div style={{ display: 'flex', gap: 'var(--space-6)', color: 'var(--color-accent-700)', fontWeight: 'var(--font-semibold)', fontSize: 'var(--text-sm)', flexWrap: 'wrap' }}>
-            <span>🏢 Multi-tenant Ready</span>
-            <span>📊 Automated Billing</span>
-            <span>💧 Conservation Insights</span>
-          </div>
+        
+        <div style={{ display: 'flex', gap: 'var(--space-3)', alignItems: 'center' }}>
+          <ThemeToggle />
+          <LanguageSelector />
         </div>
-      </div>
+      </nav>
 
-      {/* Right Form Side */}
-      <div className="auth-right">
-        <div className="auth-form-wrapper">
+      <div className="auth-main">
+        <AuthSidePanel variant="admin" />
+        {/* Right Form Side */}
+        <div className="auth-right" style={{ marginTop: 'var(--space-1)' }}>
+          <div className="auth-form-wrapper" style={{ marginTop: 'var(--space-2)' }}>
           <div style={{ width: '56px', height: '56px', background: 'var(--gradient-primary)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 'var(--space-8)' }}>
             <Building2 size={32} color="#ffffff" />
           </div>
@@ -137,50 +148,10 @@ const Register = () => {
               Sign in →
             </Link>
           </div>
+          </div>
         </div>
       </div>
-
-      <style>{`
-        .auth-container {
-          display: flex;
-          min-height: 100vh;
-          font-family: var(--font-family);
-          background-color: var(--bg-card);
-        }
-        .auth-left {
-          flex: 1.2;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          padding: 50px 60px;
-          background-color: var(--bg-card);
-        }
-        .auth-right {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          padding: 60px 40px;
-          background-color: var(--bg-card);
-          box-shadow: -10px 0 30px rgba(0,0,0,0.03);
-          border-left: 1px solid var(--border-light);
-          position: relative;
-        }
-        .auth-form-wrapper {
-          width: 100%;
-          max-width: 460px;
-          display: flex;
-          flex-direction: column;
-        }
-        @media (max-width: 1024px) {
-          .auth-left { display: none; }
-          .auth-right { flex: 1; border-left: none; box-shadow: none; }
-        }
-        @media (max-width: 768px) {
-          .auth-right { padding: var(--space-6) var(--space-5); }
-        }
-      `}</style>
+      </div>
     </div>
   );
 };

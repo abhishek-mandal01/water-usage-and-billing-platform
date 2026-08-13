@@ -21,3 +21,5 @@ spring.jpa.properties.hibernate.format_sql=true
 # Razorpay Configuration
 razorpay.key.id=YOUR_RAZORPAY_KEY_ID
 razorpay.key.secret=YOUR_RAZORPAY_KEY_SECRET
+
+gemini.api.key=YOUR_GEMINI_API_KEY_HERE

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import BrandLogo from './BrandLogo';
 import { useSidebar } from '../context/SidebarContext';
+import { useTranslation } from './LanguageSelector/useTranslation';
 import { 
   LayoutDashboard, 
   Home, 
@@ -13,6 +14,8 @@ import {
   User, 
   LogOut,
   Package,
+  AlertTriangle,
+  PieChart,
   Menu,
   X
 } from 'lucide-react';
@@ -20,6 +23,7 @@ import {
 function CommunityAdminSidebar() {
   const location = useLocation();
   const { isOpen, toggle, close } = useSidebar();
+  const { t } = useTranslation();
   const [unreadCount, setUnreadCount] = useState(0);
 
   const userId = JSON.parse(localStorage.getItem('user'))?.id;
@@ -34,15 +38,17 @@ function CommunityAdminSidebar() {
   }, [userId]);
 
   const navItems = [
-    { name: 'Dashboard', path: '/admin-panel', icon: LayoutDashboard },
-    { name: 'Households Directory', path: '/community/households', icon: Home },
-    { name: 'Meter Readings', path: '/community/meter', icon: Activity },
-    { name: 'Billing Management', path: '/community/billing', icon: CreditCard },
-    { name: 'Bulk Purchases', path: '/community/bulk-purchases', icon: Package },
-    { name: 'Support / Concerns', path: '/community/support', icon: Users },
-    { name: 'Tariff Plans', path: '/community/tariffs', icon: Settings },
-    { name: 'Announcements', path: '/community/announcements', icon: Bell },
-    { name: 'Profile', path: '/community/profile', icon: User },
+    { name: t('nav.dashboard', 'Dashboard'), path: '/admin-panel', icon: LayoutDashboard },
+    { name: t('nav.householdsDir', 'Households Directory'), path: '/community/households', icon: Home },
+    { name: t('nav.meterReadings', 'Meter Readings'), path: '/community/meter', icon: Activity },
+    { name: t('nav.billingMgmt', 'Billing Management'), path: '/community/billing', icon: CreditCard },
+    { name: t('nav.bulkPurchases', 'Bulk Purchases'), path: '/community/bulk-purchases', icon: Package },
+    { name: t('nav.reports', 'Reports & Analytics'), path: '/community/reports', icon: PieChart },
+    { name: t('nav.waterLeakage', 'Water Leakage'), path: '/community/leakage', icon: AlertTriangle },
+    { name: t('nav.support', 'Support / Concerns'), path: '/community/support', icon: Users },
+    { name: t('nav.tariffPlans', 'Tariff Plans'), path: '/community/tariffs', icon: Settings },
+    { name: t('nav.announcements', 'Announcements'), path: '/community/announcements', icon: Bell },
+    { name: t('nav.profile', 'Profile'), path: '/community/profile', icon: User },
   ];
 
   return (
@@ -57,7 +63,9 @@ function CommunityAdminSidebar() {
       />
 
       <div className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}>
-        <BrandLogo />
+        <div style={{ padding: '0 0 0 12px', marginTop: '12px', transform: 'scale(0.85)', transformOrigin: 'left center' }}>
+          <BrandLogo style={{ padding: 0 }} />
+        </div>
         
         <nav className="sidebar-nav">
           {navItems.map((item) => {
@@ -76,14 +84,14 @@ function CommunityAdminSidebar() {
                   <Icon size={18} />
                   <span>{item.name}</span>
                 </div>
-                {item.name === 'Notifications & Alerts' && unreadCount > 0 && (
+                {item.path === '/community/announcements' && unreadCount > 0 && (
                   <span style={{ 
-                    backgroundColor: '#ef4444', 
-                    color: 'white', 
+                    backgroundColor: 'var(--color-danger-500)', 
+                    color: 'var(--color-surface-0)', 
                     fontSize: '11px', 
                     fontWeight: 'bold', 
                     padding: '2px 6px', 
-                    borderRadius: '10px' 
+                    borderRadius: 'var(--radius-full)' 
                   }}>
                     {unreadCount}
                   </span>
@@ -100,7 +108,7 @@ function CommunityAdminSidebar() {
             onClick={() => { localStorage.removeItem('user'); close(); }}
           >
             <LogOut size={18} />
-            <span>Logout</span>
+            <span>{t('nav.logout', 'Logout')}</span>
           </Link>
         </div>
       </div>

@@ -7,6 +7,7 @@ import { FileText, X, Download, Droplet, Calendar, User, MapPin } from 'lucide-r
 function BillingManagement() {
   const [cycles, setCycles] = useState([]);
   const [bills, setBills] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [loading, setLoading] = useState(false);
@@ -97,40 +98,50 @@ function BillingManagement() {
     window.open(`http://localhost:8081/api/billing/pdf/${selectedBill.id}`, '_blank');
   };
 
+  const filteredBills = bills.filter(bill => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    const name = bill.user?.name?.toLowerCase() || '';
+    const flat = bill.user?.householdNumber?.toLowerCase() || '';
+    const billId = String(bill.id);
+    return name.includes(q) || flat.includes(q) || billId.includes(q);
+  });
+
   return (
     <div className="dashboard-layout">
       <CommunityAdminSidebar />
       <div className="dashboard-main">
         <Topbar />
         
-        <main style={{ padding: '40px', marginTop: '60px' }}>
+        <main className="dashboard-content">
           <h1 style={{ marginBottom: '20px' }}>Billing Cycles & Distribution</h1>
 
           <MagicCardGrid>
+            <div style={{ display: 'flex', gap: '30px', flexWrap: 'wrap', alignItems: 'stretch' }}>
             {/* Create Cycle Form */}
-            <MagicCard style={{ flex: '1 1 300px', padding: '25px' }}>
+            <MagicCard style={{ flex: '1 1 300px', padding: 'var(--space-8)' }}>
               <h3 style={{ margin: '0 0 15px 0' }}>Open New Billing Cycle</h3>
               <form onSubmit={handleCreateCycle} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 <div>
                   <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Start Date</label>
-                  <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} style={{ padding: '10px', borderRadius: '5px', border: '1px solid #ccc', width: '100%', boxSizing: 'border-box' }} required />
+                  <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} style={{ padding: '10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', width: '100%', boxSizing: 'border-box' }} required />
                 </div>
                 <div>
                   <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>End Date</label>
-                  <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} style={{ padding: '10px', borderRadius: '5px', border: '1px solid #ccc', width: '100%', boxSizing: 'border-box' }} required />
+                  <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} style={{ padding: '10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', width: '100%', boxSizing: 'border-box' }} required />
                 </div>
-                <button type="submit" disabled={loading} style={{ padding: '12px', backgroundColor: '#10b981', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}>
+                <button type="submit" disabled={loading} style={{ padding: '12px', backgroundColor: 'var(--color-success-500)', color: 'white', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 'bold' }}>
                   Create Cycle
                 </button>
               </form>
             </MagicCard>
 
             {/* Cycles List */}
-            <MagicCard style={{ flex: '2 1 500px', padding: '25px', overflowX: 'auto' }}>
+            <MagicCard style={{ flex: '2 1 500px', padding: 'var(--space-8)', overflowX: 'auto' }}>
               <h3 style={{ margin: '0 0 15px 0' }}>Active & Past Cycles</h3>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                  <tr style={{ borderBottom: '1px solid var(--border-default)' }}>
                     <th style={{ padding: '12px' }}>ID</th>
                     <th style={{ padding: '12px' }}>Start Date</th>
                     <th style={{ padding: '12px' }}>End Date</th>
@@ -140,34 +151,54 @@ function BillingManagement() {
                 </thead>
                 <tbody>
                   {cycles.map(cycle => (
-                    <tr key={cycle.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                    <tr key={cycle.id} style={{ borderBottom: '1px solid var(--color-surface-50)' }}>
                       <td style={{ padding: '12px' }}>#{cycle.id}</td>
                       <td style={{ padding: '12px' }}>{cycle.startDate}</td>
                       <td style={{ padding: '12px' }}>{cycle.endDate}</td>
                       <td style={{ padding: '12px' }}>
-                        <span style={{ padding: '4px 8px', borderRadius: '12px', fontSize: '12px', fontWeight: 'bold', backgroundColor: cycle.status === 'FINALIZED' ? '#d1fae5' : '#fef3c7', color: cycle.status === 'FINALIZED' ? '#065f46' : '#92400e' }}>
+                        <span style={{ padding: '4px 8px', borderRadius: 'var(--radius-full)', fontSize: 'var(--text-xs)', fontWeight: 'var(--font-bold)', backgroundColor: cycle.status === 'FINALIZED' ? 'var(--color-success-50)' : 'var(--color-warning-50)', color: cycle.status === 'FINALIZED' ? 'var(--color-success-700)' : 'var(--color-warning-700)' }}>
                           {cycle.status}
                         </span>
                       </td>
                       <td style={{ padding: '12px' }}>
-                        {cycle.status === 'OPEN' && (
-                          <button onClick={() => handleFinalizeCycle(cycle.id)} disabled={loading} style={{ padding: '6px 12px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>
-                            Finalize & Distribute
-                          </button>
-                        )}
+                        <button 
+                          onClick={() => handleFinalizeCycle(cycle.id)} 
+                          disabled={loading || cycle.status !== 'OPEN'} 
+                          style={{ 
+                            padding: '6px 12px', 
+                            backgroundColor: cycle.status === 'OPEN' ? 'var(--color-primary-500)' : 'var(--color-surface-200)', 
+                            color: cycle.status === 'OPEN' ? 'white' : 'var(--text-tertiary)', 
+                            border: 'none', 
+                            borderRadius: 'var(--radius-sm)', 
+                            cursor: cycle.status === 'OPEN' ? 'pointer' : 'not-allowed', 
+                            fontSize: 'var(--text-xs)', 
+                            fontWeight: 'var(--font-bold)' 
+                          }}>
+                          {cycle.status === 'OPEN' ? 'Finalize & Distribute' : 'Finalized'}
+                        </button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </MagicCard>
+            </div>
           </MagicCardGrid>
 
-          <h2 style={{ marginTop: '40px', marginBottom: '20px' }}>Generated Invoices</h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '40px', marginBottom: '20px' }}>
+            <h2 style={{ margin: 0 }}>Generated Invoices</h2>
+            <input 
+              type="text" 
+              placeholder="Search by Name, Flat No, or Invoice ID..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ padding: '10px 15px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', width: '300px', fontSize: 'var(--text-sm)', outline: 'none' }}
+            />
+          </div>
           <MagicCard style={{ padding: '0', overflow: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
-                <tr style={{ backgroundColor: 'transparent', borderBottom: '1px solid #e5e7eb' }}>
+                <tr style={{ backgroundColor: 'transparent', borderBottom: '1px solid var(--border-default)' }}>
                   <th style={{ padding: '15px' }}>Bill ID</th>
                   <th style={{ padding: '15px' }}>Resident Name</th>
                   <th style={{ padding: '15px' }}>Billing Cycle</th>
@@ -177,27 +208,30 @@ function BillingManagement() {
                 </tr>
               </thead>
               <tbody>
-                {bills.length === 0 ? (
+                {filteredBills.length === 0 ? (
                   <tr>
-                    <td colSpan="6" style={{ padding: '20px', textAlign: 'center', color: '#6b7280' }}>
-                      No bills found. Finalize a cycle to generate bills.
+                    <td colSpan="6" style={{ padding: '20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                      {searchQuery ? "No invoices match your search." : "No bills found. Finalize a cycle to generate bills."}
                     </td>
                   </tr>
                 ) : (
-                  bills.map(bill => (
-                    <tr key={bill.id} style={{ borderBottom: '1px solid #e5e7eb', transition: 'background-color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                  filteredBills.map(bill => (
+                    <tr key={bill.id} style={{ borderBottom: '1px solid var(--border-default)', transition: 'background-color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-card-hover)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                       <td style={{ padding: '15px', fontWeight: 'bold' }}>#{bill.id}</td>
-                      <td style={{ padding: '15px' }}>{bill.user ? bill.user.name : 'Unknown Resident'}</td>
+                      <td style={{ padding: '15px' }}>
+                        <div style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{bill.user ? bill.user.name : 'Unknown Resident'}</div>
+                        {bill.user?.householdNumber && <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>Flat: {bill.user.householdNumber}</div>}
+                      </td>
                       <td style={{ padding: '15px' }}>{bill.billingCycle}</td>
                       <td style={{ padding: '15px', fontWeight: 'bold' }}>₹{(bill.amount || 0).toFixed(2)}</td>
                       <td style={{ padding: '15px' }}>
                         <span style={{ 
                           padding: '4px 8px', 
-                          backgroundColor: bill.status === 'PAID' ? '#d1fae5' : '#fee2e2', 
-                          color: bill.status === 'PAID' ? '#065f46' : '#991b1b', 
-                          borderRadius: '12px', 
-                          fontSize: '12px', 
-                          fontWeight: 'bold' 
+                          backgroundColor: bill.status === 'PAID' ? 'var(--color-success-50)' : 'var(--color-danger-50)', 
+                          color: bill.status === 'PAID' ? 'var(--color-success-700)' : 'var(--color-danger-700)', 
+                          borderRadius: 'var(--radius-full)', 
+                          fontSize: 'var(--text-xs)', 
+                          fontWeight: 'var(--font-bold)' 
                         }}>
                           {bill.status}
                         </span>
@@ -367,6 +401,6 @@ function BillingManagement() {
   );
 }
 
-const viewBtnStyle = { display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', backgroundColor: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px', transition: 'background-color 0.2s' };
+const viewBtnStyle = { display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', backgroundColor: 'var(--color-primary-50)', color: 'var(--color-primary-600)', border: '1px solid var(--color-primary-200)', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 'var(--font-bold)', fontSize: 'var(--text-sm)', transition: 'background-color 0.2s' };
 
 export default BillingManagement;

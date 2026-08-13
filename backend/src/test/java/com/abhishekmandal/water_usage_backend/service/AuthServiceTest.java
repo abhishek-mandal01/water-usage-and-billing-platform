@@ -41,7 +41,7 @@ public class AuthServiceTest {
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(mockUser));
         when(passwordEncoder.matches(password, encodedPassword)).thenReturn(true);
 
-        AppUser loggedInUser = authService.login(email, password);
+        com.abhishekmandal.water_usage_backend.dto.LoginResponseDTO loggedInUser = authService.login(email, password);
 
         assertNotNull(loggedInUser);
         assertEquals("RESIDENT", loggedInUser.getRole());
@@ -62,7 +62,7 @@ public class AuthServiceTest {
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(mockUser));
         when(passwordEncoder.matches(password, encodedPassword)).thenReturn(false);
 
-        AppUser loggedInUser = authService.login(email, password);
+        com.abhishekmandal.water_usage_backend.dto.LoginResponseDTO loggedInUser = authService.login(email, password);
 
         assertNull(loggedInUser);
         verify(userRepository, times(1)).findByEmail(email);

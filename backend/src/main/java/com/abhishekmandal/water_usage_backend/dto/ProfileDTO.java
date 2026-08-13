@@ -23,4 +23,5 @@ public class ProfileDTO {
     private String panCard;
     private String address;
     private String verificationStatus;
+    private String avatarUrl;
 }

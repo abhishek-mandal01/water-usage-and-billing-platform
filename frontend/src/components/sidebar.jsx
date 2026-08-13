@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import BrandLogo from './BrandLogo';
 import { useSidebar } from '../context/SidebarContext';
+import { useTranslation } from './LanguageSelector/useTranslation';
 import { 
   LayoutDashboard, 
   Droplet, 
@@ -11,12 +12,14 @@ import {
   User, 
   LogOut,
   Menu,
+  PieChart,
   X
 } from 'lucide-react';
 
 function Sidebar() {
   const location = useLocation();
   const { isOpen, toggle, close } = useSidebar();
+  const { t } = useTranslation();
   const [unreadCount, setUnreadCount] = useState(0);
 
   const userId = JSON.parse(localStorage.getItem('user'))?.id;
@@ -31,12 +34,13 @@ function Sidebar() {
   }, [userId]);
 
   const navItems = [
-    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { name: 'Usage & History', path: '/usage', icon: Droplet },
-    { name: 'Billing & Payments', path: '/bills', icon: CreditCard },
-    { name: 'Support / Concerns', path: '/support', icon: Bell },
-    { name: 'Notifications & Tips', path: '/notifications', icon: Lightbulb },
-    { name: 'Profile', path: '/profile', icon: User },
+    { name: t('nav.dashboard'), path: '/dashboard', icon: LayoutDashboard },
+    { name: t('nav.usageHistory'), path: '/usage', icon: Droplet },
+    { name: t('nav.myBills'), path: '/bills', icon: CreditCard },
+    { name: t('nav.reports', 'Reports'), path: '/reports', icon: PieChart },
+    { name: t('nav.support'), path: '/support', icon: Lightbulb },
+    { name: t('nav.notifications'), path: '/notifications', icon: Bell },
+    { name: t('nav.profile'), path: '/profile', icon: User },
   ];
 
   return (
@@ -53,10 +57,12 @@ function Sidebar() {
       />
 
       <div className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}>
-        <BrandLogo />
+        <div style={{ padding: '0 0 0 12px', marginTop: '12px', transform: 'scale(0.85)', transformOrigin: 'left center' }}>
+          <BrandLogo style={{ borderBottom: 'none', padding: 0 }} />
+        </div>
         
-        <nav className="sidebar-nav">
-          <div className="sidebar-section-label">Navigation</div>
+        <nav className="sidebar-nav" style={{ marginTop: 'var(--space-2)' }}>
+          <div className="sidebar-section-label">{t('nav.navigation', 'Navigation')}</div>
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             const Icon = item.icon;
@@ -72,14 +78,14 @@ function Sidebar() {
                   <Icon size={18} />
                   <span>{item.name}</span>
                 </div>
-                {item.name === 'Notifications & Tips' && unreadCount > 0 && (
+                {item.path === '/notifications' && unreadCount > 0 && (
                   <span style={{ 
-                    backgroundColor: '#ef4444', 
-                    color: 'white', 
+                    backgroundColor: 'var(--color-danger-500)', 
+                    color: 'var(--color-surface-0)', 
                     fontSize: '11px', 
                     fontWeight: 'bold', 
                     padding: '2px 6px', 
-                    borderRadius: '10px' 
+                    borderRadius: 'var(--radius-full)' 
                   }}>
                     {unreadCount}
                   </span>
@@ -96,7 +102,7 @@ function Sidebar() {
             onClick={() => { localStorage.removeItem('user'); close(); }}
           >
             <LogOut size={18} />
-            <span>Logout</span>
+            <span>{t('nav.logout')}</span>
           </Link>
         </div>
       </div>

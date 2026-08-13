@@ -1,10 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Eye, EyeOff, UserPlus, ArrowRight, UserCheck, Building2 } from 'lucide-react';
-import logoImg from '../assets/water_usage_and_billing_logo.png';
+import { useTranslation } from '../components/LanguageSelector/useTranslation';
+import AuthSidePanel from '../components/AuthSidePanel';
+import ThemeToggle from '../components/ThemeToggle';
+import LanguageSelector from '../components/LanguageSelector';
+import { useTheme } from '../context/ThemeContext';
+import BrandLogo from '../components/BrandLogo';
+import { WaterBackground } from '../components/WaterBackground';
 
 const ResidentRegister = () => {
+  const { t } = useTranslation();
   const { token } = useParams();
+  const { theme } = useTheme();
   const [formData, setFormData] = useState({ token: token, name: '', email: '', householdNumber: '', phoneNumber: '', password: '', gender: '', dateOfBirth: '', governmentId: '' });
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -58,339 +66,138 @@ const ResidentRegister = () => {
   };
 
   return (
-    <div style={containerStyle}>
-      {/* Left Marketing Side */}
-      <div style={leftSideStyle}>
-        <div style={brandStyle}>
-          <Building2 size={32} color="#2563eb" />
-          <span style={{ fontSize: '24px', fontWeight: '800', color: '#111827', letterSpacing: '-1px' }}>SmartWater</span>
+    <div className="auth-container">
+      <WaterBackground darkMode={theme === 'dark'} />
+      <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column' }}>
+      {/* Top Navbar Strip */}
+      <nav style={{ 
+        position: 'relative', 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        padding: '0 var(--space-6)',
+        margin: 'var(--space-6) 5%',
+        backgroundColor: theme === 'dark' ? 'var(--bg-card)' : 'var(--color-primary-50)', 
+        borderRadius: 'var(--radius-2xl)',
+        boxShadow: 'var(--shadow-card)',
+        zIndex: 100,
+        minHeight: '76px'
+      }}>
+        <div style={{ transform: 'scale(0.8)', transformOrigin: 'left center', display: 'flex', alignItems: 'center' }}>
+          <BrandLogo style={{ borderBottom: 'none', padding: 0, margin: 0 }} />
         </div>
         
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 0', gap: '20px', transform: 'translateX(-30px)' }}>
-          <img 
-            src={logoImg} 
-            alt="Smart Water Logo" 
-            style={{ width: '130px', height: '130px', objectFit: 'contain' }} 
-          />
-          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
-            <div style={{
-              color: '#12365a',
-              fontFamily: '"Trebuchet MS", "Arial Rounded MT Bold", sans-serif',
-              fontSize: '48px',
-              fontWeight: 800,
-              letterSpacing: '-1px',
-              whiteSpace: 'nowrap'
-            }}>
-              Smart <span style={{ color: '#159bd3' }}>Water</span>
-            </div>
-            <div style={{
-              marginTop: '10px',
-              color: '#58758c',
-              fontFamily: 'Inter, system-ui, sans-serif',
-              fontSize: '18px',
-              fontWeight: 700,
-              letterSpacing: '4px',
-              textTransform: 'uppercase',
-              whiteSpace: 'nowrap'
-            }}>
-              Smarter Bills
-            </div>
-          </div>
+        {/* Center Links (hidden on mobile) */}
+        <div className="landing-nav-links" style={{ display: 'flex', gap: 'var(--space-8)', position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontWeight: 'var(--font-semibold)', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
+           <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>Home</Link>
+           <a href="/#features" style={{ color: 'inherit', textDecoration: 'none' }}>Features</a>
+           <Link to="/pricing" style={{ color: 'inherit', textDecoration: 'none' }}>Pricing</Link>
+           <Link to="/about" style={{ color: 'inherit', textDecoration: 'none' }}>About Us</Link>
         </div>
-
-        <div style={marketingBottomStyle}>
-          <h1 style={marketingTitleStyle}>
-            Join your community to easily track water usage and payments
-          </h1>
-          <div style={featuresStyle}>
-            <span>✨ Detailed Usage Insights</span>
-            <span>✨ Seamless Online Payments</span>
-            <span>✨ Real-time Alerts</span>
-          </div>
+        
+        <div style={{ display: 'flex', gap: 'var(--space-3)', alignItems: 'center' }}>
+          <ThemeToggle />
+          <LanguageSelector />
         </div>
-      </div>
+      </nav>
 
-      {/* Right Form Side */}
-      <div style={rightSideStyle}>
-        <div style={formWrapperStyle}>
-          <div style={logoIconStyle}>
-            <UserPlus size={32} color="#ffffff" />
+      <div className="auth-main">
+        <AuthSidePanel variant="resident" />
+        {/* Right Form Side */}
+        <div className="auth-right" style={{ marginTop: 'var(--space-1)' }}>
+          <div className="auth-form-wrapper" style={{ maxWidth: '560px', marginTop: 'var(--space-2)' }}>
+          <div style={{ width: '56px', height: '56px', background: 'var(--gradient-primary)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 'var(--space-8)' }}>
+            <UserPlus size={32} color="var(--bg-card)" />
           </div>
-          <h2 style={titleStyle}>Resident Invite</h2>
-          <p style={subtitleStyle}>Complete your profile to join your community</p>
+          <h2 style={{ margin: '0 0 var(--space-3) 0', fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>Resident Invite</h2>
+          <p style={{ margin: 0, fontSize: 'var(--text-lg)', color: 'var(--text-secondary)' }}>Complete your profile to join your community</p>
           
           {error && (
-            <div style={errorBannerStyle}>
+            <div className="alert alert-danger" style={{ marginTop: 'var(--space-6)' }}>
               {error}
             </div>
           )}
 
           {inviterDetails && !error && (
-            <div style={inviterBannerStyle}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                <div style={{ padding: '8px', backgroundColor: '#dbeafe', borderRadius: '50%' }}>
-                  <UserCheck size={20} color="#2563eb" />
+            <div style={{ backgroundColor: 'var(--bg-body)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-xl)', padding: 'var(--space-5)', marginTop: 'var(--space-6)', marginBottom: 'var(--space-2)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-2)' }}>
+                <div style={{ padding: 'var(--space-2)', backgroundColor: 'var(--color-primary-100)', borderRadius: '50%' }}>
+                  <UserCheck size={20} color="var(--color-primary-600)" />
                 </div>
                 <div>
-                  <p style={{ margin: 0, fontSize: '14px', color: '#4b5563', fontWeight: 500 }}>Invited by</p>
-                  <p style={{ margin: 0, fontSize: '16px', color: '#111827', fontWeight: 700 }}>{inviterDetails.adminName}</p>
+                  <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', fontWeight: 500 }}>Invited by</p>
+                  <p style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--text-primary)', fontWeight: 'var(--font-bold)' }}>{inviterDetails.adminName}</p>
                 </div>
               </div>
-              <p style={{ margin: 0, fontSize: '13px', color: '#6b7280', paddingLeft: '40px' }}>{inviterDetails.adminEmail}</p>
+              <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--text-tertiary)', paddingLeft: '40px' }}>{inviterDetails.adminEmail}</p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '20px' }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)', marginTop: 'var(--space-6)' }}>
             
-            <div>
-              <input type="text" name="name" placeholder="Full Name" onChange={handleChange} required style={inputStyle} />
+            <input type="text" name="name" placeholder="Full Name" onChange={handleChange} required className="form-input" style={{ padding: 'var(--space-4) var(--space-5)' }} />
+
+            <input type="email" name="email" placeholder="Email Address" onChange={handleChange} required className="form-input" style={{ padding: 'var(--space-4) var(--space-5)' }} />
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+              <input type="text" name="householdNumber" placeholder="Flat # (e.g. A-101)" onChange={handleChange} required className="form-input" style={{ padding: 'var(--space-4) var(--space-5)' }} />
+              <input type="tel" name="phoneNumber" placeholder="Phone Number" onChange={handleChange} required className="form-input" style={{ padding: 'var(--space-4) var(--space-5)' }} />
             </div>
 
-            <div>
-              <input type="email" name="email" placeholder="Email Address" onChange={handleChange} required style={inputStyle} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+              <select name="gender" onChange={handleChange} required className="form-input" style={{ padding: 'var(--space-4) var(--space-5)' }}>
+                <option value="" disabled selected>Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+              <input type="date" name="dateOfBirth" onChange={handleChange} required className="form-input" style={{ padding: 'var(--space-4) var(--space-5)' }} />
             </div>
 
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <div style={{ flex: 1 }}>
-                <input type="text" name="householdNumber" placeholder="Household / Flat # (e.g. A-101)" onChange={handleChange} required style={inputStyle} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <input type="tel" name="phoneNumber" placeholder="Phone Number" onChange={handleChange} required style={inputStyle} />
-              </div>
+            <input type="text" name="governmentId" placeholder="Govt ID (e.g. Aadhar)" onChange={handleChange} required className="form-input" style={{ padding: 'var(--space-4) var(--space-5)' }} />
+
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <input 
+                type={showPassword ? "text" : "password"} 
+                name="password" 
+                placeholder="Create a strong password" 
+                onChange={handleChange} 
+                required 
+                className="form-input"
+                style={{ width: '100%', paddingRight: '45px', padding: 'var(--space-4) var(--space-5)' }} 
+              />
+              <button 
+                type="button" 
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ position: 'absolute', right: '12px', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex' }}
+              >
+                {showPassword ? <EyeOff size={20} color="var(--text-tertiary)" /> : <Eye size={20} color="var(--text-tertiary)" />}
+              </button>
             </div>
 
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <div style={{ flex: 1 }}>
-                <select name="gender" onChange={handleChange} required style={{...inputStyle, color: formData.gender ? '#111827' : '#9ca3af'}}>
-                  <option value="" disabled selected>Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                  <option value="Prefer not to say">Prefer not to say</option>
-                </select>
-              </div>
-              <div style={{ flex: 1 }}>
-                <input type="date" name="dateOfBirth" onChange={handleChange} required style={{...inputStyle, color: formData.dateOfBirth ? '#111827' : '#9ca3af'}} />
-              </div>
-            </div>
-
-            <div>
-              <input type="text" name="governmentId" placeholder="Government ID (e.g. Aadhar Number)" onChange={handleChange} required style={inputStyle} />
-            </div>
-
-            <div>
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  name="password" 
-                  placeholder="Create a strong password" 
-                  onChange={handleChange} 
-                  required 
-                  style={{ ...inputStyle, width: '100%', paddingRight: '45px' }} 
-                />
-                <button 
-                  type="button" 
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={eyeButtonStyle}
-                >
-                  {showPassword ? <EyeOff size={20} color="#6b7280" /> : <Eye size={20} color="#6b7280" />}
-                </button>
-              </div>
-            </div>
-
-            <button type="submit" style={btnStyle} disabled={loading || !!error}>
+            <button type="submit" className="btn btn-primary" style={{ padding: 'var(--space-4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--text-base)' }} disabled={loading || !!error}>
               {loading ? 'Joining...' : 'Join Community'}
-              {!loading && <ArrowRight size={18} style={{ marginLeft: '8px' }} />}
+              {!loading && <ArrowRight size={18} style={{ marginLeft: 'var(--space-2)' }} />}
             </button>
           </form>
 
-          <p style={disclaimerStyle}>
-            By continuing you agree to our <Link to="/privacy-policy" style={linkStyle}>privacy policy</Link> & <Link to="/terms-of-use" style={linkStyle}>terms of use</Link>.
+          <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-tertiary)', lineHeight: '1.5', marginTop: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
+            By continuing you agree to our <Link to="/privacy-policy" style={{ color: 'var(--color-primary-600)', textDecoration: 'none' }}>privacy policy</Link> & <Link to="/terms-of-use" style={{ color: 'var(--color-primary-600)', textDecoration: 'none' }}>terms of use</Link>.
           </p>
 
-          <div style={partnerBannerStyle}>
-            <span style={{ fontSize: '15px', color: '#374151', fontWeight: '500' }}>Already have an account?</span>
-            <Link to="/login" style={{ fontSize: '15px', color: '#2563eb', textDecoration: 'none', fontWeight: '600', marginLeft: '6px' }}>
+          <div style={{ backgroundColor: 'var(--bg-body)', padding: 'var(--space-4)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center' }}>
+            <span style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', fontWeight: 'var(--font-medium)' }}>Already have an account?</span>
+            <Link to="/login" style={{ fontSize: 'var(--text-sm)', color: 'var(--color-primary-600)', textDecoration: 'none', fontWeight: 'var(--font-semibold)', marginLeft: 'var(--space-2)' }}>
               Log in →
             </Link>
           </div>
+          </div>
         </div>
+      </div>
       </div>
     </div>
   );
-};
-
-const containerStyle = {
-  display: 'flex',
-  minHeight: '100vh',
-  fontFamily: 'Inter, system-ui, sans-serif',
-  backgroundColor: '#ffffff'
-};
-
-const leftSideStyle = {
-  flex: '1.2',
-  display: 'none', // Hide on mobile
-  '@media (minWidth: 768px)': {
-    display: 'flex'
-  },
-  flexDirection: 'column',
-  justifyContent: 'space-between',
-  padding: '50px 60px',
-  backgroundColor: '#ffffff'
-};
-
-const brandStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '8px'
-};
-
-const marketingBottomStyle = {
-  paddingBottom: '40px',
-  maxWidth: '600px'
-};
-
-const marketingTitleStyle = {
-  fontSize: '32px',
-  fontWeight: '700',
-  color: '#065f46',
-  marginBottom: '24px',
-  lineHeight: '1.3',
-  letterSpacing: '-0.5px'
-};
-
-const featuresStyle = {
-  display: 'flex',
-  gap: '24px',
-  color: '#065f46',
-  fontWeight: '600',
-  fontSize: '14px',
-  flexWrap: 'wrap'
-};
-
-const rightSideStyle = {
-  flex: '1',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-  padding: '30px 40px',
-  backgroundColor: '#ffffff',
-  boxShadow: '-10px 0 30px rgba(0,0,0,0.03)',
-  borderLeft: '1px solid #f3f4f6',
-  position: 'relative'
-};
-
-const formWrapperStyle = {
-  width: '100%',
-  maxWidth: '460px',
-  display: 'flex',
-  flexDirection: 'column'
-};
-
-const logoIconStyle = {
-  width: '56px',
-  height: '56px',
-  backgroundColor: '#2563eb',
-  borderRadius: '12px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginBottom: '16px'
-};
-
-const titleStyle = {
-  margin: '0 0 6px 0',
-  fontSize: '28px',
-  fontWeight: '700',
-  color: '#111827',
-  letterSpacing: '-0.5px'
-};
-
-const subtitleStyle = {
-  margin: 0,
-  fontSize: '16px',
-  color: '#4b5563'
-};
-
-const errorBannerStyle = {
-  backgroundColor: '#fee2e2',
-  color: '#991b1b',
-  padding: '12px 16px',
-  borderRadius: '8px',
-  fontSize: '14px',
-  marginTop: '16px',
-  borderLeft: '4px solid #ef4444'
-};
-
-const inviterBannerStyle = {
-  backgroundColor: '#f8fafc',
-  border: '1px solid #e2e8f0',
-  borderRadius: '12px',
-  padding: '16px',
-  marginTop: '20px',
-  marginBottom: '8px'
-};
-
-const inputStyle = {
-  width: '100%',
-  padding: '14px 16px',
-  border: '1px solid #e5e7eb',
-  borderRadius: '8px',
-  fontSize: '15px',
-  backgroundColor: '#f9fafb',
-  color: '#111827',
-  outline: 'none',
-  boxSizing: 'border-box'
-};
-
-const eyeButtonStyle = {
-  position: 'absolute',
-  right: '12px',
-  background: 'transparent',
-  border: 'none',
-  cursor: 'pointer',
-  padding: '4px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center'
-};
-
-const btnStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '100%',
-  padding: '14px',
-  border: 'none',
-  borderRadius: '8px',
-  backgroundColor: '#eff6ff',
-  color: '#2563eb',
-  fontSize: '16px',
-  fontWeight: '600',
-  cursor: 'pointer',
-  transition: 'background-color 0.2s ease',
-};
-
-const disclaimerStyle = {
-  fontSize: '13px',
-  color: '#6b7280',
-  lineHeight: '1.5',
-  marginTop: '20px',
-  marginBottom: '20px'
-};
-
-const linkStyle = {
-  color: '#2563eb',
-  textDecoration: 'none'
-};
-
-const partnerBannerStyle = {
-  backgroundColor: '#f9fafb',
-  padding: '16px',
-  borderRadius: '8px',
-  display: 'flex',
-  alignItems: 'center'
 };
 
 export default ResidentRegister;

@@ -67,13 +67,14 @@ public class InviteController {
     @Autowired
     private com.abhishekmandal.water_usage_backend.service.EmailService emailService;
 
-    @PostMapping("/send-email")
+    @PostMapping({"/send", "/send-email"})
     public ResponseEntity<?> sendInviteEmail(@RequestBody com.abhishekmandal.water_usage_backend.dto.SendEmailRequest request) {
         try {
             emailService.sendInviteEmail(request.getEmail(), request.getInviteLink());
             return ResponseEntity.ok("Email sent successfully!");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body("Failed to send email: " + e.getMessage());
         }
     }
+
 }

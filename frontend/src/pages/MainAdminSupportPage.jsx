@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
 import MainAdminSidebar from '../components/MainAdminSidebar';
 import Topbar from '../components/topbar';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
 import { CheckCircle, Clock, AlertCircle, Share2, UserCheck, Eye } from 'lucide-react';
 
-function MainAdminSupportPage() {
+function MainAdminSupportPage() {const { t } = useTranslation();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState(null);
@@ -45,30 +45,30 @@ function MainAdminSupportPage() {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'OPEN':
-        return <span className="badge badge-warning"><Clock size={12} /> Open</span>;
+        return <span className="badge badge-warning"><Clock size={12} />{t("mainAdmin.open")}</span>;
       case 'IN_PROGRESS':
-        return <span className="badge badge-info"><AlertCircle size={12} /> In Progress</span>;
+        return <span className="badge badge-info"><AlertCircle size={12} />{t("mainAdmin.inProgress")}</span>;
       case 'RESOLVED':
       case 'CLOSED':
-        return <span className="badge badge-success"><CheckCircle size={12} /> Resolved</span>;
+        return <span className="badge badge-success"><CheckCircle size={12} />{t("mainAdmin.resolved")}</span>;
       default:
         return <span className="badge">{status}</span>;
     }
   };
 
-  const getOriginBadge = (t) => {
-    if (t.forwardedToMainAdmin) {
+  const getOriginBadge = (ticket) => {
+    if (ticket.forwardedToMainAdmin) {
       return (
         <span className="badge badge-warning" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-          <Share2 size={12} /> Forwarded Tech Fault
-        </span>
-      );
+          <Share2 size={12} />{t("mainAdmin.forwardedTechFault")}
+        </span>);
+
     }
     return (
       <span className="badge badge-info" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-        <UserCheck size={12} /> Community Admin Ticket
-      </span>
-    );
+        <UserCheck size={12} />{t("mainAdmin.communityAdminTicket")}
+      </span>);
+
   };
 
   return (
@@ -80,9 +80,9 @@ function MainAdminSupportPage() {
         <main className="dashboard-content">
           <div className="page-header">
             <div>
-              <h1>System Support & Escalation Tickets</h1>
-              <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: 'var(--text-sm)' }}>
-                System-wide ticket oversight. Displays concerns raised by Community Admins & resident technical faults forwarded for resolution.
+              <h1>{t("mainAdmin.systemSupportEscalationTickets")}</h1>
+              <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: 'var(--text-sm)' }}>{t("mainAdmin.systemwideticketoversightDisplaysconcerns")}
+
               </p>
             </div>
           </div>
@@ -90,108 +90,108 @@ function MainAdminSupportPage() {
           <MagicCardGrid>
             <div className="grid-2-1">
               <MagicCard style={{ padding: 'var(--space-6)' }}>
-                <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>
-                  Main Admin Escalations ({tickets.length})
+                <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>{t("mainAdmin.mainAdminEscalations")}
+                  {tickets.length})
                 </h3>
 
-                {loading ? (
-                  <div className="loading-screen" style={{ height: '200px' }}>Loading...</div>
-                ) : tickets.length === 0 ? (
-                  <p style={{ color: 'var(--text-tertiary)' }}>No community concerns or forwarded technical fault tickets found.</p>
-                ) : (
-                  <div style={{ overflowX: 'auto' }}>
+                {loading ?
+                <div className="loading-screen" style={{ height: '200px' }}>{t("mainAdmin.loading")}</div> :
+                tickets.length === 0 ?
+                <p style={{ color: 'var(--text-tertiary)' }}>{t("mainAdmin.nocommunityconcernsorforwarded")}</p> :
+
+                <div style={{ overflowX: 'auto' }}>
                     <table className="data-table">
                       <thead>
                         <tr>
-                          <th>ID</th>
-                          <th>Raised By</th>
-                          <th>Subject</th>
-                          <th>Origin / Scope</th>
-                          <th>Status</th>
-                          <th>Action</th>
+                          <th>{t("mainAdmin.iD")}</th>
+                          <th>{t("mainAdmin.raisedBy")}</th>
+                          <th>{t("mainAdmin.subject")}</th>
+                          <th>{t("mainAdmin.originScope")}</th>
+                          <th>{t("mainAdmin.status")}</th>
+                          <th>{t("mainAdmin.action")}</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {tickets.map((t) => (
-                          <tr key={t.id} style={{ cursor: 'pointer' }} onClick={() => setSelectedTicket(t)}>
-                            <td style={{ fontWeight: 'var(--font-semibold)' }}>#{t.id}</td>
+                        {tickets.map((ticket) =>
+                      <tr key={ticket.id} style={{ cursor: 'pointer' }} onClick={() => setSelectedTicket(ticket)}>
+                            <td style={{ fontWeight: 'var(--font-semibold)' }}>#{ticket.id}</td>
                             <td>
-                              <div>{t.raisedByName}</div>
-                              <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{t.raisedByRole}</div>
+                              <div>{ticket.raisedByName}</div>
+                              <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{ticket.raisedByRole}</div>
                             </td>
-                            <td style={{ fontWeight: 'var(--font-medium)' }}>{t.title}</td>
-                            <td>{getOriginBadge(t)}</td>
-                            <td>{getStatusBadge(t.status)}</td>
+                            <td style={{ fontWeight: 'var(--font-medium)' }}>{ticket.title}</td>
+                            <td>{getOriginBadge(ticket)}</td>
+                            <td>{getStatusBadge(ticket.status)}</td>
                             <td>
                               <button className="btn btn-outline" style={{ padding: '4px 8px', fontSize: 'var(--text-xs)' }}>
-                                <Eye size={14} /> Inspect
-                              </button>
+                                <Eye size={14} />{t("mainAdmin.inspect")}
+                          </button>
                             </td>
                           </tr>
-                        ))}
+                      )}
                       </tbody>
                     </table>
                   </div>
-                )}
+                }
               </MagicCard>
 
               {/* Detail Inspection Card */}
               <MagicCard style={{ padding: 'var(--space-6)' }}>
-                <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>
-                  Ticket Resolution Details
+                <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>{t("mainAdmin.ticketResolutionDetails")}
+
                 </h3>
 
-                {selectedTicket ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                {selectedTicket ?
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
                     <div>
                       <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                        <span className="badge badge-info">Ticket #{selectedTicket.id}</span>
+                        <span className="badge badge-info">{t("mainAdmin.ticket")}{selectedTicket.id}</span>
                         {getOriginBadge(selectedTicket)}
                       </div>
                       <h4 style={{ margin: '8px 0 0 0', color: 'var(--text-primary)' }}>{selectedTicket.title}</h4>
-                      <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)', margin: '4px 0 0 0' }}>
-                        Raised by: {selectedTicket.raisedByName} ({selectedTicket.raisedByRole}) on {new Date(selectedTicket.createdAt).toLocaleDateString()}
+                      <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)', margin: '4px 0 0 0' }}>{t("mainAdmin.raisedby")}
+                      {selectedTicket.raisedByName} ({selectedTicket.raisedByRole}{t("mainAdmin.on")}{new Date(selectedTicket.createdAt).toLocaleDateString()}
                       </p>
                     </div>
 
                     <div style={{ padding: 'var(--space-4)', backgroundColor: 'var(--bg-card-hover)', borderRadius: 'var(--radius-md)', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', lineHeight: '1.6' }}>
-                      <strong>Description:</strong><br />
+                      <strong>{t("mainAdmin.description")}</strong><br />
                       {selectedTicket.description}
                     </div>
 
-                    {selectedTicket.forwardedToMainAdmin && selectedTicket.forwardedReason && (
-                      <div style={{ padding: '12px', backgroundColor: '#fef3c7', borderRadius: '6px', border: '1px solid #fde68a', color: '#92400e', fontSize: '13px' }}>
-                        <strong>Forwarding Note / Reason:</strong> {selectedTicket.forwardedReason}
+                    {selectedTicket.forwardedToMainAdmin && selectedTicket.forwardedReason &&
+                  <div style={{ padding: '12px', backgroundColor: 'var(--color-warning-50)', borderRadius: '6px', border: '1px solid var(--color-warning-400)', color: 'var(--color-warning-700)', fontSize: '13px' }}>
+                        <strong>{t("mainAdmin.forwardingNoteReason")}</strong> {selectedTicket.forwardedReason}
                       </div>
-                    )}
+                  }
 
                     <div>
-                      <label className="form-label">Update Ticket Status</label>
+                      <label className="form-label">{t("mainAdmin.updateTicketStatus")}</label>
                       <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-                        <button className="btn btn-outline" onClick={() => handleUpdateStatus(selectedTicket.id, 'IN_PROGRESS')}>
-                          In Progress
-                        </button>
-                        <button className="btn btn-success" onClick={() => handleUpdateStatus(selectedTicket.id, 'RESOLVED')}>
-                          Mark Resolved
-                        </button>
-                        <button className="btn btn-danger" onClick={() => handleUpdateStatus(selectedTicket.id, 'CLOSED')}>
-                          Close Ticket
-                        </button>
+                        <button className="btn btn-outline" onClick={() => handleUpdateStatus(selectedTicket.id, 'IN_PROGRESS')}>{t("mainAdmin.inProgress")}
+
+                      </button>
+                        <button className="btn btn-success" onClick={() => handleUpdateStatus(selectedTicket.id, 'RESOLVED')}>{t("mainAdmin.markResolved")}
+
+                      </button>
+                        <button className="btn btn-danger" onClick={() => handleUpdateStatus(selectedTicket.id, 'CLOSED')}>{t("mainAdmin.closeTicket")}
+
+                      </button>
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  <p style={{ color: 'var(--text-tertiary)', fontSize: 'var(--text-sm)' }}>
-                    Select an escalation ticket from the table to view details, notes, and resolve technical concerns.
-                  </p>
-                )}
+                  </div> :
+
+                <p style={{ color: 'var(--text-tertiary)', fontSize: 'var(--text-sm)' }}>{t("mainAdmin.selectanescalationticketfrom")}
+
+                </p>
+                }
               </MagicCard>
             </div>
           </MagicCardGrid>
         </main>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 export default MainAdminSupportPage;

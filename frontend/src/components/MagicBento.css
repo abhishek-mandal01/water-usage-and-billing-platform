@@ -1,79 +1,109 @@
-/* Light Theme Magic Bento Styles */
-.magic-bento-card {
+/* =========================================
+   MAGIC BENTO — Claymorphism Edition
+   ========================================= */
+
+.bento-section {
   position: relative;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-default);
+}
+
+/* ── Clay Card Base ── */
+.magic-bento-card {
   background: var(--bg-card);
-  backdrop-filter: blur(10px);
+  border-radius: var(--radius-xl);
+  border: none;
+  box-shadow: var(--shadow-card);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
   overflow: hidden;
-  transition: all var(--transition-slow);
-  
-  --glow-x: 50%;
-  --glow-y: 50%;
-  --glow-intensity: 0;
-  --glow-radius: 200px;
+}
+
+.magic-bento-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: var(--gradient-clay-light);
+  pointer-events: none;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  z-index: 0;
+}
+
+.magic-bento-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 .magic-bento-card:hover {
-  transform: translateY(-2px);
   box-shadow: var(--shadow-card-hover);
+  transform: translateY(-3px);
 }
 
-/* Border glow effect adapted for light mode */
+/* ── Border Glow (softened for clay) ── */
+.magic-bento-card--border-glow {
+  --glow-x: 50%;
+  --glow-y: 50%;
+  --glow-intensity: 0;
+  --glow-radius: 300px;
+}
+
 .magic-bento-card--border-glow::after {
   content: '';
   position: absolute;
   inset: 0;
-  padding: 2px; /* Thinner for light theme to look elegant */
+  border-radius: var(--radius-xl);
+  padding: 1.5px;
   background: radial-gradient(
     var(--glow-radius) circle at var(--glow-x) var(--glow-y),
-    rgba(37, 99, 235, calc(var(--glow-intensity) * 0.5)) 0%,
-    rgba(37, 99, 235, calc(var(--glow-intensity) * 0.2)) 30%,
-    transparent 60%
+    rgba(108, 142, 239, calc(0.25 * var(--glow-intensity))),
+    rgba(91, 188, 170, calc(0.15 * var(--glow-intensity))),
+    transparent
   );
-  border-radius: inherit;
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
   mask-composite: exclude;
   pointer-events: none;
-  opacity: 1;
-  transition: opacity var(--transition-slow);
-  z-index: 1;
-}
-
-.magic-bento-card--border-glow:hover {
-  box-shadow:
-    0 4px 20px rgba(37, 99, 235, 0.1),
-    0 0 15px rgba(37, 99, 235, 0.1);
-}
-
-/* Dark mode glow adjustments */
-[data-theme="dark"] .magic-bento-card--border-glow:hover {
-  box-shadow:
-    0 4px 20px rgba(59, 130, 246, 0.2),
-    0 0 20px rgba(59, 130, 246, 0.15);
+  transition: opacity 0.4s ease;
+  z-index: 2;
 }
 
 [data-theme="dark"] .magic-bento-card--border-glow::after {
   background: radial-gradient(
     var(--glow-radius) circle at var(--glow-x) var(--glow-y),
-    rgba(59, 130, 246, calc(var(--glow-intensity) * 0.7)) 0%,
-    rgba(59, 130, 246, calc(var(--glow-intensity) * 0.3)) 30%,
-    transparent 60%
+    rgba(122, 162, 247, calc(0.3 * var(--glow-intensity))),
+    rgba(91, 188, 170, calc(0.2 * var(--glow-intensity))),
+    transparent
   );
 }
 
-.particle {
-  will-change: transform, opacity;
+/* ── Global Spotlight (subtle for clay) ── */
+.bento-spotlight {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(108, 142, 239, 0.04) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
 }
 
-.global-spotlight {
-  will-change: transform, opacity;
-  z-index: 200 !important;
+[data-theme="dark"] .bento-spotlight {
+  background: radial-gradient(circle, rgba(122, 162, 247, 0.06) 0%, transparent 70%);
+}
+
+/* ── Particle Effects (warm clay tones) ── */
+.bento-particle {
+  position: absolute;
+  border-radius: var(--radius-full);
   pointer-events: none;
+  background: var(--color-primary-300);
+  opacity: 0;
+  z-index: 3;
+}
+
+[data-theme="dark"] .bento-particle {
+  background: var(--color-primary-400);
 }

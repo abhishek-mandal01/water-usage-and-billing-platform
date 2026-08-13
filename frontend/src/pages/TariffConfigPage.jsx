@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
 import Topbar from '../components/topbar';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
 import { Calculator, Save } from 'lucide-react';
 
-function TariffConfigPage() {
+function TariffConfigPage() {const { t } = useTranslation();
   const [apartmentConfig, setApartmentConfig] = useState({
     baseRate: 5.0,
     excessRate: 8.0,
@@ -89,9 +89,9 @@ function TariffConfigPage() {
         <main className="dashboard-content">
           <div className="page-header">
             <div>
-              <h1>Tariff Plan & Rate Configuration</h1>
-              <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: 'var(--text-sm)' }}>
-                Configure tiered rate limits, excess consumption multipliers, late payment surcharges, and usage alert thresholds for your apartment community.
+              <h1>{t("communityAdmin.tariffPlanRateConfiguration")}</h1>
+              <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: 'var(--text-sm)' }}>{t("communityAdmin.configuretieredratelimitsexcess")}
+
               </p>
             </div>
           </div>
@@ -102,117 +102,117 @@ function TariffConfigPage() {
             <div className="grid-2">
               {/* Tariff Configuration Form */}
               <MagicCard style={{ padding: 'var(--space-6)' }}>
-                <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>
-                  Community Tariff Tiers & Fees
+                <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>{t("communityAdmin.communityTariffTiersFees")}
+
                 </h3>
 
-                {loading ? (
-                  <div className="loading-screen" style={{ height: '200px' }}>Loading...</div>
-                ) : (
-                  <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                {loading ?
+                <div className="loading-screen" style={{ height: '200px' }}>{t("communityAdmin.loading")}</div> :
+
+                <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
                     <div>
-                      <label className="form-label">Tier 1 Base Rate (₹ / Litre)</label>
+                      <label className="form-label">{t("communityAdmin.tier1BaseRateLitre")}</label>
                       <input
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        required
-                        value={apartmentConfig.baseRate}
-                        onChange={(e) => setApartmentConfig({ ...apartmentConfig, baseRate: parseFloat(e.target.value) || 0 })}
-                        className="form-input"
-                      />
-                      <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' }}>Applied to consumption up to tier limit.</span>
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      required
+                      value={apartmentConfig.baseRate}
+                      onChange={(e) => setApartmentConfig({ ...apartmentConfig, baseRate: parseFloat(e.target.value) || 0 })}
+                      className="form-input" />
+                    
+                      <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' }}>{t("communityAdmin.appliedtoconsumptionupto")}</span>
                     </div>
 
                     <div>
-                      <label className="form-label">Tier 1 Volume Limit (Liters)</label>
+                      <label className="form-label">{t("communityAdmin.tier1VolumeLimitLiters")}</label>
                       <input
-                        type="number"
-                        step="100"
-                        min="0"
-                        required
-                        value={apartmentConfig.tierLimit}
-                        onChange={(e) => setApartmentConfig({ ...apartmentConfig, tierLimit: parseFloat(e.target.value) || 0 })}
-                        className="form-input"
-                      />
-                      <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' }}>Threshold (e.g. 10,000 L) before Tier 2 excess pricing applies.</span>
+                      type="number"
+                      step="100"
+                      min="0"
+                      required
+                      value={apartmentConfig.tierLimit}
+                      onChange={(e) => setApartmentConfig({ ...apartmentConfig, tierLimit: parseFloat(e.target.value) || 0 })}
+                      className="form-input" />
+                    
+                      <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' }}>{t("communityAdmin.thresholdeg10000Lbefore")}</span>
                     </div>
 
                     <div>
-                      <label className="form-label">Tier 2 Excess Rate (₹ / Litre)</label>
+                      <label className="form-label">{t("communityAdmin.tier2ExcessRateLitre")}</label>
                       <input
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        required
-                        value={apartmentConfig.excessRate}
-                        onChange={(e) => setApartmentConfig({ ...apartmentConfig, excessRate: parseFloat(e.target.value) || 0 })}
-                        className="form-input"
-                      />
-                      <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' }}>Higher multiplier applied to consumption beyond Tier 1 limit.</span>
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      required
+                      value={apartmentConfig.excessRate}
+                      onChange={(e) => setApartmentConfig({ ...apartmentConfig, excessRate: parseFloat(e.target.value) || 0 })}
+                      className="form-input" />
+                    
+                      <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' }}>{t("communityAdmin.highermultiplierappliedtoconsumption")}</span>
                     </div>
 
                     <div>
-                      <label className="form-label">Late Payment Fee per Month (₹ / Month)</label>
+                      <label className="form-label">{t("communityAdmin.latePaymentFeeperMonth")}</label>
                       <input
-                        type="number"
-                        step="10"
-                        min="0"
-                        required
-                        value={apartmentConfig.lateFeePerMonth}
-                        onChange={(e) => setApartmentConfig({ ...apartmentConfig, lateFeePerMonth: parseFloat(e.target.value) || 0 })}
-                        className="form-input"
-                      />
-                      <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' }}>Extra surcharge charged for every month the payment is late.</span>
+                      type="number"
+                      step="10"
+                      min="0"
+                      required
+                      value={apartmentConfig.lateFeePerMonth}
+                      onChange={(e) => setApartmentConfig({ ...apartmentConfig, lateFeePerMonth: parseFloat(e.target.value) || 0 })}
+                      className="form-input" />
+                    
+                      <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' }}>{t("communityAdmin.extrasurchargechargedforevery")}</span>
                     </div>
 
                     <div>
-                      <label className="form-label">Payment Grace Period (Days)</label>
+                      <label className="form-label">{t("communityAdmin.paymentGracePeriodDays")}</label>
                       <input
-                        type="number"
-                        step="1"
-                        min="0"
-                        required
-                        value={apartmentConfig.gracePeriodDays}
-                        onChange={(e) => setApartmentConfig({ ...apartmentConfig, gracePeriodDays: parseInt(e.target.value) || 0 })}
-                        className="form-input"
-                      />
-                      <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' }}>Number of days after cycle end date before late payment surcharge starts accumulating.</span>
+                      type="number"
+                      step="1"
+                      min="0"
+                      required
+                      value={apartmentConfig.gracePeriodDays}
+                      onChange={(e) => setApartmentConfig({ ...apartmentConfig, gracePeriodDays: parseInt(e.target.value) || 0 })}
+                      className="form-input" />
+                    
+                      <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' }}>{t("communityAdmin.numberofdaysaftercycle")}</span>
                     </div>
 
                     <div>
-                      <label className="form-label">Usage Alert Threshold (Liters)</label>
+                      <label className="form-label">{t("communityAdmin.usageAlertThresholdLiters")}</label>
                       <input
-                        type="number"
-                        step="500"
-                        min="0"
-                        required
-                        value={apartmentConfig.usageAlertThreshold}
-                        onChange={(e) => setApartmentConfig({ ...apartmentConfig, usageAlertThreshold: parseFloat(e.target.value) || 0 })}
-                        className="form-input"
-                      />
-                      <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' }}>Triggers automatic high usage email alert to household.</span>
+                      type="number"
+                      step="500"
+                      min="0"
+                      required
+                      value={apartmentConfig.usageAlertThreshold}
+                      onChange={(e) => setApartmentConfig({ ...apartmentConfig, usageAlertThreshold: parseFloat(e.target.value) || 0 })}
+                      className="form-input" />
+                    
+                      <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' }}>{t("communityAdmin.triggersautomatichighusageemail")}</span>
                     </div>
 
                     <button type="submit" className="btn btn-primary" style={{ marginTop: 'var(--space-2)' }}>
-                      <Save size={16} /> Save Tariff Settings
-                    </button>
+                      <Save size={16} />{t("communityAdmin.saveTariffSettings")}
+                  </button>
                   </form>
-                )}
+                }
               </MagicCard>
 
               {/* Real-time Calculation Simulator */}
               <MagicCard style={{ padding: 'var(--space-6)' }}>
                 <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Calculator size={20} color="var(--color-primary-500)" /> Tariff Calculation Preview
+                  <Calculator size={20} color="var(--color-primary-500)" />{t("communityAdmin.tariffCalculationPreview")}
                 </h3>
 
-                <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', margin: '0 0 var(--space-4) 0' }}>
-                  Test how your configured rates and late fees will calculate household bills based on hypothetical consumption and overdue delay.
+                <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', margin: '0 0 var(--space-4) 0' }}>{t("communityAdmin.testhowyourconfiguredrates")}
+
                 </p>
 
                 <div style={{ marginBottom: 'var(--space-4)' }}>
-                  <label className="form-label">Simulated Consumption (Liters): {simUsage.toLocaleString()} L</label>
+                  <label className="form-label">{t("communityAdmin.simulatedConsumptionLiters")}{simUsage.toLocaleString()} L</label>
                   <input
                     type="range"
                     min="1000"
@@ -220,12 +220,17 @@ function TariffConfigPage() {
                     step="500"
                     value={simUsage}
                     onChange={(e) => setSimUsage(parseInt(e.target.value))}
-                    style={{ width: '100%', accentColor: 'var(--color-primary-600)' }}
-                  />
+                    className="custom-range-slider"
+                    style={{ 
+                      width: '100%', 
+                      '--thumb-color': 'var(--color-primary-500)',
+                      background: `linear-gradient(to right, var(--color-primary-500) ${((simUsage - 1000) / 39000) * 100}%, var(--border-input) ${((simUsage - 1000) / 39000) * 100}%)`
+                    }} />
+                  
                 </div>
 
                 <div style={{ marginBottom: 'var(--space-5)' }}>
-                  <label className="form-label">Simulated Payment Delay: {simMonthsLate} Month(s) Overdue</label>
+                  <label className="form-label">{t("communityAdmin.simulatedPaymentDelay")}{simMonthsLate}{t("communityAdmin.monthsOverdue")}</label>
                   <input
                     type="range"
                     min="0"
@@ -233,30 +238,35 @@ function TariffConfigPage() {
                     step="1"
                     value={simMonthsLate}
                     onChange={(e) => setSimMonthsLate(parseInt(e.target.value))}
-                    style={{ width: '100%', accentColor: 'var(--color-danger-500)' }}
-                  />
+                    className="custom-range-slider"
+                    style={{ 
+                      width: '100%', 
+                      '--thumb-color': 'var(--color-danger-500)',
+                      background: `linear-gradient(to right, var(--color-danger-500) ${(simMonthsLate / 6) * 100}%, var(--border-input) ${(simMonthsLate / 6) * 100}%)`
+                    }} />
+                  
                 </div>
 
                 <div style={{ padding: 'var(--space-4)', backgroundColor: 'var(--bg-card-hover)', borderRadius: 'var(--radius-lg)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-sm)' }}>
-                    <span style={{ color: 'var(--text-secondary)' }}>Tier 1 Base Portion ({Math.min(simUsage, apartmentConfig.tierLimit).toLocaleString()} L @ ₹{apartmentConfig.baseRate}/L):</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>{t("communityAdmin.tier1BasePortion")}{Math.min(simUsage, apartmentConfig.tierLimit).toLocaleString()}{t("communityAdmin.l")}{apartmentConfig.baseRate}{t("communityAdmin.l")}</span>
                     <span style={{ fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>₹{calcBaseAmount.toFixed(2)}</span>
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-sm)' }}>
-                    <span style={{ color: 'var(--text-secondary)' }}>Tier 2 Excess Portion ({Math.max(0, simUsage - apartmentConfig.tierLimit).toLocaleString()} L @ ₹{apartmentConfig.excessRate}/L):</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>{t("communityAdmin.tier2ExcessPortion")}{Math.max(0, simUsage - apartmentConfig.tierLimit).toLocaleString()}{t("communityAdmin.l")}{apartmentConfig.excessRate}{t("communityAdmin.l")}</span>
                     <span style={{ fontWeight: 'var(--font-semibold)', color: 'var(--color-danger-500)' }}>₹{calcExcessAmount.toFixed(2)}</span>
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-sm)' }}>
-                    <span style={{ color: 'var(--text-secondary)' }}>Late Payment Surcharge ({simMonthsLate} Mo. @ ₹{apartmentConfig.lateFeePerMonth}/mo):</span>
-                    <span style={{ fontWeight: 'var(--font-semibold)', color: simMonthsLate > 0 ? '#dc2626' : 'var(--text-tertiary)' }}>₹{calcLateFeeAmount.toFixed(2)}</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>{t("communityAdmin.latePaymentSurcharge")}{simMonthsLate}{t("communityAdmin.mo")}{apartmentConfig.lateFeePerMonth}{t("communityAdmin.mo")}</span>
+                    <span style={{ fontWeight: 'var(--font-semibold)', color: simMonthsLate > 0 ? 'var(--color-danger-600)' : 'var(--text-tertiary)' }}>₹{calcLateFeeAmount.toFixed(2)}</span>
                   </div>
 
                   <hr style={{ border: 'none', borderTop: '1px solid var(--border-light)', margin: 'var(--space-2) 0' }} />
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-base)', fontWeight: 'var(--font-bold)' }}>
-                    <span style={{ color: 'var(--text-primary)' }}>Estimated Total Bill:</span>
+                    <span style={{ color: 'var(--text-primary)' }}>{t("communityAdmin.estimatedTotalBill")}</span>
                     <span style={{ color: 'var(--color-primary-600)' }}>₹{calcTotalAmount.toFixed(2)}</span>
                   </div>
                 </div>
@@ -265,8 +275,8 @@ function TariffConfigPage() {
           </MagicCardGrid>
         </main>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 export default TariffConfigPage;

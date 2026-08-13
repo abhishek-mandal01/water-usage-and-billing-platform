@@ -33,6 +33,9 @@ public class BillingService {
     @Autowired
     private ApartmentRepository apartmentRepository;
 
+    @Autowired
+    private EmailService emailService;
+
     @Transactional
     public BillingCycle createBillingCycle(Long adminId, LocalDate startDate, LocalDate endDate) {
         if (startDate == null || endDate == null) {
@@ -47,9 +50,9 @@ public class BillingService {
 
         List<BillingCycle> existingCycles = billingCycleRepository.findByApartmentIdOrderByIdDesc(apt.getId());
         for (BillingCycle existing : existingCycles) {
-            if (existing.getStartDate().getYear() == startDate.getYear() && 
-                existing.getStartDate().getMonthValue() == startDate.getMonthValue()) {
-                throw new RuntimeException("A billing cycle for this month has already been generated. Monthly bills can only be generated once every month.");
+            // Date overlap logic: start1 <= end2 && end1 >= start2
+            if (!startDate.isAfter(existing.getEndDate()) && !endDate.isBefore(existing.getStartDate())) {
+                throw new RuntimeException("The selected dates overlap with an existing billing cycle (" + existing.getStartDate() + " to " + existing.getEndDate() + "). Billing cycles cannot overlap.");
             }
         }
 
@@ -192,7 +195,18 @@ public class BillingService {
                 }
                 
                 bill.setStatus("UNPAID");
-                billRepository.save(bill);
+                bill = billRepository.save(bill);
+
+                // Send Email Notification
+                if (hh.getResident().getEmail() != null) {
+                    emailService.sendBillGeneratedEmail(
+                        hh.getResident().getEmail(), 
+                        hh.getResident().getName(), 
+                        cycleStr, 
+                        bill.getAmount(), 
+                        dueDate.toString()
+                    );
+                }
             }
         }
 
@@ -245,6 +259,10 @@ public class BillingService {
         }
 
         Double personalCharge = bAmount + eAmount;
+
+        if (personalCharge <= 0) {
+            return null; // Do not generate Rs 0 bills
+        }
 
         Bill bill = new Bill();
         bill.setUser(hh.getResident());
@@ -325,7 +343,10 @@ public class BillingService {
     @Transactional
     public List<Bill> getBillsByUser(Long userId) {
         List<Bill> bills = billRepository.findByUserId(userId);
-        return bills.stream().map(this::applyLateFeeIfNeeded).collect(Collectors.toList());
+        return bills.stream()
+            .map(this::applyLateFeeIfNeeded)
+            .filter(b -> b != null && b.getAmount() > 0)
+            .collect(Collectors.toList());
     }
 
     @Transactional
@@ -339,7 +360,10 @@ public class BillingService {
         if (residentIds.isEmpty()) return List.of();
         
         List<Bill> bills = billRepository.findByUserIdInOrderByIdDesc(residentIds);
-        return bills.stream().map(this::applyLateFeeIfNeeded).collect(Collectors.toList());
+        return bills.stream()
+            .map(this::applyLateFeeIfNeeded)
+            .filter(b -> b != null && b.getAmount() > 0)
+            .collect(Collectors.toList());
     }
     
     // Kept for backward compatibility with older controllers if they still call it

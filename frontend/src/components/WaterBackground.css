@@ -1,0 +1,169 @@
+.water-bg-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.water-bg-base {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transition: background-color 0.7s, color 0.7s;
+}
+
+.water-bg-base.light {
+  background: linear-gradient(to right, #dbeafe, #bfdbfe, #93c5fd);
+}
+
+.water-bg-base.dark {
+  background-color: #020617;
+  color: #f1f5f9;
+}
+
+.water-bg-photo {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: opacity 1s, mix-blend-mode 1s;
+}
+
+.water-bg-photo.light {
+  opacity: 0.85;
+  mix-blend-mode: multiply;
+}
+
+.water-bg-photo.dark {
+  opacity: 0.25;
+  mix-blend-mode: soft-light;
+}
+
+.water-bg-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.water-bg-overlay.light {
+  background: linear-gradient(to bottom, rgba(240,249,255,0.4), rgba(255,255,255,0.2), rgba(224,242,254,0.6));
+}
+
+.water-bg-overlay.dark {
+  background: linear-gradient(to bottom, rgba(2,6,23,0.8), rgba(15,23,42,0.6), rgba(2,6,23,0.9));
+}
+
+.water-bg-ripple-area {
+  position: absolute;
+  top: 45%;
+  left: 85%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+}
+
+.water-bg-ripple-1, .water-bg-ripple-2 {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 50%;
+}
+
+.water-bg-ripple-1 {
+  border: 1px solid rgba(125,211,252,0.4);
+  animation: ripple 4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+
+.water-bg-ripple-2 {
+  border: 1px solid rgba(96,165,250,0.3);
+  animation: ripple 4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+  animation-delay: 2s;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.water-bg-droplet {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(to top right, rgba(125,211,252,0.6), rgba(255,255,255,0.8), rgba(59,130,246,0.3));
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.9);
+  box-shadow: 0 10px 25px rgba(37,99,235,0.25);
+  animation: float 6s ease-in-out infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes float {
+  0% { transform: translate(-50%, -50%) translateY(0px); }
+  50% { transform: translate(-50%, -50%) translateY(-20px); }
+  100% { transform: translate(-50%, -50%) translateY(0px); }
+}
+
+.water-bg-droplet-inner {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: rgba(255,255,255,0.7);
+  filter: blur(1px);
+}
+
+.water-bg-orb-1, .water-bg-orb-2, .water-bg-orb-3 {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(64px);
+}
+
+.water-bg-orb-1 {
+  top: -128px;
+  left: -128px;
+  width: 384px;
+  height: 384px;
+  background-color: rgba(147,197,253,0.3);
+}
+
+.water-bg-orb-2 {
+  top: 50%;
+  right: 0;
+  width: 500px;
+  height: 500px;
+  background-color: rgba(186,230,253,0.4);
+}
+
+.water-bg-orb-3 {
+  bottom: -80px;
+  left: 33.333333%;
+  width: 320px;
+  height: 320px;
+  background-color: rgba(199,210,254,0.3);
+}

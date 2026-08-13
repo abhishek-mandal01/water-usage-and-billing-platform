@@ -29,6 +29,7 @@ public class ProfileService {
         dto.setRole(user.getRole());
         dto.setGender(user.getGender());
         dto.setDateOfBirth(user.getDateOfBirth());
+        dto.setAvatarUrl(user.getAvatarUrl());
         
         if (user instanceof Resident) {
             dto.setPhoneNumber(((Resident) user).getPhoneNumber());
@@ -54,6 +55,7 @@ public class ProfileService {
         user.setName(dto.getName());
         if (dto.getGender() != null) user.setGender(dto.getGender());
         if (dto.getDateOfBirth() != null) user.setDateOfBirth(dto.getDateOfBirth());
+        if (dto.getAvatarUrl() != null) user.setAvatarUrl(dto.getAvatarUrl());
         
         if (user instanceof Resident) {
             ((Resident) user).setPhoneNumber(dto.getPhoneNumber());

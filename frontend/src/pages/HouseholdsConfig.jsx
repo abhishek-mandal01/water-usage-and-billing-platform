@@ -10,6 +10,7 @@ function HouseholdsDirectory() {
   const [residentUsage, setResidentUsage] = useState([]);
   const [assignMeterForm, setAssignMeterForm] = useState('');
   const [isAssigningMeter, setIsAssigningMeter] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const adminId = JSON.parse(localStorage.getItem('user'))?.id;
 
@@ -113,52 +114,81 @@ function HouseholdsDirectory() {
     }
   };
 
+  const filteredHouseholds = households.filter(hh => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    const name = hh.resident?.name?.toLowerCase() || '';
+    const email = hh.resident?.email?.toLowerCase() || '';
+    const flatNo = hh.householdNumber?.toLowerCase() || '';
+    const meterNo = hh.waterMeter?.serialNumber?.toLowerCase() || '';
+    return name.includes(q) || email.includes(q) || flatNo.includes(q) || meterNo.includes(q);
+  });
+
   return (
     <div className="dashboard-layout">
       <CommunityAdminSidebar />
       <div className="dashboard-main">
         <Topbar />
         
-        <main style={{ padding: '40px', marginTop: '60px' }}>
+        <main className="dashboard-content">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h1>Households Directory</h1>
-            <p style={{ color: '#6b7280', fontSize: '14px' }}>Total Households: {households.length}</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+              <h1 style={{ margin: 0 }}>Households Directory</h1>
+              <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '14px', backgroundColor: 'var(--color-surface-100)', padding: '4px 10px', borderRadius: 'var(--radius-full)' }}>Total: {households.length}</p>
+            </div>
+            <div style={{ position: 'relative' }}>
+              <input 
+                type="text" 
+                placeholder="Search Name, Email, Flat No, or Meter No..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{ padding: '10px 15px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', width: '350px', fontSize: 'var(--text-sm)', outline: 'none' }}
+              />
+              {searchQuery && (
+                <button 
+                  onClick={() => setSearchQuery('')}
+                  style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
+                >
+                  ✕
+                </button>
+              )}
+            </div>
           </div>
 
           <MagicCardGrid>
             <MagicCard style={{ padding: '0', overflow: 'hidden' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
-                <tr style={{ backgroundColor: 'transparent', borderBottom: '1px solid #e5e7eb' }}>
+                <tr style={{ backgroundColor: 'transparent', borderBottom: '1px solid var(--border-default)' }}>
                   <th style={{ padding: '15px' }}>Household Number</th>
                   <th style={{ padding: '15px' }}>Resident Name</th>
                   <th style={{ padding: '15px' }}>Status</th>
                 </tr>
               </thead>
               <tbody>
-                {households.length === 0 ? (
+                {filteredHouseholds.length === 0 ? (
                   <tr>
-                    <td colSpan="3" style={{ padding: '20px', textAlign: 'center', color: '#6b7280' }}>
-                      No households found. Generate an invite link for residents to register.
+                    <td colSpan="3" style={{ padding: '20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                      {searchQuery ? "No households match your search." : "No households found. Generate an invite link for residents to register."}
                     </td>
                   </tr>
                 ) : (
-                  households.map(hh => (
+                  filteredHouseholds.map(hh => (
                     <tr 
                       key={hh.id} 
                       onClick={() => handleHouseholdClick(hh)}
-                      style={{ borderBottom: '1px solid #e5e7eb', cursor: 'pointer', transition: 'background-color 0.2s' }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                      style={{ borderBottom: '1px solid var(--border-default)', cursor: 'pointer', transition: 'background-color 0.2s' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-card-hover)'}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
                       <td style={{ padding: '15px', fontWeight: 'bold' }}>{hh.householdNumber}</td>
                       <td style={{ padding: '15px' }}>
-                        {hh.resident ? hh.resident.name : <span style={{ color: '#9ca3af', fontStyle: 'italic' }}>Unassigned</span>}
+                        {hh.resident ? hh.resident.name : <span style={{ color: 'var(--text-tertiary)', fontStyle: 'italic' }}>Unassigned</span>}
                       </td>
                       <td style={{ padding: '15px' }}>
                         {hh.resident ? 
-                          <span style={{ padding: '4px 8px', backgroundColor: '#d1fae5', color: '#065f46', borderRadius: '12px', fontSize: '12px', fontWeight: 'bold' }}>Active</span> : 
-                          <span style={{ padding: '4px 8px', backgroundColor: '#fef3c7', color: '#92400e', borderRadius: '12px', fontSize: '12px', fontWeight: 'bold' }}>Pending</span>
+                          <span style={{ padding: '4px 8px', backgroundColor: 'var(--color-success-50)', color: 'var(--color-success-700)', borderRadius: 'var(--radius-full)', fontSize: 'var(--text-xs)', fontWeight: 'var(--font-bold)' }}>Active</span> : 
+                          <span style={{ padding: '4px 8px', backgroundColor: 'var(--color-warning-50)', color: 'var(--color-warning-700)', borderRadius: 'var(--radius-full)', fontSize: 'var(--text-xs)', fontWeight: 'var(--font-bold)' }}>Pending</span>
                         }
                       </td>
                     </tr>
@@ -171,18 +201,22 @@ function HouseholdsDirectory() {
 
           {/* Household Detail Modal */}
           {selectedHousehold && (
-            <div style={{
+            <div 
+              onClick={() => { setSelectedHousehold(null); setIsAssigningMeter(false); }}
+              style={{
               position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
               backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex',
               justifyContent: 'center', alignItems: 'center'
             }}>
-              <div style={{ backgroundColor: '#fff', padding: '30px', borderRadius: '10px', width: '90%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}>
-                <h2 style={{ marginTop: 0, borderBottom: '1px solid #e5e7eb', paddingBottom: '10px' }}>Household {selectedHousehold.householdNumber}</h2>
+              <div 
+                onClick={(e) => e.stopPropagation()}
+                style={{ backgroundColor: '#fff', padding: '30px', borderRadius: '10px', width: '90%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}>
+                <h2 style={{ marginTop: 0, borderBottom: '1px solid var(--border-default)', paddingBottom: '10px' }}>Household {selectedHousehold.householdNumber}</h2>
                 
                 <div style={{ marginTop: '20px' }}>
                   <h4 style={{ margin: '0 0 10px 0', color: '#374151' }}>Resident Details</h4>
                   {selectedHousehold.resident ? (
-                    <div style={{ backgroundColor: 'transparent', padding: '15px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                    <div style={{ backgroundColor: 'transparent', padding: '15px', borderRadius: '8px', border: '1px solid var(--border-default)' }}>
                       <p style={{ margin: '0 0 5px 0' }}><strong>Name:</strong> {selectedHousehold.resident.name}</p>
                       <p style={{ margin: '0 0 5px 0' }}><strong>Email:</strong> {selectedHousehold.resident.email}</p>
                       <p style={{ margin: '0 0 5px 0' }}><strong>Phone:</strong> {selectedHousehold.resident.phoneNumber}</p>
@@ -191,16 +225,16 @@ function HouseholdsDirectory() {
                       <p style={{ margin: '0 0 10px 0' }}><strong>Government ID:</strong> {selectedHousehold.resident.governmentId || 'N/A'}</p>
                       <button 
                         onClick={() => handleRemoveResident(selectedHousehold.resident.id, selectedHousehold.householdNumber)}
-                        style={{ padding: '6px 12px', backgroundColor: '#fee2e2', color: '#991b1b', border: '1px solid #f87171', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>
+                        style={{ padding: '6px 12px', backgroundColor: 'var(--color-danger-50)', color: 'var(--color-danger-700)', border: '1px solid var(--color-danger-400)', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>
                         Remove Resident
                       </button>
                     </div>
                   ) : (
                     <div>
-                      <p style={{ color: '#6b7280', fontStyle: 'italic', marginBottom: '15px' }}>No resident registered yet.</p>
+                      <p style={{ color: 'var(--text-secondary)', fontStyle: 'italic', marginBottom: '15px' }}>No resident registered yet.</p>
                       <button 
                         onClick={() => handleDeleteHousehold(selectedHousehold.id, selectedHousehold.householdNumber)}
-                        style={{ padding: '6px 12px', backgroundColor: '#fee2e2', color: '#991b1b', border: '1px solid #f87171', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>
+                        style={{ padding: '6px 12px', backgroundColor: 'var(--color-danger-50)', color: 'var(--color-danger-700)', border: '1px solid var(--color-danger-400)', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>
                         Delete Household
                       </button>
                     </div>
@@ -209,19 +243,19 @@ function HouseholdsDirectory() {
 
                 <div style={{ marginTop: '20px' }}>
                   <h4 style={{ margin: '0 0 10px 0', color: '#374151' }}>Water Meter Details</h4>
-                  <div style={{ backgroundColor: 'transparent', padding: '15px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                  <div style={{ backgroundColor: 'transparent', padding: '15px', borderRadius: '8px', border: '1px solid var(--border-default)' }}>
                     {selectedHousehold.waterMeter ? (
                       <div>
                         <p style={{ margin: '0 0 5px 0' }}><strong>Meter Number:</strong> {selectedHousehold.waterMeter.serialNumber}</p>
-                        <p style={{ margin: 0, fontSize: '13px', color: '#6b7280' }}>Installed on: {selectedHousehold.waterMeter.installationDate}</p>
+                        <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>Installed on: {selectedHousehold.waterMeter.installationDate}</p>
                       </div>
                     ) : (
                       <div>
-                        <p style={{ margin: '0 0 10px 0', color: '#6b7280', fontStyle: 'italic' }}>No meter assigned.</p>
+                        <p style={{ margin: '0 0 10px 0', color: 'var(--text-secondary)', fontStyle: 'italic' }}>No meter assigned.</p>
                         {!isAssigningMeter ? (
                           <button 
                             onClick={() => setIsAssigningMeter(true)}
-                            style={{ padding: '6px 12px', backgroundColor: '#e0e7ff', color: '#4f46e5', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>
+                            style={{ padding: '6px 12px', backgroundColor: 'var(--color-primary-100)', color: 'var(--color-primary-600)', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>
                             Assign Meter
                           </button>
                         ) : (
@@ -234,7 +268,7 @@ function HouseholdsDirectory() {
                               required
                               style={{ padding: '8px', borderRadius: '4px', border: '1px solid #d1d5db', outline: 'none', flexGrow: 1 }}
                             />
-                            <button type="submit" style={{ padding: '8px 12px', backgroundColor: '#10b981', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Save</button>
+                            <button type="submit" style={{ padding: '8px 12px', backgroundColor: 'var(--color-success-500)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Save</button>
                             <button type="button" onClick={() => setIsAssigningMeter(false)} style={{ padding: '8px 12px', backgroundColor: '#f3f4f6', color: '#4b5563', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Cancel</button>
                           </form>
                         )}
@@ -245,13 +279,13 @@ function HouseholdsDirectory() {
 
                 <div style={{ marginTop: '20px' }}>
                   <h4 style={{ margin: '0 0 10px 0', color: '#374151' }}>Water Usage History</h4>
-                  <div style={{ backgroundColor: 'transparent', padding: '15px', borderRadius: '8px', border: '1px solid #e5e7eb', maxHeight: '150px', overflowY: 'auto' }}>
+                  <div style={{ backgroundColor: 'transparent', padding: '15px', borderRadius: '8px', border: '1px solid var(--border-default)', maxHeight: '150px', overflowY: 'auto' }}>
                     {residentUsage.length === 0 ? (
-                      <p style={{ margin: 0, color: '#6b7280' }}>No usage logs available.</p>
+                      <p style={{ margin: 0, color: 'var(--text-secondary)' }}>No usage logs available.</p>
                     ) : (
                       <table style={{ width: '100%', fontSize: '13px', textAlign: 'left', borderCollapse: 'collapse' }}>
                         <thead>
-                          <tr style={{ color: '#6b7280', borderBottom: '1px solid #e5e7eb' }}>
+                          <tr style={{ color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-default)' }}>
                             <th style={{ paddingBottom: '5px' }}>Date</th>
                             <th style={{ paddingBottom: '5px' }}>Volume (L)</th>
                             <th style={{ paddingBottom: '5px' }}>Consumption</th>
@@ -273,16 +307,16 @@ function HouseholdsDirectory() {
 
                 <div style={{ marginTop: '20px' }}>
                   <h4 style={{ margin: '0 0 10px 0', color: '#374151' }}>Financial Overview</h4>
-                  <div style={{ backgroundColor: 'transparent', padding: '15px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                  <div style={{ backgroundColor: 'transparent', padding: '15px', borderRadius: '8px', border: '1px solid var(--border-default)' }}>
                     <p style={{ margin: 0, color: '#059669', fontWeight: 'bold' }}>No pending bills (₹0.00 Due)</p>
                   </div>
                 </div>
 
                 <div style={{ marginTop: '20px' }}>
                   <h4 style={{ margin: '0 0 10px 0', color: '#374151' }}>Support Concerns Raised</h4>
-                  <div style={{ backgroundColor: 'transparent', padding: '15px', borderRadius: '8px', border: '1px solid #e5e7eb', maxHeight: '150px', overflowY: 'auto' }}>
+                  <div style={{ backgroundColor: 'transparent', padding: '15px', borderRadius: '8px', border: '1px solid var(--border-default)', maxHeight: '150px', overflowY: 'auto' }}>
                     {residentTickets.length === 0 ? (
-                      <p style={{ margin: 0, color: '#6b7280' }}>No tickets raised by this resident.</p>
+                      <p style={{ margin: 0, color: 'var(--text-secondary)' }}>No tickets raised by this resident.</p>
                     ) : (
                       <ul style={{ margin: 0, paddingLeft: '20px' }}>
                         {residentTickets.map(ticket => (
@@ -297,7 +331,7 @@ function HouseholdsDirectory() {
 
                 <button 
                   onClick={() => setSelectedHousehold(null)} 
-                  style={{ marginTop: '25px', padding: '10px 20px', width: '100%', backgroundColor: '#1e3a8a', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}>
+                  style={{ marginTop: '25px', padding: '10px 20px', width: '100%', backgroundColor: 'var(--color-primary-900)', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}>
                   Close
                 </button>
               </div>

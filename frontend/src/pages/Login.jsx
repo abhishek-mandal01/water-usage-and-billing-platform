@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from '../components/LanguageSelector/useTranslation';
 import { Eye, EyeOff, Droplets } from 'lucide-react';
-import logoImg from '../assets/water_usage_and_billing_logo.png';
+import AuthSidePanel from '../components/AuthSidePanel';
+import LanguageSelector from '../components/LanguageSelector';
+import ThemeToggle from '../components/ThemeToggle';
+import { useTheme } from '../context/ThemeContext';
+import BrandLogo from '../components/BrandLogo';
+import { WaterBackground } from '../components/WaterBackground';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -9,6 +15,8 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { theme } = useTheme();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,10 +28,15 @@ const Login = () => {
     setLoading(true);
 
     try {
+      const payload = {
+        email: formData.email.trim(),
+        password: formData.password
+      };
+
       const response = await fetch('http://localhost:8081/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
 
       if (response.ok) {
@@ -49,49 +62,50 @@ const Login = () => {
 
   return (
     <div className="auth-container">
-      {/* Left Marketing Side */}
-      <div className="auth-left">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-          <Droplets size={32} color="var(--color-primary-600)" />
-          <span style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-extrabold)', color: 'var(--text-primary)', letterSpacing: '-1px' }}>SmartWater</span>
+      <WaterBackground darkMode={theme === 'dark'} />
+      <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column' }}>
+      {/* Top Navbar Strip */}
+      <nav style={{ 
+        position: 'relative', 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        padding: '0 var(--space-6)',
+        margin: 'var(--space-6) 5%',
+        backgroundColor: theme === 'dark' ? 'var(--bg-card)' : 'var(--color-primary-50)', 
+        borderRadius: 'var(--radius-2xl)',
+        boxShadow: 'var(--shadow-card)',
+        zIndex: 100,
+        minHeight: '76px'
+      }}>
+        <div style={{ transform: 'scale(0.8)', transformOrigin: 'left center', display: 'flex', alignItems: 'center' }}>
+          <BrandLogo style={{ borderBottom: 'none', padding: 0, margin: 0 }} />
         </div>
         
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-10) 0', gap: 'var(--space-5)', transform: 'translateX(-30px)' }}>
-          <img 
-            src={logoImg} 
-            alt="Smart Water Logo" 
-            style={{ width: '130px', height: '130px', objectFit: 'contain' }} 
-          />
-          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
-            <div style={{ color: 'var(--text-primary)', fontFamily: '"Trebuchet MS", "Arial Rounded MT Bold", sans-serif', fontSize: '48px', fontWeight: 800, letterSpacing: '-1px', whiteSpace: 'nowrap' }}>
-              Smart <span style={{ color: 'var(--color-primary-500)' }}>Water</span>
-            </div>
-            <div style={{ marginTop: 'var(--space-3)', color: 'var(--text-secondary)', fontFamily: 'var(--font-family)', fontSize: 'var(--text-lg)', fontWeight: 700, letterSpacing: '4px', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
-              Smarter Bills
-            </div>
-          </div>
+        {/* Center Links (hidden on mobile) */}
+        <div className="landing-nav-links" style={{ display: 'flex', gap: 'var(--space-8)', position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontWeight: 'var(--font-semibold)', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
+           <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>Home</Link>
+           <a href="/#features" style={{ color: 'inherit', textDecoration: 'none' }}>Features</a>
+           <Link to="/pricing" style={{ color: 'inherit', textDecoration: 'none' }}>Pricing</Link>
+           <Link to="/about" style={{ color: 'inherit', textDecoration: 'none' }}>About Us</Link>
         </div>
-
-        <div style={{ paddingBottom: 'var(--space-10)', maxWidth: '600px' }}>
-          <h1 style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-bold)', color: 'var(--color-accent-700)', marginBottom: 'var(--space-6)', lineHeight: '1.3', letterSpacing: '-0.5px' }}>
-            Join thousands of communities that trust SmartWater to manage their resources
-          </h1>
-          <div style={{ display: 'flex', gap: 'var(--space-6)', color: 'var(--color-accent-700)', fontWeight: 'var(--font-semibold)', fontSize: 'var(--text-sm)', flexWrap: 'wrap' }}>
-            <span>✨ Transparent Billing</span>
-            <span>✨ Easy Integration</span>
-            <span>✨ Powerful Dashboard</span>
-          </div>
+        
+        <div style={{ display: 'flex', gap: 'var(--space-3)', alignItems: 'center' }}>
+          <ThemeToggle />
+          <LanguageSelector />
         </div>
-      </div>
+      </nav>
 
       {/* Right Form Side */}
-      <div className="auth-right">
-        <div className="auth-form-wrapper">
+      <div className="auth-main">
+        <AuthSidePanel variant="login" />
+        <div className="auth-right" style={{ marginTop: 'var(--space-1)' }}>
+          <div className="auth-form-wrapper" style={{ marginTop: 'var(--space-2)' }}>
           <div style={{ width: '56px', height: '56px', background: 'var(--gradient-primary)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 'var(--space-8)' }}>
-            <Droplets size={32} color="#ffffff" />
+            <Droplets size={32} color="var(--bg-card)" />
           </div>
-          <h2 style={{ margin: '0 0 var(--space-3) 0', fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>Welcome to SmartWater</h2>
-          <p style={{ margin: 0, fontSize: 'var(--text-lg)', color: 'var(--text-secondary)' }}>Sign in with your email address</p>
+          <h2 style={{ margin: '0 0 var(--space-3) 0', fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>{t('auth.login')}</h2>
+          <p style={{ margin: 0, fontSize: 'var(--text-lg)', color: 'var(--text-secondary)' }}>{t('login.subtitle')}</p>
           
           {error && (
             <div className="alert alert-danger" style={{ marginTop: 'var(--space-6)' }}>
@@ -118,7 +132,7 @@ const Login = () => {
                 <input 
                   type={showPassword ? "text" : "password"} 
                   name="password" 
-                  placeholder="Enter your password" 
+                  placeholder={t('auth.password')} 
                   onChange={handleChange} 
                   required 
                   className="form-input"
@@ -134,73 +148,34 @@ const Login = () => {
                 </button>
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'var(--space-3)' }}>
-                <Link to="#" style={{ fontSize: 'var(--text-sm)', color: 'var(--text-tertiary)', textDecoration: 'none', fontWeight: 'var(--font-medium)' }}>Forgot password?</Link>
+                <Link to="/forgot-password" style={{ fontSize: 'var(--text-sm)', color: 'var(--text-tertiary)', textDecoration: 'none', fontWeight: 'var(--font-medium)' }}>{t('login.forgot')}</Link>
               </div>
             </div>
 
             <button type="submit" className="btn btn-primary btn-lg" disabled={loading} style={{ width: '100%' }}>
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading ? t('login.signingIn') : t('auth.login')}
             </button>
           </form>
 
           <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-tertiary)', lineHeight: '1.6', marginTop: 'var(--space-7)', marginBottom: 'var(--space-7)' }}>
-            By continuing you agree to our <Link to="/privacy-policy" style={{ color: 'var(--text-link)', textDecoration: 'none' }}>privacy policy</Link> & <Link to="/terms-of-use" style={{ color: 'var(--text-link)', textDecoration: 'none' }}>terms of use</Link>.
+            {t('login.agreeText1')}<Link to="/privacy-policy" style={{ color: 'var(--text-link)', textDecoration: 'none' }}>{t('login.privacyPolicy')}</Link>{t('login.agreeText2')}<Link to="/terms-of-use" style={{ color: 'var(--text-link)', textDecoration: 'none' }}>{t('login.termsOfUse')}</Link>{t('login.agreeText3')}
           </p>
 
           <div style={{ backgroundColor: 'var(--bg-card-hover)', padding: 'var(--space-4)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', fontWeight: 'var(--font-medium)' }}>Don't have an account?</span>
+            <span style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', fontWeight: 'var(--font-medium)' }}>{t('login.noAccount')}</span>
             <Link to="/register" style={{ fontSize: 'var(--text-sm)', color: 'var(--text-link)', textDecoration: 'none', fontWeight: 'var(--font-semibold)', marginLeft: 'var(--space-2)' }}>
-              Register Community →
+              {t('login.registerComm')}
             </Link>
+          </div>
           </div>
         </div>
       </div>
 
-      <style>{`
-        .auth-container {
-          display: flex;
-          min-height: 100vh;
-          font-family: var(--font-family);
-          background-color: var(--bg-card);
-        }
-        .auth-left {
-          flex: 1.2;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          padding: 50px 60px;
-          background-color: var(--bg-card);
-        }
-        .auth-right {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          padding: 60px 40px;
-          background-color: var(--bg-card);
-          box-shadow: -10px 0 30px rgba(0,0,0,0.03);
-          border-left: 1px solid var(--border-light);
-          position: relative;
-        }
-        .auth-form-wrapper {
-          width: 100%;
-          max-width: 460px;
-          display: flex;
-          flex-direction: column;
-        }
-        @media (max-width: 1024px) {
-          .auth-left { display: none; }
-          .auth-right {
-            flex: 1;
-            border-left: none;
-            box-shadow: none;
-          }
-        }
-        @media (max-width: 768px) {
-          .auth-right { padding: var(--space-6) var(--space-5); }
-        }
-      `}</style>
+      {/* Footer */}
+      <footer style={{ position: 'relative', textAlign: 'center', padding: 'var(--space-6)', color: 'var(--text-secondary)', fontSize: 'var(--text-base)', marginTop: 'auto', zIndex: 10, fontWeight: 'var(--font-medium)' }}>
+        {t('landing.footer')}
+      </footer>
+      </div>
     </div>
   );
 };

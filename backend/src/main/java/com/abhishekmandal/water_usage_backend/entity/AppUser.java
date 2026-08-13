@@ -28,4 +28,7 @@ public class AppUser {
     private String gender;
 
     private LocalDate dateOfBirth;
+
+    @Column(columnDefinition = "TEXT")
+    private String avatarUrl;
 }

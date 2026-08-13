@@ -13,6 +13,7 @@ import com.abhishekmandal.water_usage_backend.repository.TicketRepository;
 import com.abhishekmandal.water_usage_backend.repository.UserRepository;
 import com.abhishekmandal.water_usage_backend.repository.ApartmentRepository;
 import com.abhishekmandal.water_usage_backend.entity.Apartment;
+import com.abhishekmandal.water_usage_backend.repository.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +48,9 @@ public class UserManagementController {
     @Autowired
     private ApartmentRepository apartmentRepository;
 
+    @Autowired
+    private NotificationRepository notificationRepository;
+
     private void performResidentDeletion(Long residentId) {
         // 1. Delete associated Bills
         List<Bill> bills = billRepository.findByUserId(residentId);
@@ -55,6 +59,10 @@ public class UserManagementController {
         // 2. Delete associated Tickets
         List<Ticket> tickets = ticketRepository.findByRaisedByIdOrderByCreatedAtDesc(residentId);
         ticketRepository.deleteAll(tickets);
+
+        // 2.5 Delete associated Notifications
+        List<com.abhishekmandal.water_usage_backend.entity.Notification> notifications = notificationRepository.findByRecipientIdOrderByCreatedAtDesc(residentId);
+        notificationRepository.deleteAll(notifications);
 
         // 3. Unlink from Household — use proper repository query instead of findAll().stream().filter()
         Optional<Household> hhOpt = householdRepository.findByResidentId(residentId);

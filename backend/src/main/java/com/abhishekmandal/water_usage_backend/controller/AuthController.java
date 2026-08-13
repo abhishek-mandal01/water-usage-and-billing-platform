@@ -14,6 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.abhishekmandal.water_usage_backend.entity.PasswordResetToken;
+import com.abhishekmandal.water_usage_backend.repository.PasswordResetTokenRepository;
+import com.abhishekmandal.water_usage_backend.service.EmailService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.Optional;
 
 @RestController
@@ -34,6 +40,15 @@ public class AuthController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordResetTokenRepository tokenRepository;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody CommunityAdmin user) {
@@ -117,15 +132,63 @@ public class AuthController {
             return ResponseEntity.status(401).body("Invalid email or password");
         }
     }
-}
 
-// A simple Data Transfer Object (DTO) to capture the login JSON sent by React
-class LoginRequest {
-    private String email;
-    private String password;
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody java.util.Map<String, String> payload) {
+        String email = payload.get("email");
+        if (email == null) return ResponseEntity.badRequest().body("Email required");
+        
+        Optional<AppUser> userOpt = userRepository.findByEmailIgnoreCase(email.trim());
+        if (userOpt.isPresent()) {
+            AppUser user = userOpt.get();
+            
+            // Delete old token if exists
+            Optional<PasswordResetToken> existingToken = tokenRepository.findByUserId(user.getId());
+            existingToken.ifPresent(tokenRepository::delete);
+            
+            PasswordResetToken token = new PasswordResetToken();
+            token.setUser(user);
+            token.setToken(UUID.randomUUID().toString());
+            token.setExpiryDate(LocalDateTime.now().plusHours(1));
+            tokenRepository.save(token);
+            
+            String resetLink = "http://localhost:5173/reset-password?token=" + token.getToken();
+            emailService.sendEmail(user.getEmail(), "Password Reset Request", 
+                "You requested a password reset. Click the link to reset your password: \n" + resetLink);
+        }
+        // Always return OK to prevent email enumeration
+        return ResponseEntity.ok("If an account with that email exists, a reset link has been sent.");
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody java.util.Map<String, String> payload) {
+        String tokenStr = payload.get("token");
+        String newPassword = payload.get("password");
+        
+        if (tokenStr == null || newPassword == null) {
+            return ResponseEntity.badRequest().body("Token and password are required.");
+        }
+        
+        Optional<PasswordResetToken> tokenOpt = tokenRepository.findByToken(tokenStr);
+        if (tokenOpt.isEmpty() || tokenOpt.get().getExpiryDate().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.badRequest().body("Invalid or expired token.");
+        }
+        
+        AppUser user = tokenOpt.get().getUser();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        tokenRepository.delete(tokenOpt.get());
+        
+        return ResponseEntity.ok("Password successfully reset.");
+    }
+
+    static class LoginRequest {
+        private String email;
+        private String password;
+
+        public String getEmail() { return email; }
+        public void setEmail(String email) { this.email = email; }
+        public String getPassword() { return password; }
+        public void setPassword(String password) { this.password = password; }
+    }
 }

@@ -12,6 +12,7 @@ public class LoginResponseDTO {
     private String gender;
     private String phoneNumber;
     private String householdNumber;
+    private String avatarUrl;
 
     public LoginResponseDTO(Long id, String name, String email, String role) {
         this.id = id;

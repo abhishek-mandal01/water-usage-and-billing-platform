@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import BrandLogo from './BrandLogo';
 import { useSidebar } from '../context/SidebarContext';
+import { useTranslation } from './LanguageSelector/useTranslation';
 import { 
   LayoutDashboard, 
   Home, 
@@ -17,15 +18,16 @@ import {
 function MainAdminSidebar() {
   const location = useLocation();
   const { isOpen, toggle, close } = useSidebar();
+  const { t } = useTranslation();
 
   const navItems = [
-    { name: 'Dashboard', path: '/main-admin-panel', icon: LayoutDashboard },
-    { name: 'Communities / Apartments', path: '/admin/communities', icon: Home },
-    { name: 'System Analytics', path: '/admin/analytics', icon: Activity },
-    { name: 'Financials', path: '/admin/financials', icon: CreditCard },
-    { name: 'System Tariffs', path: '/admin/tariffs', icon: Settings },
-    { name: 'Support Tickets', path: '/admin/support', icon: Bell },
-    { name: 'Reports', path: '/admin/reports', icon: FileText },
+    { name: t('nav.dashboard', 'Dashboard'), path: '/main-admin-panel', icon: LayoutDashboard },
+    { name: t('nav.communities', 'Communities / Apartments'), path: '/admin/communities', icon: Home },
+    { name: t('nav.analytics', 'System Analytics'), path: '/admin/analytics', icon: Activity },
+    { name: t('nav.financials', 'Financials'), path: '/admin/financials', icon: CreditCard },
+    { name: t('nav.systemTariffs', 'System Tariffs'), path: '/admin/tariffs', icon: Settings },
+    { name: t('nav.supportTickets', 'Support Tickets'), path: '/admin/support', icon: Bell },
+    { name: t('nav.reports', 'Reports'), path: '/admin/reports', icon: FileText },
   ];
 
   return (
@@ -40,7 +42,9 @@ function MainAdminSidebar() {
       />
 
       <div className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}>
-        <BrandLogo />
+        <div style={{ padding: '0 0 0 12px', marginTop: '12px', transform: 'scale(0.85)', transformOrigin: 'left center' }}>
+          <BrandLogo style={{ padding: 0 }} />
+        </div>
         
         <nav className="sidebar-nav">
           {navItems.map((item) => {
@@ -68,7 +72,7 @@ function MainAdminSidebar() {
             onClick={() => { localStorage.removeItem('user'); close(); }}
           >
             <LogOut size={18} />
-            <span>Logout</span>
+            <span>{t('nav.logout', 'Logout')}</span>
           </Link>
         </div>
       </div>

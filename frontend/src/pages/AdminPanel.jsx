@@ -4,20 +4,8 @@ import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
 import Topbar from '../components/topbar';
 import { AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
+import SkeletonLoader from '../components/SkeletonLoader';
 
-const mockConsumptionData = [
-  { month: 'Jan', consumption: 4000 },
-  { month: 'Feb', consumption: 3500 },
-  { month: 'Mar', consumption: 5000 },
-  { month: 'Apr', consumption: 4500 },
-  { month: 'May', consumption: 6000 },
-  { month: 'Jun', consumption: 5800 },
-];
-
-const mockStatusData = [
-  { name: 'Paid', value: 85 },
-  { name: 'Unpaid', value: 15 },
-];
 const COLORS = ['#10b981', '#ef4444'];
 
 function AdminPanel() {
@@ -27,7 +15,16 @@ function AdminPanel() {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [targetEmail, setTargetEmail] = useState('');
   const [emailStatus, setEmailStatus] = useState('');
-  const [adminStats, setAdminStats] = useState({ totalHouseholds: 0, totalResidents: 0, totalUsage: 0.0, currentCycle: 'N/A' });
+  const [adminStats, setAdminStats] = useState({ 
+    totalHouseholds: 0, 
+    totalResidents: 0, 
+    totalUsage: 0.0, 
+    currentCycle: 'N/A', 
+    pendingBills: [], 
+    recentAlerts: [],
+    consumptionTrend: [],
+    statusBreakdown: []
+  });
   
   // Verification form state
   const [vForm, setVForm] = useState({ aadharCard: '', panCard: '', phoneNumber: '', address: '' });
@@ -107,46 +104,53 @@ function AdminPanel() {
     if (!targetEmail) return;
     setEmailStatus('Sending...');
     try {
-      const response = await fetch('http://localhost:8081/api/invite/send-email', {
+      const response = await fetch('http://localhost:8081/api/invite/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: targetEmail, inviteLink })
       });
+      const resText = await response.text();
       if (response.ok) {
-        setEmailStatus('Email sent successfully!');
-        setTargetEmail('');
+        setEmailStatus('Invite sent successfully!');
       } else {
-        const error = await response.text();
-        setEmailStatus(`Failed: ${error}`);
+        setEmailStatus(resText || 'Failed to send invite.');
       }
     } catch (err) {
       console.error(err);
-      setEmailStatus('Error sending email.');
+      setEmailStatus('Failed to send invite. Check server connection.');
     }
   };
 
+
   if (loading) {
-    return <div className="loading-screen">Loading</div>;
+    return (
+      <div className="dashboard-layout">
+        <CommunityAdminSidebar />
+        <div className="dashboard-main">
+          <Topbar />
+          <main className="dashboard-content">
+            <SkeletonLoader type="dashboard" />
+          </main>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="dashboard-layout" style={{ position: 'relative' }}>
-      
-      {/* Permanent Overlay for Verification */}
+    <div className="dashboard-layout">
       {verificationStatus !== 'APPROVED' && (
-        <div className="modal-overlay" style={{ zIndex: 9998 }}>
-          <div className="modal-content">
-            <h2 style={{ marginTop: 0, textAlign: 'center', color: 'var(--text-primary)' }}>Account Verification</h2>
+        <div className="modal-overlay" style={{ zIndex: 1000, background: 'rgba(255, 255, 255, 0.8)' }}>
+          <div className="modal-content" style={{ maxWidth: '400px' }}>
+            <h2 style={{ textAlign: 'center', color: 'var(--text-primary)', marginBottom: 'var(--space-2)' }}>Welcome, Admin</h2>
             
             {verificationStatus === 'PENDING' ? (
-              <div style={{ textAlign: 'center', padding: 'var(--space-5)' }}>
-                <h3 style={{ color: 'var(--color-warning-600)', marginBottom: 'var(--space-4)' }}>Status: Yet to be approved</h3>
-                <p style={{ color: 'var(--text-secondary)' }}>Your verification has been sent and is pending approval by the main admin.</p>
-                <p style={{ color: 'var(--text-tertiary)' }}>Please check back later.</p>
-                <button onClick={() => { localStorage.removeItem('user'); window.location.href='/login'; }} className="btn btn-outline" style={{ marginTop: 'var(--space-5)' }}>Logout</button>
+              <div style={{ textAlign: 'center', padding: 'var(--space-4)' }}>
+                <div style={{ fontSize: '3rem', marginBottom: 'var(--space-3)' }}>⏳</div>
+                <h3 style={{ margin: '0 0 var(--space-2) 0', color: 'var(--text-primary)' }}>Verification Pending</h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>Your community details are being reviewed by the Main Admin. You will be granted access once approved.</p>
               </div>
             ) : (
-              <form onSubmit={handleVerificationSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+              <form onSubmit={handleVerificationSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
                 {verificationStatus === 'RE_REQUEST' ? (
                   <div className="alert alert-danger">
                     <p style={{ margin: 0, fontWeight: 'var(--font-bold)' }}>Action Required</p>
@@ -201,7 +205,9 @@ function AdminPanel() {
         <main className="dashboard-content">
           <div className="page-header">
             <h1>Community Admin Dashboard</h1>
-            <button onClick={handleInviteGen} className="btn btn-success">+ Generate Resident Invite</button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button onClick={handleInviteGen} className="btn btn-success">+ Generate Invite</button>
+            </div>
           </div>
           
           <MagicCardGrid>
@@ -228,7 +234,7 @@ function AdminPanel() {
               <MagicCard className="chart-card" style={{ height: '350px' }}>
                 <h3>Community Consumption Trend (Liters)</h3>
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={mockConsumptionData} margin={{ top: 10, right: 30, left: 0, bottom: 15 }}>
+                  <AreaChart data={adminStats.consumptionTrend} margin={{ top: 10, right: 30, left: 0, bottom: 15 }}>
                     <defs>
                       <linearGradient id="colorCons" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
@@ -248,8 +254,8 @@ function AdminPanel() {
                 <h3>Bill Payment Status</h3>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={mockStatusData} cx="50%" cy="45%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                      {mockStatusData.map((entry, index) => (
+                    <Pie data={adminStats.statusBreakdown} cx="50%" cy="45%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                      {adminStats.statusBreakdown.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
@@ -266,31 +272,40 @@ function AdminPanel() {
                 <h3 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
                   <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--color-warning-500)' }}></span> Pending Bills
                 </h3>
-                <div className="alert alert-warning" style={{ marginBottom: 'var(--space-3)' }}>
-                  <strong>Apt 101, Block A</strong> - ₹450.00 Due
-                </div>
-                <div className="alert alert-warning" style={{ marginBottom: 'var(--space-3)' }}>
-                  <strong>Apt 205, Block B</strong> - ₹320.00 Due
-                </div>
-                <div className="alert alert-warning">
-                  <strong>Apt 302, Block A</strong> - ₹500.00 Due
-                </div>
+                {adminStats.pendingBills && adminStats.pendingBills.length > 0 ? (
+                  adminStats.pendingBills.map((bill, index) => (
+                    <div key={index} className="alert alert-warning" style={{ marginBottom: index !== adminStats.pendingBills.length - 1 ? 'var(--space-3)' : '0' }}>
+                      <strong>{bill.householdNumber}, {bill.apartmentName}</strong> - ₹{bill.amountDue.toFixed(2)} Due
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ color: 'var(--text-secondary)' }}>No pending bills at this time.</div>
+                )}
               </MagicCard>
               
               <MagicCard className="chart-card">
                 <h3 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
                   <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--color-danger-500)' }}></span> Recent Alerts
                 </h3>
-                <div style={{ padding: 'var(--space-4)', borderLeft: '4px solid var(--color-danger-500)', backgroundColor: 'transparent', borderRadius: '0 var(--radius-md) var(--radius-md) 0', marginBottom: 'var(--space-3)' }}>
-                  <strong style={{ color: 'var(--text-primary)' }}>System Maintenance</strong>
-                  <p style={{ margin: 'var(--space-1) 0 0 0', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>Scheduled for Pump 2 on Friday, 10:00 AM.</p>
-                </div>
-                <div style={{ padding: 'var(--space-4)', borderLeft: '4px solid var(--color-primary-500)', backgroundColor: 'transparent', borderRadius: '0 var(--radius-md) var(--radius-md) 0' }}>
-                  <strong style={{ color: 'var(--text-primary)' }}>New Registration</strong>
-                  <p style={{ margin: 'var(--space-1) 0 0 0', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>A new resident registered for Apt 401.</p>
-                </div>
+                {adminStats.recentAlerts && adminStats.recentAlerts.length > 0 ? (
+                  adminStats.recentAlerts.map((alert, index) => {
+                    let colorVar = 'var(--color-primary-500)';
+                    if (alert.category === 'URGENT') colorVar = 'var(--color-danger-500)';
+                    if (alert.category === 'WARNING') colorVar = 'var(--color-warning-500)';
+                    
+                    return (
+                      <div key={index} style={{ padding: 'var(--space-4)', borderLeft: `4px solid ${colorVar}`, backgroundColor: 'transparent', borderRadius: '0 var(--radius-md) var(--radius-md) 0', marginBottom: index !== adminStats.recentAlerts.length - 1 ? 'var(--space-3)' : '0' }}>
+                        <strong style={{ color: 'var(--text-primary)' }}>{alert.title}</strong>
+                        <p style={{ margin: 'var(--space-1) 0 0 0', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>{alert.message}</p>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div style={{ color: 'var(--text-secondary)' }}>No recent alerts.</div>
+                )}
               </MagicCard>
             </div>
+            
           </MagicCardGrid>
           
         </main>

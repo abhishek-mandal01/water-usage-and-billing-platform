@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from '../components/LanguageSelector/useTranslation';
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
 import Topbar from '../components/topbar';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
 
 function MeterConfig() {
+  const { t } = useTranslation();
   const [households, setHouseholds] = useState([]);
   const [readingForm, setReadingForm] = useState({ householdNumber: '', readingVolume: '', readingDate: new Date().toISOString().split('T')[0] });
   const [readingLoading, setReadingLoading] = useState(false);
@@ -84,10 +86,10 @@ function MeterConfig() {
       <div className="dashboard-main">
         <Topbar />
         
-        <main style={{ padding: '40px', marginTop: '60px' }}>
+        <main className="dashboard-content">
           <h1 style={{ marginBottom: '20px' }}>Meter Readings & Billing Setup</h1>
 
-          {message && <div style={{ padding: '15px', backgroundColor: '#d1fae5', color: '#065f46', marginBottom: '20px', borderRadius: '8px', border: '1px solid #34d399' }}>{message}</div>}
+          {message && <div style={{ padding: '15px', backgroundColor: 'var(--color-success-50)', color: 'var(--color-success-700)', marginBottom: '20px', borderRadius: '8px', border: '1px solid var(--color-success-400)' }}>{message}</div>}
 
           <MagicCardGrid>
             <div style={{ display: 'flex', gap: '30px', flexWrap: 'wrap', alignItems: 'stretch' }}>
@@ -98,21 +100,25 @@ function MeterConfig() {
               <form onSubmit={handleAddReading} style={{ ...formStyle, gap: '25px' }}>
                 <div>
                   <label style={{ ...labelStyle, fontSize: '15px' }}>Select Household</label>
-                  <select 
+                  <input 
+                    list="households-list"
                     value={readingForm.householdNumber} 
                     onChange={e => setReadingForm({...readingForm, householdNumber: e.target.value})} 
+                    placeholder="Type to search by name or household..."
                     style={{ ...inputStyle, padding: '14px', width: '100%', marginTop: '5px', marginBottom: '10px' }} 
                     required
-                  >
-                  <option value="">Choose a household...</option>
-                  {households.map(h => (
-                    <option key={h.id} value={h.householdNumber}>{h.householdNumber} - {h.resident ? h.resident.name : 'No Resident'}</option>
-                  ))}
-                </select>
+                  />
+                  <datalist id="households-list">
+                    {households.map(h => (
+                      <option key={h.id} value={h.householdNumber}>
+                        {h.householdNumber} - {h.resident ? h.resident.name : 'No Resident'}
+                      </option>
+                    ))}
+                  </datalist>
                 
                 {readingForm.householdNumber && (
-                  <div style={{ padding: '10px', backgroundColor: '#f3f4f6', borderRadius: '6px', fontSize: '14px', color: '#4b5563' }}>
-                    <strong>Assigned Meter:</strong> {households.find(h => h.householdNumber === readingForm.householdNumber)?.waterMeter?.serialNumber || <span style={{ fontStyle: 'italic', color: '#9ca3af' }}>No meter assigned</span>}
+                  <div style={{ padding: '10px', backgroundColor: 'var(--color-surface-50)', borderRadius: 'var(--radius-md)', fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>
+                    <strong>{t("communityAdmin.assignedMeter")}</strong> {households.find(h => h.householdNumber === readingForm.householdNumber)?.waterMeter?.serialNumber || <span style={{ fontStyle: 'italic', color: 'var(--text-tertiary)' }}>{t("communityAdmin.nometerassigned")}</span>}
                   </div>
                 )}
                 </div>
@@ -149,7 +155,7 @@ function MeterConfig() {
               {/* Bulk CSV Upload */}
               <MagicCard style={{ flex: '1 1 300px', padding: '25px', display: 'flex', flexDirection: 'column' }}>
                 <h3 style={{ margin: '0 0 15px 0' }}>Bulk CSV Upload</h3>
-              <p style={{ fontSize: '15.5px', lineHeight: '1.6', color: '#4b5563', marginBottom: '25px' }}>
+              <p style={{ fontSize: '15.5px', lineHeight: '1.6', color: 'var(--text-secondary)', marginBottom: '25px' }}>
                 Upload a CSV file containing <code style={{backgroundColor: 'transparent', padding:'2px 4px', borderRadius:'4px'}}>HouseholdNumber</code>, <code style={{backgroundColor: 'transparent', padding:'2px 4px', borderRadius:'4px'}}>ReadingVolume</code>, and <code style={{backgroundColor: 'transparent', padding:'2px 4px', borderRadius:'4px'}}>Date</code> to automatically log usage and generate bills.
               </p>
               <form onSubmit={handleCsvUpload} style={formStyle}>
@@ -161,7 +167,7 @@ function MeterConfig() {
                   style={inputStyle}
                   required
                 />
-                <button type="submit" disabled={csvLoading || !csvFile} style={{ ...btnStyle, backgroundColor: '#8b5cf6', marginTop: 'auto' }}>
+                <button type="submit" disabled={csvLoading || !csvFile} style={{ ...btnStyle, backgroundColor: 'var(--color-primary-600)', marginTop: 'auto' }}>
                   {csvLoading ? 'Uploading...' : 'Upload CSV'}
                   </button>
                 </form>
@@ -177,8 +183,8 @@ function MeterConfig() {
 
 
 const formStyle = { display: 'flex', flexDirection: 'column', gap: '15px', flexGrow: 1 };
-const labelStyle = { fontSize: '14px', fontWeight: 'bold', color: '#374151', marginBottom: '5px' };
-const inputStyle = { width: '100%', boxSizing: 'border-box', padding: '12px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '15px', outline: 'none' };
-const btnStyle = { padding: '12px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '15px', transition: 'background-color 0.2s' };
+const labelStyle = { fontSize: '14px', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '5px' };
+const inputStyle = { width: '100%', boxSizing: 'border-box', padding: '12px', borderRadius: '6px', border: '1px solid var(--border-default)', fontSize: '15px', outline: 'none' };
+const btnStyle = { padding: '12px', backgroundColor: 'var(--color-primary-500)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '15px', transition: 'background-color 0.2s' };
 
 export default MeterConfig;

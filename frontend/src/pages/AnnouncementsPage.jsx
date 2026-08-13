@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
 import Sidebar from '../components/sidebar';
 import Topbar from '../components/topbar';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
 import { Megaphone, Plus, Trash2, Calendar } from 'lucide-react';
 
-function AnnouncementsPage({ role = 'COMMUNITY_ADMIN' }) {
+function AnnouncementsPage({ role = 'COMMUNITY_ADMIN' }) {const { t } = useTranslation();
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -16,9 +16,9 @@ function AnnouncementsPage({ role = 'COMMUNITY_ADMIN' }) {
 
   const fetchAnnouncements = async () => {
     try {
-      const url = role === 'COMMUNITY_ADMIN'
-        ? `http://localhost:8081/api/announcements/community/${adminId}`
-        : `http://localhost:8081/api/announcements/all`;
+      const url = role === 'COMMUNITY_ADMIN' ?
+      `http://localhost:8081/api/announcements/community/${adminId}` :
+      `http://localhost:8081/api/announcements/all`;
       const res = await fetch(url);
       if (res.ok) {
         setAnnouncements(await res.json());
@@ -87,123 +87,127 @@ function AnnouncementsPage({ role = 'COMMUNITY_ADMIN' }) {
       <div className="dashboard-main">
         <Topbar />
 
-        {showModal && (
-          <div className="modal-overlay">
+        {showModal &&
+        <div className="modal-overlay">
             <div className="modal-content">
-              <h2 style={{ marginTop: 0, color: 'var(--text-primary)' }}>New Community Announcement</h2>
+              <h2 style={{ marginTop: 0, color: 'var(--text-primary)' }}>{t("communityAdmin.newCommunityAnnouncement")}</h2>
               <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', marginTop: 'var(--space-4)' }}>
                 <div>
-                  <label className="form-label">Title</label>
+                  <label className="form-label">{t("communityAdmin.title")}</label>
                   <input
-                    type="text"
-                    required
-                    placeholder="e.g. Scheduled Pump Maintenance on Friday"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="form-input"
-                  />
+                  type="text"
+                  required
+                  placeholder="e.g. Scheduled Pump Maintenance on Friday"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  className="form-input" />
+                
                 </div>
 
                 <div>
-                  <label className="form-label">Category</label>
+                  <label className="form-label">{t("communityAdmin.category")}</label>
                   <select
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="form-input"
-                  >
-                    <option value="GENERAL">General Notice</option>
-                    <option value="MAINTENANCE">Maintenance Alert</option>
-                    <option value="CONSERVATION">Water Conservation Campaign</option>
-                    <option value="URGENT">Urgent Supply Disruption</option>
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  className="form-input">
+                  
+                    <option value="GENERAL">{t("communityAdmin.generalNotice")}</option>
+                    <option value="MAINTENANCE">{t("communityAdmin.maintenanceAlert")}</option>
+                    <option value="CONSERVATION">{t("communityAdmin.waterConservationCampaign")}</option>
+                    <option value="URGENT">{t("communityAdmin.urgentSupplyDisruption")}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="form-label">Message / Details</label>
+                  <label className="form-label">{t("communityAdmin.messageDetails")}</label>
                   <textarea
-                    required
-                    rows={4}
-                    placeholder="Provide clear details for residents..."
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="form-input"
-                    style={{ resize: 'vertical' }}
-                  />
+                  required
+                  rows={4}
+                  placeholder="Provide clear details for residents..."
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  className="form-input"
+                  style={{ resize: 'vertical' }} />
+                
                 </div>
 
                 <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end', marginTop: 'var(--space-2)' }}>
-                  <button type="button" className="btn btn-outline" onClick={() => setShowModal(false)}>Cancel</button>
-                  <button type="submit" className="btn btn-primary">Publish Notice</button>
+                  <button type="button" className="btn btn-outline" onClick={() => setShowModal(false)}>{t("communityAdmin.cancel")}</button>
+                  <button type="submit" className="btn btn-primary">{t("communityAdmin.publishNotice")}</button>
                 </div>
               </form>
             </div>
           </div>
-        )}
+        }
 
         <main className="dashboard-content">
           <div className="page-header">
             <div>
-              <h1>Community Announcements & Bulletins</h1>
-              <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: 'var(--text-sm)' }}>
-                Broadcast important notices, water supply schedules, and maintenance alerts across your apartment community.
+              <h1>{t("communityAdmin.communityAnnouncementsBulletins")}</h1>
+              <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: 'var(--text-sm)' }}>{t("communityAdmin.broadcastimportantnoticeswatersupply")}
+
               </p>
             </div>
-            {role === 'COMMUNITY_ADMIN' && (
-              <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-                <Plus size={16} /> Broadcast Notice
-              </button>
-            )}
+            {role === 'COMMUNITY_ADMIN' &&
+            <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+                <Plus size={16} />{t("communityAdmin.broadcastNotice")}
+            </button>
+            }
           </div>
 
           {msg && <div className="alert alert-info" style={{ marginBottom: 'var(--space-5)' }}>{msg}</div>}
 
           <MagicCardGrid>
             <MagicCard style={{ padding: 'var(--space-6)' }}>
-              <h3 style={{ margin: '0 0 var(--space-6) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>
-                Active Bulletins ({announcements.length})
+              <h3 style={{ margin: '0 0 var(--space-6) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>{t("communityAdmin.activeBulletins")}
+                {announcements.length})
               </h3>
 
-              {loading ? (
-                <div className="loading-screen" style={{ height: '200px' }}>Loading notices...</div>
-              ) : announcements.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: 'var(--space-10) 0', color: 'var(--text-tertiary)' }}>
+              {loading ?
+              <div className="loading-screen" style={{ height: '200px' }}>{t("communityAdmin.loadingnotices")}</div> :
+              announcements.length === 0 ?
+              <div style={{ textAlign: 'center', padding: 'var(--space-10) 0', color: 'var(--text-tertiary)' }}>
                   <Megaphone size={48} style={{ marginBottom: 'var(--space-3)' }} />
-                  <p style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--text-secondary)' }}>No announcements posted yet.</p>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-                  {announcements.map((a) => (
-                    <div
-                      key={a.id}
-                      style={{
-                        padding: 'var(--space-5)',
-                        border: '1px solid var(--border-light)',
-                        borderRadius: 'var(--radius-lg)',
-                        backgroundColor: 'var(--bg-card-hover)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 'var(--space-2)'
-                      }}
-                    >
+                  <p style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--text-secondary)' }}>{t("communityAdmin.noannouncementspostedyet")}</p>
+                </div> :
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                  {announcements.map((a) =>
+                <div
+                  key={a.id}
+                  style={{
+                    padding: 'var(--space-5)',
+                    border: '1px solid var(--border-light)',
+                    borderRadius: 'var(--radius-lg)',
+                    backgroundColor: 'var(--bg-card-hover)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 'var(--space-2)'
+                  }}>
+                  
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
                           <span className={`badge ${a.category === 'URGENT' ? 'badge-danger' : a.category === 'MAINTENANCE' ? 'badge-warning' : 'badge-info'}`}>
-                            {a.category}
+                            {a.category === 'GENERAL' ? t('communityAdmin.GENERAL', 'General Notice') :
+                             a.category === 'MAINTENANCE' ? t('communityAdmin.MAINTENANCE', 'Maintenance Alert') :
+                             a.category === 'CONSERVATION' ? t('communityAdmin.CONSERVATION', 'Water Conservation') :
+                             a.category === 'URGENT' ? t('communityAdmin.URGENT', 'Urgent Disruption') :
+                             t(`communityAdmin.${a.category}`, a.category)}
                           </span>
                           <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <Calendar size={12} /> {a.createdAt ? new Date(a.createdAt).toLocaleString() : 'Recent'}
+                            <Calendar size={12} /> {a.createdAt ? new Date(a.createdAt).toLocaleString() : t('communityAdmin.recent', 'Recent')}
                           </span>
                         </div>
-                        {role === 'COMMUNITY_ADMIN' && (
-                          <button
-                            onClick={() => handleDelete(a.id)}
-                            className="btn btn-ghost"
-                            style={{ color: 'var(--color-danger-500)', padding: '4px 8px' }}
-                            title="Delete Notice"
-                          >
+                        {role === 'COMMUNITY_ADMIN' &&
+                    <button
+                      onClick={() => handleDelete(a.id)}
+                      className="btn btn-ghost"
+                      style={{ color: 'var(--color-danger-500)', padding: '4px 8px' }}
+                      title="Delete Notice">
+                      
                             <Trash2 size={16} />
                           </button>
-                        )}
+                    }
                       </div>
 
                       <h4 style={{ margin: 0, fontSize: 'var(--text-base)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>
@@ -214,15 +218,15 @@ function AnnouncementsPage({ role = 'COMMUNITY_ADMIN' }) {
                         {a.message}
                       </p>
                     </div>
-                  ))}
+                )}
                 </div>
-              )}
+              }
             </MagicCard>
           </MagicCardGrid>
         </main>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 export default AnnouncementsPage;

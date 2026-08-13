@@ -24,6 +24,11 @@ public class UserDashboardController {
         return ResponseEntity.ok(dashboardService.getAdminDashboardSummary(adminId));
     }
 
+    @GetMapping("/main-admin")
+    public ResponseEntity<com.abhishekmandal.water_usage_backend.dto.MainAdminDashboardDTO> getMainAdminDashboardSummary() {
+        return ResponseEntity.ok(dashboardService.getMainAdminDashboardSummary());
+    }
+
     @GetMapping("/peer-benchmarking/{userId}")
     public ResponseEntity<com.abhishekmandal.water_usage_backend.dto.PeerBenchmarkingDTO> getPeerBenchmarking(@PathVariable Long userId) {
         return ResponseEntity.ok(dashboardService.getPeerBenchmarking(userId));

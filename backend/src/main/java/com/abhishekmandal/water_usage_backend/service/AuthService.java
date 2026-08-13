@@ -23,9 +23,16 @@ public class AuthService {
     @Autowired
     private com.abhishekmandal.water_usage_backend.repository.ApartmentRepository apartmentRepository;
 
+    @Autowired
+    private EmailService emailService;
+
     public LoginResponseDTO register(AppUser user) {
+        if (user.getEmail() != null) {
+            user.setEmail(user.getEmail().trim().toLowerCase());
+        }
+
         // Check for duplicate email
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+        if (userRepository.findByEmailIgnoreCase(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("An account with this email already exists.");
         }
 
@@ -42,12 +49,19 @@ public class AuthService {
             apartmentRepository.save(apt);
         }
 
+        // Send Welcome Email asynchronously
+        emailService.sendWelcomeEmail(savedUser.getEmail(), savedUser.getName(), savedUser.getRole());
+
         return buildLoginResponse(savedUser);
     }
 
     public LoginResponseDTO inviteRegister(AppUser user) {
+        if (user.getEmail() != null) {
+            user.setEmail(user.getEmail().trim().toLowerCase());
+        }
+
         // Check for duplicate email
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+        if (userRepository.findByEmailIgnoreCase(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("An account with this email already exists.");
         }
 
@@ -55,11 +69,19 @@ public class AuthService {
         user.setRole("RESIDENT");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         AppUser savedUser = userRepository.save(user);
+        
+        // Send Welcome Email asynchronously
+        emailService.sendWelcomeEmail(savedUser.getEmail(), savedUser.getName(), savedUser.getRole());
+        
         return buildLoginResponse(savedUser);
     }
 
     public LoginResponseDTO login(String email, String password) {
-        Optional<AppUser> userOptional = userRepository.findByEmail(email);
+        String cleanEmail = email != null ? email.trim().toLowerCase() : "";
+        Optional<AppUser> userOptional = userRepository.findByEmailIgnoreCase(cleanEmail);
+        if (userOptional.isEmpty() && email != null) {
+            userOptional = userRepository.findByEmail(email.trim());
+        }
 
         if (userOptional.isPresent()) {
             AppUser user = userOptional.get();
@@ -87,6 +109,7 @@ public class AuthService {
     private LoginResponseDTO buildLoginResponse(AppUser user) {
         LoginResponseDTO dto = new LoginResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getRole());
         dto.setGender(user.getGender());
+        dto.setAvatarUrl(user.getAvatarUrl());
 
         if (user instanceof CommunityAdmin ca) {
             dto.setVerificationStatus(ca.getVerificationStatus());

@@ -4,8 +4,26 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>Smart Water Billing Platform</title>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+      /* Forcefully hide the Google Translate banner at the root level */
+      iframe.skiptranslate, 
+      .goog-te-banner-frame.skiptranslate,
+      #goog-gt-tt,
+      .goog-te-balloon-frame,
+      .goog-te-spinner-pos,
+      .goog-te-spinner-animation,
+      .VIpgJd-Zvi9od-aZ2wEe-wOHMyf,
+      .VIpgJd-Zvi9od-ORHb-OEVmcd,
+      #google_translate_element { 
+        display: none !important; 
+        visibility: hidden !important;
+        opacity: 0 !important;
+      } 
+      body { top: 0px !important; }
+      body > div.skiptranslate { display: none !important; }
+    </style>
   </head>
   <body>
     <div id="root"></div>

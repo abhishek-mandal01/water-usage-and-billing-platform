@@ -31,11 +31,15 @@ function MainAdminCommunities() {
       <div className="dashboard-main">
         <Topbar />
         
-        <main style={{ padding: '30px', marginTop: '60px' }}>
+        <main className="dashboard-content">
           
-          <div style={{ marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <Building2 size={28} color="#3b82f6" />
-            <h1 style={{ margin: 0, fontSize: '24px', color: '#111827' }}>Registered Communities & Apartments</h1>
+          <div className="page-header">
+            <div>
+              <h1>Registered Communities & Apartments</h1>
+              <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: 'var(--text-sm)' }}>
+                Overview of all communities and their assigned admins
+              </p>
+            </div>
           </div>
 
           <MagicCardGrid>

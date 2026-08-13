@@ -1,25 +1,36 @@
-import MainAdminSidebar from '../components/MainAdminSidebar';
+import { useTranslation } from '../components/LanguageSelector/useTranslation';import MainAdminSidebar from '../components/MainAdminSidebar';
 import Topbar from '../components/topbar';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
 
-const analyticsTrendData = [
-  { month: 'Jan', totalVolume: 125000, activeCommunities: 4 },
-  { month: 'Feb', totalVolume: 140000, activeCommunities: 5 },
-  { month: 'Mar', totalVolume: 135000, activeCommunities: 6 },
-  { month: 'Apr', totalVolume: 160000, activeCommunities: 8 },
-  { month: 'May', totalVolume: 185000, activeCommunities: 9 },
-  { month: 'Jun', totalVolume: 210000, activeCommunities: 12 },
-];
+import { useState, useEffect } from 'react';
 
-const communityBreakdown = [
-  { community: 'Greenwood Heights', usage: 52000, households: 45 },
-  { community: 'Sunrise Enclave', usage: 68000, households: 60 },
-  { community: 'Oasis Gardens', usage: 34000, households: 30 },
-  { community: 'Pinecrest Apartments', usage: 41000, households: 38 },
-];
 
 function MainAdminAnalyticsPage() {
+  const { t } = useTranslation();
+  const [data, setData] = useState({
+    totalPlatformUsage: 0,
+    activeCommunities: 0,
+    avgHouseholdUsage: 0,
+    waterConserved: 0,
+    consumptionTrend: [],
+    communityBreakdown: []
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('http://localhost:8081/api/analytics/main-admin')
+      .then(res => res.json())
+      .then(json => {
+        setData(json);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <div className="dashboard-layout">
       <MainAdminSidebar />
@@ -29,9 +40,9 @@ function MainAdminAnalyticsPage() {
         <main className="dashboard-content">
           <div className="page-header">
             <div>
-              <h1>System Analytics & Usage Intelligence</h1>
-              <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: 'var(--text-sm)' }}>
-                Platform-wide insights across all registered communities, water consumption metrics, and growth trends.
+              <h1>{t("mainAdmin.systemAnalyticsUsageIntelligence")}</h1>
+              <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: 'var(--text-sm)' }}>{t("mainAdmin.platformwideinsightsacrossallregistered")}
+
               </p>
             </div>
           </div>
@@ -39,59 +50,59 @@ function MainAdminAnalyticsPage() {
           <MagicCardGrid>
             <div className="grid-4">
               <MagicCard className="stat-card">
-                <h3>Total Platform Usage</h3>
-                <div className="stat-value" style={{ color: 'var(--color-primary-600)' }}>854 kL</div>
-                <div className="stat-sub">+14% vs last month</div>
+                <h3>{t("mainAdmin.totalPlatformUsage")}</h3>
+                <div className="stat-value" style={{ color: 'var(--color-primary-600)' }}>{loading ? '...' : `${data.totalPlatformUsage.toLocaleString(undefined, { maximumFractionDigits: 1 })} kL`}</div>
+                <div className="stat-sub">{t("mainAdmin.14vslastmonth")}</div>
               </MagicCard>
 
               <MagicCard className="stat-card">
-                <h3>Active Communities</h3>
-                <div className="stat-value">12</div>
-                <div className="stat-sub">173 Total Households</div>
+                <h3>{t("mainAdmin.activeCommunities")}</h3>
+                <div className="stat-value">{loading ? '...' : data.activeCommunities}</div>
+                <div className="stat-sub">{t("mainAdmin.173TotalHouseholds")}</div>
               </MagicCard>
 
               <MagicCard className="stat-card">
-                <h3>Avg Household Usage</h3>
-                <div className="stat-value">4.9 kL</div>
-                <div className="stat-sub">Monthly Average</div>
+                <h3>{t("mainAdmin.avgHouseholdUsage")}</h3>
+                <div className="stat-value">{loading ? '...' : `${data.avgHouseholdUsage.toLocaleString(undefined, { maximumFractionDigits: 1 })} L`}</div>
+                <div className="stat-sub">{t("mainAdmin.monthlyAverage")}</div>
               </MagicCard>
 
               <MagicCard className="stat-card">
-                <h3>Water Conserved</h3>
-                <div className="stat-value" style={{ color: 'var(--color-success-500)' }}>112 kL</div>
-                <div className="stat-sub">Via Alert Reduction</div>
+                <h3>{t("mainAdmin.waterConserved")}</h3>
+                <div className="stat-value" style={{ color: 'var(--color-success-500)' }}>{loading ? '...' : `${data.waterConserved.toLocaleString(undefined, { maximumFractionDigits: 1 })} kL`}</div>
+                <div className="stat-sub">{t("mainAdmin.viaAlertReduction")}</div>
               </MagicCard>
             </div>
 
             <div className="grid-2">
               <MagicCard className="chart-card" style={{ height: '350px' }}>
-                <h3>Platform Water Consumption Trend (Liters)</h3>
+                <h3>{t("mainAdmin.platformWaterConsumptionTrendLiters")}</h3>
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={analyticsTrendData} margin={{ top: 10, right: 30, left: 0, bottom: 15 }}>
+                  <AreaChart data={data.consumptionTrend} margin={{ top: 10, right: 30, left: 0, bottom: 15 }}>
                     <defs>
                       <linearGradient id="colorPlatform" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="var(--color-primary-500)" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="var(--color-primary-500)" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="var(--color-primary-500)" stopOpacity={0.8} />
+                        <stop offset="95%" stopColor="var(--color-primary-500)" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                     <XAxis dataKey="month" stroke="var(--text-tertiary)" fontSize={12} tickLine={false} />
                     <YAxis stroke="var(--text-tertiary)" fontSize={12} tickLine={false} />
                     <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} />
-                    <Area type="monotone" dataKey="totalVolume" stroke="var(--color-primary-600)" fillOpacity={1} fill="url(#colorPlatform)" />
+                    <Area type="monotone" dataKey="totalVolume" stroke="#6c8eef" fillOpacity={1} fill="url(#colorPlatform)" />
                   </AreaChart>
                 </ResponsiveContainer>
               </MagicCard>
 
               <MagicCard className="chart-card" style={{ height: '350px' }}>
-                <h3>Consumption Comparison by Community (L)</h3>
+                <h3>{t("mainAdmin.consumptionComparisonbyCommunityL")}</h3>
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={communityBreakdown} margin={{ top: 10, right: 30, left: 0, bottom: 15 }}>
+                  <BarChart data={data.communityBreakdown} margin={{ top: 10, right: 30, left: 0, bottom: 15 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                     <XAxis dataKey="community" stroke="var(--text-tertiary)" fontSize={11} tickLine={false} />
                     <YAxis stroke="var(--text-tertiary)" fontSize={12} tickLine={false} />
                     <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} />
-                    <Bar dataKey="usage" fill="var(--color-accent-500)" radius={[4, 4, 0, 0]} barSize={35} />
+                    <Bar dataKey="usage" fill="#5bbcaa" radius={[4, 4, 0, 0]} barSize={35} />
                   </BarChart>
                 </ResponsiveContainer>
               </MagicCard>
@@ -99,8 +110,8 @@ function MainAdminAnalyticsPage() {
           </MagicCardGrid>
         </main>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 export default MainAdminAnalyticsPage;

@@ -1,0 +1,56 @@
+/* src/components/RadarRipple.css */
+.radar-ripple-container {
+  position: absolute;
+  top: var(--ripple-y, 50%);
+  left: var(--ripple-x, 22vw);
+  transform: translate(-50%, -50%);
+  z-index: 1; /* Below navbar (100) and below cards */
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+
+.radar-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.3);
+  opacity: 0;
+  animation: radar-wave 6s infinite cubic-bezier(0.1, 0.4, 0.8, 1);
+}
+
+.radar-ripple.ripple-1 { animation-delay: 0s; }
+.radar-ripple.ripple-2 { animation-delay: 1.5s; }
+.radar-ripple.ripple-3 { animation-delay: 3s; }
+.radar-ripple.ripple-4 { animation-delay: 4.5s; }
+
+@keyframes radar-wave {
+  0% {
+    width: 20px;
+    height: 20px;
+    opacity: 0;
+    border-width: 4px;
+  }
+  10% {
+    opacity: 1;
+    border-width: 3px;
+  }
+  100% {
+    width: 600px;
+    height: 600px;
+    opacity: 0;
+    border-width: 1px;
+  }
+}
+
+/* Adjust size for mobile if necessary */
+@media (max-width: 768px) {
+  @keyframes radar-wave {
+    0% { width: 10px; height: 10px; opacity: 0; border-width: 3px; }
+    10% { opacity: 0.8; border-width: 2px; }
+    100% { width: 350px; height: 350px; opacity: 0; border-width: 0.5px; }
+  }
+}
