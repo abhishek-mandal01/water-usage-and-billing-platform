@@ -204,7 +204,7 @@ function AdminPanel() {
 
         <main className="dashboard-content">
           <div className="page-header">
-            <h1>Community Admin Dashboard</h1>
+            <h1>Welcome, {JSON.parse(localStorage.getItem('user') || '{}')?.name?.split(' ')[0] || 'Admin'} 👋</h1>
             <div style={{ display: 'flex', gap: '10px' }}>
               <button onClick={handleInviteGen} className="btn btn-success">+ Generate Invite</button>
             </div>
@@ -266,7 +266,7 @@ function AdminPanel() {
               </MagicCard>
             </div>
 
-            {/* NEW: Additional Charts Section for Community Admin Dashboard */}
+            {}
             <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
               {/* Visual 1: Horizontal Ranking Bar Chart - Top Household Consumers */}
               <MagicCard className="chart-card" style={{ minHeight: '360px' }}>

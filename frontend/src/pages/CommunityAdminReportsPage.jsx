@@ -177,7 +177,7 @@ function CommunityAdminReportsPage() {
                   <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                       <thead>
-                        <tr style={{ borderBottom: '1px solid var(--border-default)', color: 'var(--text-secondary)' }}>
+                  <tr style={{ backgroundColor: 'var(--color-primary-50)',  borderBottom: '1px solid var(--border-default)', color: 'var(--text-secondary)' }}>
                           <th style={{ padding: 'var(--space-3)' }}>Date</th>
                           <th style={{ padding: 'var(--space-3)' }}>Vendor</th>
                           <th style={{ padding: 'var(--space-3)' }}>Volume (L)</th>
@@ -221,7 +221,7 @@ function CommunityAdminReportsPage() {
                 </div>
               </MagicCard>
 
-              {/* NEW: Financial Distribution Pie Chart & Community Performance Bar */}
+              {}
               <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
                 {/* Donut PieChart: Financial Revenue vs Expenses */}
                 <MagicCard style={{ padding: 'var(--space-6)' }}>

@@ -14,9 +14,7 @@ import {
   Area,
   PieChart,
   Pie,
-  Cell,
-  LineChart,
-  Line
+  Cell
 } from 'recharts';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
 
@@ -127,10 +125,15 @@ function UsageHistory() {const { t } = useTranslation();
                         name="Consumption (Liters)"
                         radius={[6, 6, 0, 0]}
                         barSize={36}
-                        animationDuration={1000}>
-                        {chartData.map((_, index) => (
-                          <Cell key={`cell-${index}`} fill={`url(#histBarGrad${index % 8})`} />
-                        ))}
+                        animationDuration={1000}
+                      >
+                        {chartData.map((entry, index) => {
+                          const maxVal = Math.max(...chartData.map(d => d.consumption)) || 1;
+                          let color = '#22c55e'; // green (low)
+                          if (entry.consumption > maxVal * 0.75) color = '#ef4444'; // red (high)
+                          else if (entry.consumption > maxVal * 0.4) color = '#f97316'; // orange (mid)
+                          return <Cell key={`cell-${index}`} fill={color} />;
+                        })}
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
@@ -171,7 +174,7 @@ function UsageHistory() {const { t } = useTranslation();
 
           </div>
 
-          {/* NEW: Additional Charts Section for Usage History */}
+          {}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginTop: '25px' }}>
             {/* Cumulative Area Chart */}
             <MagicCard style={{ padding: '25px', minHeight: '340px' }}>

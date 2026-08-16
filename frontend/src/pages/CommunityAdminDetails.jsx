@@ -12,6 +12,25 @@ function CommunityAdminDetails() {const { t } = useTranslation();
   const [residents, setResidents] = useState([]);
   const [selectedResident, setSelectedResident] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOption, setSortOption] = useState('flat_asc');
+
+  const filteredResidents = residents.filter(r => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    const name = (r.name || '').toLowerCase();
+    const email = (r.email || '').toLowerCase();
+    const flat = (r.householdNumber || '').toLowerCase();
+    return name.includes(q) || email.includes(q) || flat.includes(q);
+  });
+
+  const sortedResidents = [...filteredResidents].sort((a, b) => {
+    if (sortOption === 'flat_asc') return (a.householdNumber || '').localeCompare(b.householdNumber || '');
+    if (sortOption === 'flat_desc') return (b.householdNumber || '').localeCompare(a.householdNumber || '');
+    if (sortOption === 'name_asc') return (a.name || '').localeCompare(b.name || '');
+    if (sortOption === 'name_desc') return (b.name || '').localeCompare(a.name || '');
+    return 0;
+  });
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -179,12 +198,31 @@ function CommunityAdminDetails() {const { t } = useTranslation();
             </MagicCard>
 
             <MagicCard style={{ padding: '0', overflow: 'hidden' }}>
-              <div style={{ padding: '20px', borderBottom: '1px solid var(--border-default)' }}>
-              <h2 style={{ margin: 0, fontSize: '18px' }}>{t("mainAdmin.managedResidents")}{residents.length})</h2>
-            </div>
+              <div style={{ padding: '20px', borderBottom: '1px solid var(--border-default)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h2 style={{ margin: 0, fontSize: '18px' }}>{t("mainAdmin.managedResidents")} ({residents.length})</h2>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <select
+                    value={sortOption}
+                    onChange={(e) => setSortOption(e.target.value)}
+                    style={{ padding: '8px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', fontSize: 'var(--text-sm)', outline: 'none', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}
+                  >
+                    <option value="flat_asc">Household (A-Z)</option>
+                    <option value="flat_desc">Household (Z-A)</option>
+                    <option value="name_asc">Name (A-Z)</option>
+                    <option value="name_desc">Name (Z-A)</option>
+                  </select>
+                  <input
+                    type="text"
+                    placeholder="Search residents..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{ padding: '8px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', fontSize: 'var(--text-sm)', outline: 'none', width: '200px' }}
+                  />
+                </div>
+              </div>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
-                <tr style={{ backgroundColor: 'transparent' }}>
+                  <tr style={{ backgroundColor: 'var(--color-primary-50)' }}>
                   <th style={thStyle}>{t("mainAdmin.household")}</th>
                   <th style={thStyle}>{t("mainAdmin.name")}</th>
                   <th style={thStyle}>{t("mainAdmin.email")}</th>
@@ -192,7 +230,7 @@ function CommunityAdminDetails() {const { t } = useTranslation();
                 </tr>
               </thead>
               <tbody>
-                {residents.map((r) =>
+                {sortedResidents.map((r) =>
                   <tr key={r.id} onClick={() => setSelectedResident(r)} style={{ borderBottom: '1px solid var(--border-default)', cursor: 'pointer', transition: 'background-color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-card-hover)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                     <td style={tdStyle}>{r.householdNumber || 'Unassigned'}</td>
                     <td style={tdStyle}>{r.name}</td>

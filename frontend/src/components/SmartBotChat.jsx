@@ -492,7 +492,13 @@ const SmartBotChat = () => {
       </AnimatePresence>
 
       {!isOpen && (
-        <div className="smartbot-mascot-fab-container">
+        <motion.div 
+          className="smartbot-mascot-fab-container"
+          drag
+          dragMomentum={false}
+          dragElastic={0.08}
+          whileDrag={{ scale: 1.1, cursor: 'grabbing' }}
+        >
           <SmartBotAvatar 
             size="large"
             isInteractive={true}
@@ -500,7 +506,7 @@ const SmartBotChat = () => {
             tooltipText={t('chat.tooltip', 'Hi! I am SmartBot. Need help? 💧')}
             onClick={() => setIsOpen(true)}
           />
-        </div>
+        </motion.div>
       )}
     </div>
   );

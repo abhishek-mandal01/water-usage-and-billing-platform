@@ -12,6 +12,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import UserDashboard from './pages/UserDashboard';
 import ResidentRegister from './pages/ResidentRegister';
+import WaterTipsPage from './pages/WaterTipsPage';
 
 import MainAdminDashboard from './pages/MainAdminDashboard';
 import BillingManagement from './pages/BillingManagement';
@@ -67,6 +68,7 @@ function App() {
             <Route path="/usage" element={<UsageHistory />} />
             <Route path="/bills" element={<MyBills />} />
             <Route path="/reports" element={<ResidentReportsPage />} />
+            <Route path="/water-tips" element={<WaterTipsPage />} />
             <Route path="/support" element={<ResidentSupportPage />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/profile" element={<Profile />} />

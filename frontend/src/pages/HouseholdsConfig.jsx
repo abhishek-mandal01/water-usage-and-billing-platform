@@ -11,6 +11,7 @@ function HouseholdsDirectory() {
   const [assignMeterForm, setAssignMeterForm] = useState('');
   const [isAssigningMeter, setIsAssigningMeter] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortOption, setSortOption] = useState('flat_asc');
 
   const adminId = JSON.parse(localStorage.getItem('user'))?.id;
 
@@ -122,6 +123,15 @@ function HouseholdsDirectory() {
     const flatNo = hh.householdNumber?.toLowerCase() || '';
     const meterNo = hh.waterMeter?.serialNumber?.toLowerCase() || '';
     return name.includes(q) || email.includes(q) || flatNo.includes(q) || meterNo.includes(q);
+  }).sort((a, b) => {
+    if (sortOption === 'flat_asc') return a.householdNumber.localeCompare(b.householdNumber);
+    if (sortOption === 'flat_desc') return b.householdNumber.localeCompare(a.householdNumber);
+    if (sortOption === 'name_asc') {
+      const nameA = a.resident?.name || '';
+      const nameB = b.resident?.name || '';
+      return nameA.localeCompare(nameB);
+    }
+    return 0;
   });
 
   return (
@@ -136,22 +146,33 @@ function HouseholdsDirectory() {
               <h1 style={{ margin: 0 }}>Households Directory</h1>
               <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '14px', backgroundColor: 'var(--color-surface-100)', padding: '4px 10px', borderRadius: 'var(--radius-full)' }}>Total: {households.length}</p>
             </div>
-            <div style={{ position: 'relative' }}>
-              <input 
-                type="text" 
-                placeholder="Search Name, Email, Flat No, or Meter No..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ padding: '10px 15px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', width: '350px', fontSize: 'var(--text-sm)', outline: 'none' }}
-              />
-              {searchQuery && (
-                <button 
-                  onClick={() => setSearchQuery('')}
-                  style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
-                >
-                  ✕
-                </button>
-              )}
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <select 
+                value={sortOption} 
+                onChange={(e) => setSortOption(e.target.value)}
+                style={{ padding: '10px 15px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', fontSize: 'var(--text-sm)', outline: 'none', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}
+              >
+                <option value="flat_asc">Flat No (A-Z)</option>
+                <option value="flat_desc">Flat No (Z-A)</option>
+                <option value="name_asc">Resident Name (A-Z)</option>
+              </select>
+              <div style={{ position: 'relative' }}>
+                <input 
+                  type="text" 
+                  placeholder="Search Name, Email, Flat No, or Meter No..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{ padding: '10px 15px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', width: '350px', fontSize: 'var(--text-sm)', outline: 'none' }}
+                />
+                {searchQuery && (
+                  <button 
+                    onClick={() => setSearchQuery('')}
+                    style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
@@ -159,7 +180,7 @@ function HouseholdsDirectory() {
             <MagicCard style={{ padding: '0', overflow: 'hidden' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
-                <tr style={{ backgroundColor: 'transparent', borderBottom: '1px solid var(--border-default)' }}>
+                  <tr style={{ backgroundColor: 'var(--color-primary-50)', borderBottom: '1px solid var(--border-default)' }}>
                   <th style={{ padding: '15px' }}>Household Number</th>
                   <th style={{ padding: '15px' }}>Resident Name</th>
                   <th style={{ padding: '15px' }}>Status</th>
@@ -285,7 +306,7 @@ function HouseholdsDirectory() {
                     ) : (
                       <table style={{ width: '100%', fontSize: '13px', textAlign: 'left', borderCollapse: 'collapse' }}>
                         <thead>
-                          <tr style={{ color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-default)' }}>
+                  <tr style={{ backgroundColor: 'var(--color-primary-50)',  color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-default)' }}>
                             <th style={{ paddingBottom: '5px' }}>Date</th>
                             <th style={{ paddingBottom: '5px' }}>Volume (L)</th>
                             <th style={{ paddingBottom: '5px' }}>Consumption</th>

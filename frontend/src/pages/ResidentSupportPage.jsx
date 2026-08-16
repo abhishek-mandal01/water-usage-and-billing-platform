@@ -10,6 +10,8 @@ function ResidentSupportPage() {const { t } = useTranslation();
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({ title: '', description: '' });
   const [statusMsg, setStatusMsg] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOption, setSortOption] = useState('newest');
 
   const user = JSON.parse(localStorage.getItem('user')) || { id: 1 };
 
@@ -30,6 +32,23 @@ function ResidentSupportPage() {const { t } = useTranslation();
     setTimeout(() => fetchTickets(), 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const filteredTickets = tickets.filter(t => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (t.title || '').toLowerCase().includes(q) || t.id.toString().includes(q);
+  });
+
+  const sortedTickets = [...filteredTickets].sort((a, b) => {
+    if (sortOption === 'newest') return b.id - a.id;
+    if (sortOption === 'oldest') return a.id - b.id;
+    if (sortOption === 'status_open') {
+      if (a.status === 'OPEN' && b.status !== 'OPEN') return -1;
+      if (a.status !== 'OPEN' && b.status === 'OPEN') return 1;
+      return b.id - a.id;
+    }
+    return 0;
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -133,9 +152,25 @@ function ResidentSupportPage() {const { t } = useTranslation();
           <MagicCardGrid>
             <MagicCard style={{ padding: 'var(--space-6)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-6)' }}>
-                <h3 style={{ margin: 0, fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>{t("resident.mySupportTickets")}
-                  {tickets.length})
-                </h3>
+                <h3 style={{ margin: 0, fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>{t("resident.mySupportTickets")} ({tickets.length})</h3>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <select
+                    value={sortOption}
+                    onChange={(e) => setSortOption(e.target.value)}
+                    style={{ padding: '8px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', fontSize: 'var(--text-sm)', outline: 'none', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}
+                  >
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="status_open">Open First</option>
+                  </select>
+                  <input
+                    type="text"
+                    placeholder="Search tickets..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{ padding: '8px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', fontSize: 'var(--text-sm)', outline: 'none', width: '200px' }}
+                  />
+                </div>
               </div>
 
               {loading ?
@@ -150,7 +185,7 @@ function ResidentSupportPage() {const { t } = useTranslation();
               <div style={{ overflowX: 'auto' }}>
                   <table className="data-table">
                     <thead>
-                      <tr>
+                  <tr style={{ backgroundColor: 'var(--color-primary-50)' }}>
                         <th>{t("resident.ticketID")}</th>
                         <th>{t("resident.subject")}</th>
                         <th>{t("resident.level")}</th>
@@ -159,7 +194,7 @@ function ResidentSupportPage() {const { t } = useTranslation();
                       </tr>
                     </thead>
                     <tbody>
-                      {tickets.map((t) =>
+                      {sortedTickets.map((t) =>
                     <tr key={t.id}>
                           <td style={{ fontWeight: 'var(--font-semibold)' }}>#{t.id}</td>
                           <td>

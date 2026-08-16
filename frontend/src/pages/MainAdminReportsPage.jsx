@@ -120,7 +120,7 @@ function MainAdminReportsPage() {
                 <div style={{ overflowX: 'auto' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                     <thead>
-                      <tr style={{ borderBottom: '1px solid var(--border-default)', color: 'var(--text-secondary)' }}>
+                  <tr style={{ backgroundColor: 'var(--color-primary-50)',  borderBottom: '1px solid var(--border-default)', color: 'var(--text-secondary)' }}>
                         <th style={{ padding: 'var(--space-3)' }}>Community Name</th>
                         <th style={{ padding: 'var(--space-3)' }}>Households</th>
                         <th style={{ padding: 'var(--space-3)' }}>Monthly Usage (L)</th>
@@ -156,7 +156,7 @@ function MainAdminReportsPage() {
                 </div>
               </MagicCard>
 
-              {/* NEW: Charts derived from reportsList */}
+              {}
               <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
                 {/* BarChart: Top Communities by Water Usage */}
                 <MagicCard style={{ padding: 'var(--space-6)' }}>
@@ -250,7 +250,7 @@ function MainAdminReportsPage() {
                 </MagicCard>
               </div>
 
-              {/* NEW: Additional Reports Charts Row 2 */}
+              {}
               <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
                 {/* Visual 3: Side-by-Side Billed Revenue vs Procurement Cost */}
                 <MagicCard style={{ padding: 'var(--space-6)' }}>

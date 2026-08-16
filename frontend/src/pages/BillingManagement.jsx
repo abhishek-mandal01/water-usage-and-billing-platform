@@ -9,9 +9,12 @@ function BillingManagement() {
   const [cycles, setCycles] = useState([]);
   const [bills, setBills] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortOption, setSortOption] = useState('newest');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   
   const [selectedBill, setSelectedBill] = useState(null);
   const billRef = useRef(null);
@@ -106,7 +109,30 @@ function BillingManagement() {
     const flat = bill.user?.householdNumber?.toLowerCase() || '';
     const billId = String(bill.id);
     return name.includes(q) || flat.includes(q) || billId.includes(q);
+  }).sort((a, b) => {
+    if (sortOption === 'newest') return b.id - a.id;
+    if (sortOption === 'oldest') return a.id - b.id;
+    if (sortOption === 'amount_high') return b.amount - a.amount;
+    if (sortOption === 'amount_low') return a.amount - b.amount;
+    if (sortOption === 'unpaid_first') {
+      if (a.status === 'UNPAID' && b.status !== 'UNPAID') return -1;
+      if (a.status !== 'UNPAID' && b.status === 'UNPAID') return 1;
+      return b.id - a.id;
+    }
+    return 0;
   });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredBills.length / itemsPerPage);
+  const currentBills = filteredBills.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  // Reset to first page when search/sort changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCurrentPage(1);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [searchQuery, sortOption]);
 
   return (
     <div className="dashboard-layout">
@@ -142,7 +168,7 @@ function BillingManagement() {
               <h3 style={{ margin: '0 0 15px 0' }}>Active & Past Cycles</h3>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid var(--border-default)' }}>
+                  <tr style={{ backgroundColor: 'var(--color-primary-50)',  borderBottom: '1px solid var(--border-default)' }}>
                     <th style={{ padding: '12px' }}>ID</th>
                     <th style={{ padding: '12px' }}>Start Date</th>
                     <th style={{ padding: '12px' }}>End Date</th>
@@ -185,7 +211,7 @@ function BillingManagement() {
             </MagicCard>
             </div>
 
-            {/* NEW: Billing Management Charts */}
+            {}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginTop: '25px' }}>
               {/* Cycle Billed vs Collected Bar Chart */}
               <MagicCard style={{ padding: '25px', minHeight: '340px' }}>
@@ -260,18 +286,31 @@ function BillingManagement() {
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '40px', marginBottom: '20px' }}>
             <h2 style={{ margin: 0 }}>Generated Invoices</h2>
-            <input 
-              type="text" 
-              placeholder="Search by Name, Flat No, or Invoice ID..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ padding: '10px 15px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', width: '300px', fontSize: 'var(--text-sm)', outline: 'none' }}
-            />
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <select
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+                style={{ padding: '10px 15px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', fontSize: 'var(--text-sm)', outline: 'none', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}
+              >
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="amount_high">Amount: High to Low</option>
+                <option value="amount_low">Amount: Low to High</option>
+                <option value="unpaid_first">Unpaid First</option>
+              </select>
+              <input 
+                type="text" 
+                placeholder="Search by Name, Flat No, or Invoice ID..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{ padding: '10px 15px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', width: '300px', fontSize: 'var(--text-sm)', outline: 'none' }}
+              />
+            </div>
           </div>
           <MagicCard style={{ padding: '0', overflow: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
-                <tr style={{ backgroundColor: 'transparent', borderBottom: '1px solid var(--border-default)' }}>
+                  <tr style={{ backgroundColor: 'var(--color-primary-50)', borderBottom: '1px solid var(--border-default)' }}>
                   <th style={{ padding: '15px' }}>Bill ID</th>
                   <th style={{ padding: '15px' }}>Resident Name</th>
                   <th style={{ padding: '15px' }}>Billing Cycle</th>
@@ -281,14 +320,14 @@ function BillingManagement() {
                 </tr>
               </thead>
               <tbody>
-                {filteredBills.length === 0 ? (
+                {currentBills.length === 0 ? (
                   <tr>
                     <td colSpan="6" style={{ padding: '20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
                       {searchQuery ? "No invoices match your search." : "No bills found. Finalize a cycle to generate bills."}
                     </td>
                   </tr>
                 ) : (
-                  filteredBills.map(bill => (
+                  currentBills.map(bill => (
                     <tr key={bill.id} style={{ borderBottom: '1px solid var(--border-default)', transition: 'background-color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-card-hover)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                       <td style={{ padding: '15px', fontWeight: 'bold' }}>#{bill.id}</td>
                       <td style={{ padding: '15px' }}>
@@ -322,6 +361,45 @@ function BillingManagement() {
                 )}
               </tbody>
             </table>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 20px', borderTop: '1px solid var(--border-default)', backgroundColor: 'var(--bg-card)' }}>
+                <button 
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(p => p - 1)}
+                  style={{ 
+                    padding: '8px 16px', 
+                    borderRadius: 'var(--radius-sm)', 
+                    border: '1px solid var(--border-default)', 
+                    backgroundColor: currentPage === 1 ? 'var(--color-surface-100)' : 'white', 
+                    color: currentPage === 1 ? 'var(--text-tertiary)' : 'var(--text-primary)',
+                    cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                    fontWeight: '500'
+                  }}
+                >
+                  Previous
+                </button>
+                <span style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', fontWeight: '500' }}>
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button 
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage(p => p + 1)}
+                  style={{ 
+                    padding: '8px 16px', 
+                    borderRadius: 'var(--radius-sm)', 
+                    border: '1px solid var(--border-default)', 
+                    backgroundColor: currentPage === totalPages ? 'var(--color-surface-100)' : 'white', 
+                    color: currentPage === totalPages ? 'var(--text-tertiary)' : 'var(--text-primary)',
+                    cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                    fontWeight: '500'
+                  }}
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </MagicCard>
 
           {/* E-Bill Modal */}
@@ -398,7 +476,7 @@ function BillingManagement() {
                       <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', color: '#374151' }}>Charges Breakdown</h3>
                       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
-                          <tr style={{ backgroundColor: '#f3f4f6' }}>
+                  <tr style={{ backgroundColor: 'var(--color-primary-50)' }}>
                             <th style={{ padding: '12px 15px', textAlign: 'left', color: '#4b5563', fontSize: '13px', borderBottom: '1px solid #e5e7eb' }}>Description</th>
                             <th style={{ padding: '12px 15px', textAlign: 'right', color: '#4b5563', fontSize: '13px', borderBottom: '1px solid #e5e7eb' }}>Total</th>
                           </tr>

@@ -170,7 +170,7 @@ function MainAdminFinancialsPage() {
               </MagicCard>
             </div>
 
-            {/* NEW: Revenue Flow Composed Chart */}
+            {}
             <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
               <MagicCard className="chart-card" style={{ minHeight: '360px' }}>
                 <h3 style={{ margin: '0 0 var(--space-4) 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -210,7 +210,7 @@ function MainAdminFinancialsPage() {
                 </div>
               </MagicCard>
 
-              {/* NEW: Month-over-Month Collection Rate % per Community */}
+              {}
               <MagicCard className="chart-card" style={{ minHeight: '360px' }}>
                 <h3 style={{ margin: '0 0 var(--space-4) 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #5bbcaa, #a78bfa)' }}></span>

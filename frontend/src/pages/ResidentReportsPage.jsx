@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { useTranslation } from '../components/LanguageSelector/useTranslation';
 import Sidebar from '../components/sidebar';
 import Topbar from '../components/topbar';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
@@ -14,19 +13,15 @@ import {
   Trophy, 
   Award, 
   Quote, 
-  Sparkles, 
   Building2, 
-  ShieldCheck, 
   TrendingUp 
 } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell, Legend, LineChart, Line } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell, Legend } from 'recharts';
 
 function ResidentReportsPage() {
-  const { t } = useTranslation();
   const [dateRange, setDateRange] = useState('2026-08');
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
-  const [loading, setLoading] = useState(false);
   const reportRef = useRef(null);
 
   const user = JSON.parse(localStorage.getItem('user')) || { id: 1 };
@@ -53,24 +48,22 @@ function ResidentReportsPage() {
 
   useEffect(() => {
     if (!user?.id) return;
-    setLoading(true);
-    fetch(`http://localhost:8081/api/reports/resident/${user.id}?dateRange=${dateRange}`)
-      .then(res => {
-        if (res.ok) return res.json();
-        throw new Error('Failed to fetch resident report');
-      })
-      .then(data => {
+    const fetchReport = async () => {
+      try {
+        const res = await fetch(`http://localhost:8081/api/reports/resident/${user.id}?dateRange=${dateRange}`);
+        if (!res.ok) throw new Error('Failed to fetch resident report');
+        const data = await res.json();
         if (data) {
           setReportData(prev => ({
             ...prev,
             ...data
           }));
         }
-      })
-      .catch(err => {
+      } catch (err) {
         console.warn('Backend report fetch failed, using localized report state:', err);
-      })
-      .finally(() => setLoading(false));
+      }
+    };
+    fetchReport();
   }, [user?.id, dateRange]);
 
   const usageDiff = reportData.monthlyUsage - reportData.previousMonthUsage;
@@ -367,7 +360,15 @@ function ResidentReportsPage() {
                       <XAxis dataKey="day" stroke="var(--text-tertiary)" fontSize={12} />
                       <YAxis stroke="var(--text-tertiary)" fontSize={12} />
                       <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)' }} />
-                      <Bar dataKey="usage" name="Water Used (Liters)" fill="var(--color-primary-500)" radius={[6, 6, 0, 0]} barSize={50} />
+                      <Bar dataKey="usage" name="Water Used (Liters)" radius={[6, 6, 0, 0]} barSize={50}>
+                        {reportData.dailyUsageTrend.map((entry, index) => {
+                          const maxVal = Math.max(...reportData.dailyUsageTrend.map(d => d.usage)) || 1;
+                          let color = '#22c55e'; // green (low)
+                          if (entry.usage > maxVal * 0.75) color = '#ef4444'; // red (high)
+                          else if (entry.usage > maxVal * 0.4) color = '#f97316'; // orange (mid)
+                          return <Cell key={`cell-${index}`} fill={color} />;
+                        })}
+                      </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                 </div>

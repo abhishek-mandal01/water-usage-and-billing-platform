@@ -50,7 +50,7 @@ const LanguageSelector = () => {
       >
         <Globe size={18} color="var(--color-primary-500)" />
         <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--font-medium)' }}>
-          {currentLangObj.englishName}
+          {isOpen ? currentLangObj.englishName : currentLanguage.toUpperCase()}
         </span>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}

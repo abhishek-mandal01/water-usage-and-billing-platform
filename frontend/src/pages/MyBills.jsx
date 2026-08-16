@@ -13,6 +13,12 @@ function MyBills() {const { t } = useTranslation();
   const [selectedBill, setSelectedBill] = useState(null);
   const billRef = useRef(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOption, setSortOption] = useState('unpaid_first');
+
   const residentData = JSON.parse(localStorage.getItem('user'));
   const residentId = residentData?.id;
 
@@ -49,79 +55,112 @@ function MyBills() {const { t } = useTranslation();
         method: 'POST'
       });
 
-      if (!orderRes.ok) {
-        const errorMsg = await orderRes.text();
-        setMessage(`Failed to initialize payment: ${errorMsg}`);
-        setLoading(false);
-        return;
-      }
-
       const orderData = await orderRes.json();
-
-      // 2. Initialize Razorpay options
+      
+      // 2. Open Razorpay Checkout
       const options = {
-        key: "rzp_test_TFdEdEuWTNsH5O",
-        amount: orderData.amount, // Amount is in paise
-        currency: "INR",
-        name: "SmartWater Utility",
+        key: 'rzp_test_TFdEdEuWTNsH5O',
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'SmartWater Utility',
         description: "Water Bill Payment",
         order_id: orderData.id,
         handler: async function (response) {
-          // 3. Verify signature on backend
-          try {
-            const verifyRes = await fetch('http://localhost:8081/api/payments/verify', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                billId: billId,
-                razorpayOrderId: response.razorpay_order_id,
-                razorpayPaymentId: response.razorpay_payment_id,
-                razorpaySignature: response.razorpay_signature
-              })
-            });
+          // 3. Verify Payment
+          const verifyRes = await fetch('http://localhost:8081/api/payments/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+              billId: billId
+            })
+          });
 
-            if (verifyRes.ok) {
-              setMessage('Payment successful! Your bill is now marked as PAID.');
-              fetchBillsRef();
-            } else {
-              setMessage('Payment verification failed.');
-            }
-          } catch (err) {
-            console.error("Verification Error:", err);
-            setMessage('Error verifying payment.');
+          if (verifyRes.ok) {
+            setMessage('Payment successful!');
+            fetchBillsRef();
+          } else {
+            setMessage('Payment verification failed.');
           }
         },
         prefill: {
-          name: residentData?.name || "",
-          email: residentData?.email || "",
-          contact: residentData?.phoneNumber || ""
+          name: residentData?.name || 'Resident',
+          email: residentData?.email || 'resident@example.com',
+          contact: '9999999999'
         },
         theme: {
-          color: "var(--color-primary-600)"
+          color: '#3B82F6'
         }
       };
 
-      const rzp1 = new window.Razorpay(options);
-      rzp1.on('payment.failed', function (response) {
-        console.error("Payment Failed", response.error);
-        setMessage(`Payment failed: ${response.error.description}`);
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function (response){
+        setMessage('Payment failed: ' + response.error.description);
       });
-      rzp1.open();
+      rzp.open();
 
     } catch (err) {
-      console.error("Checkout Error:", err);
-      setMessage('Error opening checkout.');
+      console.error("Payment flow error:", err);
+      setMessage('Could not initiate payment.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-    setTimeout(() => setMessage(''), 5000);
+  };
+
+  const payBtnStyle = {
+    padding: '8px 16px',
+    backgroundColor: 'var(--color-primary-600)',
+    color: 'white',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    fontSize: '13px'
+  };
+
+  const viewBtnStyle = {
+    padding: '8px 16px',
+    backgroundColor: 'white',
+    color: 'var(--text-secondary)',
+    border: '1px solid var(--border-default)',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    fontSize: '13px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px'
   };
 
   const handleDownloadPdf = () => {
-    if (!selectedBill) return;
     window.open(`http://localhost:8081/api/billing/pdf/${selectedBill.id}`, '_blank');
   };
 
   const totalDue = bills.filter((b) => b.status === 'UNPAID').reduce((sum, b) => sum + b.amount, 0);
+
+  const filteredBills = bills.filter(b => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (b.billingCycle || '').toLowerCase().includes(q) || (b.status || '').toLowerCase().includes(q);
+  });
+
+  const sortedBills = [...filteredBills].sort((a, b) => {
+    if (sortOption === 'unpaid_first') {
+      if (a.status === 'UNPAID' && b.status !== 'UNPAID') return -1;
+      if (a.status !== 'UNPAID' && b.status === 'UNPAID') return 1;
+      return b.id - a.id;
+    }
+    if (sortOption === 'newest') return b.id - a.id;
+    if (sortOption === 'oldest') return a.id - b.id;
+    if (sortOption === 'amount_high') return b.amount - a.amount;
+    if (sortOption === 'amount_low') return a.amount - b.amount;
+    return 0;
+  });
+
+  const totalPages = Math.ceil(sortedBills.length / itemsPerPage);
+  const currentBills = sortedBills.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div className="dashboard-layout">
@@ -146,13 +185,35 @@ function MyBills() {const { t } = useTranslation();
               </MagicCard>
 
               <MagicCard style={{ flex: '2 1 500px', padding: '25px' }}>
-                <h3 style={{ margin: '0 0 15px 0' }}>{t("resident.billingHistory")}</h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                  <h3 style={{ margin: 0 }}>{t("resident.billingHistory")}</h3>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <select
+                      value={sortOption}
+                      onChange={(e) => setSortOption(e.target.value)}
+                      style={{ padding: '8px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', fontSize: 'var(--text-sm)', outline: 'none', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}
+                    >
+                      <option value="unpaid_first">Unpaid First</option>
+                      <option value="newest">Newest First</option>
+                      <option value="oldest">Oldest First</option>
+                      <option value="amount_high">Amount: High to Low</option>
+                      <option value="amount_low">Amount: Low to High</option>
+                    </select>
+                    <input
+                      type="text"
+                      placeholder="Search bills..."
+                      value={searchQuery}
+                      onChange={(e) => {setSearchQuery(e.target.value); setCurrentPage(1);}}
+                      style={{ padding: '8px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', fontSize: 'var(--text-sm)', outline: 'none', width: '200px' }}
+                    />
+                  </div>
+                </div>
                 {bills.length === 0 ?
                 <p style={{ color: 'var(--text-secondary)' }}>{t("resident.nobillsgeneratedyet")}</p> :
-
+                <>
                 <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
                     <thead>
-                      <tr style={{ backgroundColor: 'transparent', textAlign: 'left' }}>
+                  <tr style={{ backgroundColor: 'var(--color-primary-50)', textAlign: 'left' }}>
                         <th style={{ padding: '12px', borderBottom: '1px solid var(--border-default)' }}>{t("resident.cycle")}</th>
                         <th style={{ padding: '12px', borderBottom: '1px solid var(--border-default)' }}>{t("resident.dueDate")}</th>
                         <th style={{ padding: '12px', borderBottom: '1px solid var(--border-default)' }}>{t("resident.amount")}</th>
@@ -161,7 +222,7 @@ function MyBills() {const { t } = useTranslation();
                       </tr>
                     </thead>
                     <tbody>
-                      {bills.map((b) =>
+                      {currentBills.map((b) =>
                     <tr key={b.id} style={{ transition: 'background-color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-card-hover)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                           <td style={{ padding: '12px', borderBottom: '1px solid var(--border-default)', fontWeight: '500' }}>{b.billingCycle}</td>
                           <td style={{ padding: '12px', borderBottom: '1px solid var(--border-default)', fontSize: '13px', color: 'var(--text-secondary)' }}>{b.dueDate || 'N/A'}</td>
@@ -208,12 +269,37 @@ function MyBills() {const { t } = useTranslation();
                     )}
                     </tbody>
                   </table>
+                  
+                  {totalPages > 1 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px' }}>
+                      <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
+                        Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, sortedBills.length)} of {sortedBills.length}
+                      </span>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button 
+                          disabled={currentPage === 1}
+                          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                          style={{ padding: '6px 12px', border: '1px solid var(--border-default)', borderRadius: '6px', background: currentPage === 1 ? 'var(--bg-body)' : 'white', cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
+                        >
+                          Previous
+                        </button>
+                        <button 
+                          disabled={currentPage === totalPages}
+                          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                          style={{ padding: '6px 12px', border: '1px solid var(--border-default)', borderRadius: '6px', background: currentPage === totalPages ? 'var(--bg-body)' : 'white', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
                 }
               </MagicCard>
 
             </div>
 
-            {/* NEW: Resident Billing Visuals & Charts */}
+            {}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginTop: '25px' }}>
               {/* Monthly Bill Amount Bar Chart */}
               <MagicCard style={{ padding: '25px', minHeight: '340px' }}>
@@ -374,7 +460,7 @@ function MyBills() {const { t } = useTranslation();
                       <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', color: 'var(--text-secondary)' }}>{t("resident.chargesBreakdown")}</h3>
                       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
-                          <tr style={{ backgroundColor: 'var(--bg-card-hover)' }}>
+                  <tr style={{ backgroundColor: 'var(--color-primary-50)' }}>
                             <th style={{ padding: '12px 15px', textAlign: 'left', color: 'var(--text-secondary)', fontSize: '13px', borderBottom: '1px solid var(--border-default)' }}>{t("resident.description")}</th>
                             <th style={{ padding: '12px 15px', textAlign: 'right', color: 'var(--text-secondary)', fontSize: '13px', borderBottom: '1px solid var(--border-default)' }}>{t("resident.total")}</th>
                           </tr>

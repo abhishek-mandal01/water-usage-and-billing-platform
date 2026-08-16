@@ -8,6 +8,25 @@ function MainAdminSupportPage() {const { t } = useTranslation();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOption, setSortOption] = useState('newest');
+
+  const filteredTickets = tickets.filter(t => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (t.title || '').toLowerCase().includes(q) || t.id.toString().includes(q) || (t.raisedByName || '').toLowerCase().includes(q);
+  });
+
+  const sortedTickets = [...filteredTickets].sort((a, b) => {
+    if (sortOption === 'newest') return b.id - a.id;
+    if (sortOption === 'oldest') return a.id - b.id;
+    if (sortOption === 'status_open') {
+      if (a.status === 'OPEN' && b.status !== 'OPEN') return -1;
+      if (a.status !== 'OPEN' && b.status === 'OPEN') return 1;
+      return b.id - a.id;
+    }
+    return 0;
+  });
 
   const fetchTickets = async () => {
     try {
@@ -90,9 +109,27 @@ function MainAdminSupportPage() {const { t } = useTranslation();
           <MagicCardGrid>
             <div className="grid-2-1">
               <MagicCard style={{ padding: 'var(--space-6)' }}>
-                <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>{t("mainAdmin.mainAdminEscalations")}
-                  {tickets.length})
-                </h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
+                  <h3 style={{ margin: 0, fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>{t("mainAdmin.mainAdminEscalations")} ({tickets.length})</h3>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <select
+                      value={sortOption}
+                      onChange={(e) => setSortOption(e.target.value)}
+                      style={{ padding: '8px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', fontSize: 'var(--text-sm)', outline: 'none', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}
+                    >
+                      <option value="newest">Newest First</option>
+                      <option value="oldest">Oldest First</option>
+                      <option value="status_open">Open First</option>
+                    </select>
+                    <input
+                      type="text"
+                      placeholder="Search tickets..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      style={{ padding: '8px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', fontSize: 'var(--text-sm)', outline: 'none', width: '200px' }}
+                    />
+                  </div>
+                </div>
 
                 {loading ?
                 <div className="loading-screen" style={{ height: '200px' }}>{t("mainAdmin.loading")}</div> :
@@ -102,7 +139,7 @@ function MainAdminSupportPage() {const { t } = useTranslation();
                 <div style={{ overflowX: 'auto' }}>
                     <table className="data-table">
                       <thead>
-                        <tr>
+                  <tr style={{ backgroundColor: 'var(--color-primary-50)' }}>
                           <th>{t("mainAdmin.iD")}</th>
                           <th>{t("mainAdmin.raisedBy")}</th>
                           <th>{t("mainAdmin.subject")}</th>
@@ -112,7 +149,7 @@ function MainAdminSupportPage() {const { t } = useTranslation();
                         </tr>
                       </thead>
                       <tbody>
-                        {tickets.map((ticket) =>
+                        {sortedTickets.map((ticket) =>
                       <tr key={ticket.id} style={{ cursor: 'pointer' }} onClick={() => setSelectedTicket(ticket)}>
                             <td style={{ fontWeight: 'var(--font-semibold)' }}>#{ticket.id}</td>
                             <td>

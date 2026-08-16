@@ -1,7 +1,35 @@
 import { Link } from 'react-router-dom';
+import { PanelRightOpen } from 'lucide-react';
 import logoImg from '../assets/water_usage_and_billing_logo.png';
 
-function BrandLogo({ style = {} }) {
+function BrandLogo({ 
+  style = {}, 
+  isCollapsed = false, 
+  onToggleCollapse, 
+  logoSize = 85, 
+  textSize = '25px', 
+  subTextSize = '12px' 
+}) {
+  if (isCollapsed && onToggleCollapse) {
+    return (
+      <div 
+        className="brand-logo-collapsed-container"
+        onClick={onToggleCollapse}
+        title="Expand sidebar"
+        style={style}
+      >
+        <div className="brand-logo-morph-wrapper">
+          <img
+            src={logoImg}
+            alt="Expand sidebar"
+            className="brand-logo-img-morph"
+          />
+          <PanelRightOpen size={20} className="brand-logo-icon-morph" color="var(--text-secondary)" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Link
       to="/"
@@ -10,8 +38,8 @@ function BrandLogo({ style = {} }) {
         padding: 'var(--space-4) var(--space-5)',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        gap: '5px',
+        justifyContent: 'flex-start',
+        gap: '8px',
         color: 'inherit',
         textDecoration: 'none',
         ...style
@@ -22,8 +50,8 @@ function BrandLogo({ style = {} }) {
         alt=""
         aria-hidden="true"
         style={{
-          width: '85px',
-          height: '85px',
+          width: `${logoSize}px`,
+          height: `${logoSize}px`,
           objectFit: 'contain',
           flexShrink: 0
         }}
@@ -32,7 +60,7 @@ function BrandLogo({ style = {} }) {
         <div style={{
           color: 'var(--text-primary)',
           fontFamily: 'var(--font-family)',
-          fontSize: '25px',
+          fontSize: textSize,
           fontWeight: 800,
           letterSpacing: '-0.7px',
           whiteSpace: 'nowrap'
@@ -40,10 +68,10 @@ function BrandLogo({ style = {} }) {
           Smart <span style={{ color: 'var(--color-primary-500)' }}>Water</span>
         </div>
         <div style={{
-          marginTop: '7px',
+          marginTop: '6px',
           color: 'var(--text-secondary)',
           fontFamily: 'var(--font-family)',
-          fontSize: '12px',
+          fontSize: subTextSize,
           fontWeight: 700,
           letterSpacing: '1.7px',
           textTransform: 'uppercase',
@@ -57,3 +85,5 @@ function BrandLogo({ style = {} }) {
 }
 
 export default BrandLogo;
+
+

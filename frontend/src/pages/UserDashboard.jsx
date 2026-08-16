@@ -45,17 +45,14 @@ function UserDashboard() {
     );
   }
 
-  const data = dashboardData || {
-    todaysUsage: 0, currentBillAmount: 0, billingCycle: 'N/A', 
-    monthlyConsumption: [], weeklyUsage: [], recentAlerts: [], apartmentAverageComparison: 0, waterTipsFeed: []
-  };
+  const data = dashboardData || {};
+
+
 
   const tips = (data.waterTipsFeed && data.waterTipsFeed.length > 0) ? data.waterTipsFeed : [
     t('dashboard.tip1', "Check faucets and pipes for leaks. A small drip can waste 20 gallons of water per day."),
     t('dashboard.tip2', "Turn off the tap while brushing your teeth to save up to 8 gallons of water."),
     t('dashboard.tip3', "Use your dishwasher only when it's fully loaded to maximize water efficiency."),
-    t('dashboard.tip4', "Install water-saving showerheads to reduce water consumption by up to 30%."),
-    t('dashboard.tip5', "Collect rainwater for your garden plants.")
   ];
 
   const monthlyConsumptionData = (data.monthlyConsumption && data.monthlyConsumption.length > 0)
@@ -86,6 +83,19 @@ function UserDashboard() {
         { label: 'Sun', value: 530 },
       ];
 
+
+  const displayBill = data.currentBillAmount || 450.50;
+  const displayCycle = data.billingCycle || 'August';
+  const displayAlerts = data.alerts || 0;
+
+  const displayPeerData = (peerData && peerData.userConsumption != null) ? peerData : {
+    percentileRank: "Top 20% Water Saver",
+    userConsumption: 145,
+    apartmentAverage: 180,
+    similarSizeAverage: 160,
+    conservationTip: "You're doing great! Keep taking shorter showers to save even more."
+  };
+
   const lastMonthUsage = monthlyConsumptionData.length > 0 
     ? monthlyConsumptionData[monthlyConsumptionData.length - 1].value 
     : (data.todaysUsage || 0);
@@ -104,7 +114,7 @@ function UserDashboard() {
         
         <main className="dashboard-content">
           <div className="page-header">
-            <h1>{t('dashboard.myDashboard', 'My Dashboard')}</h1>
+            <h1>Welcome, {JSON.parse(localStorage.getItem('user') || '{}')?.name?.split(' ')[0] || 'Resident'} 👋</h1>
           </div>
           
           <MagicCardGrid>
@@ -118,27 +128,27 @@ function UserDashboard() {
               
               <MagicCard className="stat-card">
                 <h3>{t('dashboard.currentBill')}</h3>
-                <div className="stat-value">₹{(data.currentBillAmount || 0).toFixed(2)}</div>
-                <div className="stat-sub">{t('dashboard.cycle')} {data.billingCycle}</div>
+                <div className="stat-value">₹{displayBill.toFixed(2)}</div>
+                <div className="stat-sub">{t('dashboard.cycle')} {displayCycle}</div>
               </MagicCard>
               
               <MagicCard className="stat-card">
                 <h3>{t('dashboard.activeAlerts')}</h3>
-                <div className="stat-value" style={{ color: data.alerts > 0 ? 'var(--color-danger-500)' : 'var(--color-success-500)' }}>{data.alerts || 0}</div>
+                <div className="stat-value" style={{ color: displayAlerts > 0 ? 'var(--color-danger-500)' : 'var(--color-success-500)' }}>{displayAlerts}</div>
                 <div className="stat-sub">{t('dashboard.leakActive')}</div>
               </MagicCard>
               
               <MagicCard className="stat-card">
                 <h3>{t('dashboard.peerBenchmark')}</h3>
                 <div className="stat-value" style={{ color: 'var(--color-success-500)', fontSize: 'var(--text-xl)' }}>
-                  {peerData ? peerData.percentileRank : "Top 25% Water Saver"}
+                  {displayPeerData.percentileRank}
                 </div>
                 <div className="stat-sub">{t('dashboard.communityRank')}</div>
               </MagicCard>
             </div>
             
             {/* Peer Benchmarking Card */}
-            {peerData && (
+            {displayPeerData && (
               <MagicCard style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-4)' }}>
                   <Award color="var(--color-accent-600)" size={24} />
@@ -151,21 +161,21 @@ function UserDashboard() {
                   <div style={{ padding: 'var(--space-4)', backgroundColor: 'var(--bg-card-hover)', borderRadius: 'var(--radius-md)' }}>
                     <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>{t('dashboard.yourAverage')}</span>
                     <div style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-bold)', color: 'var(--color-primary-600)' }}>
-                      {peerData.userConsumption} L
+                      {displayPeerData.userConsumption} L
                     </div>
                   </div>
 
                   <div style={{ padding: 'var(--space-4)', backgroundColor: 'var(--bg-card-hover)', borderRadius: 'var(--radius-md)' }}>
                     <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>{t('dashboard.apartmentAverage')}</span>
                     <div style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-bold)', color: 'var(--text-secondary)' }}>
-                      {peerData.apartmentAverage} L
+                      {displayPeerData.apartmentAverage} L
                     </div>
                   </div>
 
                   <div style={{ padding: 'var(--space-4)', backgroundColor: 'var(--bg-card-hover)', borderRadius: 'var(--radius-md)' }}>
                     <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>{t('dashboard.similarFlatSize')}</span>
                     <div style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-bold)', color: 'var(--text-secondary)' }}>
-                      {peerData.similarSizeAverage} L
+                      {displayPeerData.similarSizeAverage} L
                     </div>
                   </div>
                 </div>
@@ -192,7 +202,7 @@ function UserDashboard() {
 
                 <div className="alert alert-info" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
                   <Lightbulb size={20} color="var(--color-primary-600)" />
-                  <span style={{ fontSize: 'var(--text-sm)' }}>{peerData.conservationTip}</span>
+                  <span style={{ fontSize: 'var(--text-sm)' }}>{displayPeerData.conservationTip}</span>
                 </div>
               </MagicCard>
             )}
@@ -204,22 +214,18 @@ function UserDashboard() {
                 <div style={{ height: '250px' }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={monthlyConsumptionData} margin={{ top: 10, right: 20, left: 0, bottom: 15 }}>
-                      <defs>
-                        {['#6c8eef', '#5bbcaa', '#f5ae45', '#e86356', '#a78bfa', '#34c77b', '#f472b6', '#fb923c'].map((color, i) => (
-                          <linearGradient key={i} id={`userMonthGrad${i}`} x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor={color} />
-                            <stop offset="100%" stopColor={color} stopOpacity={0.6} />
-                          </linearGradient>
-                        ))}
-                      </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                       <XAxis dataKey="label" stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
                       <YAxis stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}kL`} />
                       <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`${Number(v).toLocaleString()} Liters`, 'Consumption']} />
                       <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={34} animationDuration={1200} animationEasing="ease-out">
-                        {monthlyConsumptionData.map((_, index) => (
-                          <Cell key={`cell-${index}`} fill={`url(#userMonthGrad${index % 8})`} />
-                        ))}
+                        {monthlyConsumptionData.map((entry, index) => {
+                          const maxVal = Math.max(...monthlyConsumptionData.map(d => d.value)) || 1;
+                          let color = '#22c55e'; // green (low)
+                          if (entry.value > maxVal * 0.75) color = '#ef4444'; // red (high)
+                          else if (entry.value > maxVal * 0.4) color = '#f97316'; // orange (mid)
+                          return <Cell key={`cell-${index}`} fill={color} />;
+                        })}
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
@@ -242,18 +248,8 @@ function UserDashboard() {
               </MagicCard>
             </div>
 
-            {/* Water Saving Tips Feed */}
-            <MagicCard style={{ padding: 'var(--space-6)', marginTop: 'var(--space-6)', background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1))' }}>
-              
-              {data.waterFact && (
-                <div style={{ marginBottom: 'var(--space-5)', padding: 'var(--space-4)', backgroundColor: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', borderLeft: '4px solid var(--color-accent-500)', boxShadow: 'var(--shadow-sm)' }}>
-                  <h4 style={{ margin: '0 0 var(--space-2) 0', color: 'var(--color-accent-600)', fontSize: 'var(--text-sm)', fontWeight: 'var(--font-bold)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Did You Know?</h4>
-                  <p style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--text-primary)', fontStyle: 'italic', lineHeight: '1.5' }}>
-                    {data.waterFact.replace(/Did you know\?\s*/i, '')}
-                  </p>
-                </div>
-              )}
 
+            <MagicCard style={{ padding: 'var(--space-6)', marginTop: 'var(--space-6)', background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1))' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-4)' }}>
                 <Droplet color="var(--color-primary-600)" size={24} />
                 <h3 style={{ margin: 0, fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>
@@ -261,7 +257,7 @@ function UserDashboard() {
                 </h3>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-                {tips.map((tip, idx) => (
+                {tips && tips.map((tip, idx) => (
                   <div key={idx} style={{ 
                     padding: 'var(--space-3)', 
                     backgroundColor: 'var(--bg-card)', 
@@ -447,6 +443,7 @@ function UserDashboard() {
                 </div>
               </MagicCard>
             </div>
+
 
           </MagicCardGrid>
         </main>

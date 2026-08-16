@@ -10,6 +10,7 @@ function BulkPurchases() {const { t } = useTranslation();
   const [msg, setMsg] = useState('');
   const [searchStartDate, setSearchStartDate] = useState('');
   const [searchEndDate, setSearchEndDate] = useState('');
+  const [sortOption, setSortOption] = useState('newest');
   const [formData, setFormData] = useState({
     vendorName: '',
     purchaseDate: new Date().toISOString().split('T')[0],
@@ -78,6 +79,23 @@ function BulkPurchases() {const { t } = useTranslation();
     }
   };
 
+  const filteredPurchases = purchases.filter(p => {
+    const date = p.purchaseDate;
+    if (searchStartDate && date < searchStartDate) return false;
+    if (searchEndDate && date > searchEndDate) return false;
+    return true;
+  });
+
+  const sortedPurchases = [...filteredPurchases].sort((a, b) => {
+    if (sortOption === 'newest') return new Date(b.purchaseDate) - new Date(a.purchaseDate);
+    if (sortOption === 'oldest') return new Date(a.purchaseDate) - new Date(b.purchaseDate);
+    if (sortOption === 'vol_high') return b.volumeLiters - a.volumeLiters;
+    if (sortOption === 'vol_low') return a.volumeLiters - b.volumeLiters;
+    if (sortOption === 'cost_high') return b.totalCost - a.totalCost;
+    if (sortOption === 'cost_low') return a.totalCost - b.totalCost;
+    return 0;
+  });
+
   return (
     <div className="dashboard-layout">
       <CommunityAdminSidebar />
@@ -129,6 +147,18 @@ function BulkPurchases() {const { t } = useTranslation();
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
                 <h3 style={{ margin: 0 }}>{t("communityAdmin.purchaseHistory")}</h3>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <select
+                    value={sortOption}
+                    onChange={(e) => setSortOption(e.target.value)}
+                    style={{ padding: '6px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', fontSize: 'var(--text-sm)', outline: 'none', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}
+                  >
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="vol_high">Volume: High to Low</option>
+                    <option value="vol_low">Volume: Low to High</option>
+                    <option value="cost_high">Cost: High to Low</option>
+                    <option value="cost_low">Cost: Low to High</option>
+                  </select>
                   <input type="date" value={searchStartDate} onChange={(e) => setSearchStartDate(e.target.value)} style={{ padding: '6px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', fontSize: 'var(--text-sm)', fontFamily: 'inherit', color: 'var(--text-primary)', outline: 'none' }} />
                   <span style={{ display: 'flex', alignItems: 'center', color: 'var(--text-secondary)' }}>to</span>
                   <input type="date" value={searchEndDate} onChange={(e) => setSearchEndDate(e.target.value)} style={{ padding: '6px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', fontSize: 'var(--text-sm)', fontFamily: 'inherit', color: 'var(--text-primary)', outline: 'none' }} />
@@ -146,17 +176,12 @@ function BulkPurchases() {const { t } = useTranslation();
               <div style={{ overflowY: 'auto', flex: 1, paddingRight: '5px' }}>
               {loading ?
               <p>{t("communityAdmin.loading")}</p> :
-              purchases.filter(p => {
-                const date = p.purchaseDate;
-                if (searchStartDate && date < searchStartDate) return false;
-                if (searchEndDate && date > searchEndDate) return false;
-                return true;
-              }).length === 0 ?
+              sortedPurchases.length === 0 ?
               <p style={{ color: 'var(--text-secondary)' }}>No purchases match your criteria.</p> :
 
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                   <thead>
-                    <tr style={{ borderBottom: '1px solid var(--border-default)' }}>
+                  <tr style={{ backgroundColor: 'var(--color-primary-50)',  borderBottom: '1px solid var(--border-default)' }}>
                       <th style={{ padding: '12px' }}>{t("communityAdmin.date")}</th>
                       <th style={{ padding: '12px' }}>{t("communityAdmin.vendor")}</th>
                       <th style={{ padding: '15px', borderBottom: '1px solid var(--border-default)', textAlign: 'left', color: 'var(--text-secondary)' }}>{t("communityAdmin.volumeL")}</th>
@@ -165,20 +190,18 @@ function BulkPurchases() {const { t } = useTranslation();
                     </tr>
                   </thead>
                   <tbody>
-                    {purchases.filter(p => {
-                      const date = p.purchaseDate;
-                      if (searchStartDate && date < searchStartDate) return false;
-                      if (searchEndDate && date > searchEndDate) return false;
-                      return true;
-                    }).map((p) =>
-                  <tr key={p.id} style={{ borderBottom: '1px solid var(--color-surface-50)' }}>
-                        <td style={{ padding: '12px' }}>{p.purchaseDate}</td>
-                        <td style={{ padding: '12px' }}>{p.vendorName}</td>
-                        <td style={{ padding: '15px', borderBottom: '1px solid var(--border-default)', color: 'var(--text-primary)' }}>{p.volumeLiters.toLocaleString()} L</td>
-                        <td style={{ padding: '15px', borderBottom: '1px solid var(--border-default)', color: 'var(--text-primary)' }}>₹{p.basePrice ? p.basePrice.toFixed(2) : '-'}</td>
-                        <td style={{ padding: '15px', borderBottom: '1px solid var(--border-default)', color: 'var(--text-primary)', fontWeight: 'var(--font-bold)' }}>₹{p.totalCost.toFixed(2)}</td>
+                    {sortedPurchases.map((p) => (
+                      <tr key={p.id} style={{ borderBottom: '1px solid var(--border-default)' }}>
+                        <td style={{ padding: '15px', color: 'var(--text-primary)' }}>{p.purchaseDate}</td>
+                        <td style={{ padding: '15px', color: 'var(--text-primary)' }}>
+                          <div style={{ fontWeight: 'bold' }}>{p.vendorName}</div>
+                          <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Receipt: {p.receiptNumber || 'N/A'}</div>
+                        </td>
+                        <td style={{ padding: '15px', color: 'var(--text-primary)' }}>{p.volumeLiters != null ? p.volumeLiters.toLocaleString() : '0'} L</td>
+                        <td style={{ padding: '15px', color: 'var(--text-primary)' }}>₹{p.basePrice != null ? p.basePrice.toFixed(2) : '0.00'}</td>
+                        <td style={{ padding: '15px', fontWeight: 'bold', color: 'var(--color-primary-600)' }}>₹{p.totalCost != null ? p.totalCost.toFixed(2) : '0.00'}</td>
                       </tr>
-                  )}
+                    ))}
                   </tbody>
                 </table>
               }
@@ -186,7 +209,7 @@ function BulkPurchases() {const { t } = useTranslation();
             </MagicCard>
             </div>
 
-            {/* NEW: Bulk Water Purchases Visual Analytics */}
+            {}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginTop: '25px' }}>
               {/* Procurement Volume by Vendor Horizontal Bar Chart */}
               <MagicCard style={{ padding: '25px', minHeight: '340px' }}>

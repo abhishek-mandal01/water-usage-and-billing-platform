@@ -98,22 +98,18 @@ function MainAdminAnalyticsPage() {
                 <h3>{t("mainAdmin.consumptionComparisonbyCommunityL")}</h3>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data.communityBreakdown} layout="vertical" margin={{ top: 10, right: 30, left: 20, bottom: 15 }}>
-                    <defs>
-                      {['#6c8eef','#5bbcaa','#f5ae45','#e86356','#a78bfa'].map((color, i) => (
-                        <linearGradient key={i} id={`commBreakHGrad${i}`} x1="0" y1="0" x2="1" y2="0">
-                          <stop offset="0%" stopColor={color} />
-                          <stop offset="100%" stopColor={color} stopOpacity={0.65} />
-                        </linearGradient>
-                      ))}
-                    </defs>
                     <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--chart-grid)" />
                     <XAxis type="number" stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}kL`} />
                     <YAxis type="category" dataKey="community" stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} width={95} />
                     <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`${Number(v).toLocaleString()} Liters`, 'Total Usage']} />
                     <Bar dataKey="usage" radius={[0, 6, 6, 0]} barSize={22} animationDuration={1000}>
-                      {(data.communityBreakdown || []).map((_, index) => (
-                        <Cell key={`cell-${index}`} fill={`url(#commBreakHGrad${index % 5})`} />
-                      ))}
+                      {data.communityBreakdown.map((entry, index) => {
+                        const maxVal = Math.max(...data.communityBreakdown.map(d => d.usage)) || 1;
+                        let color = '#22c55e'; // green (low)
+                        if (entry.usage > maxVal * 0.75) color = '#ef4444'; // red (high)
+                        else if (entry.usage > maxVal * 0.4) color = '#f97316'; // orange (mid)
+                        return <Cell key={`cell-${index}`} fill={color} />;
+                      })}
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>

@@ -9,6 +9,8 @@ import { useTranslation } from '../components/LanguageSelector/useTranslation';
 function WaterLeakagePage() {
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOption, setSortOption] = useState('newest');
 
   const plumbers = [
     { name: 'Abdul Rahman', phone: '+91 634 567 8900', rating: '4.8/5' },
@@ -47,6 +49,26 @@ function WaterLeakagePage() {
         return <span>{status}</span>;
     }
   };
+
+  const filteredLeaks = leakData.filter(l => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (l.location || '').toLowerCase().includes(q) || (l.id || '').toLowerCase().includes(q) || (l.type || '').toLowerCase().includes(q);
+  });
+
+  const sortedLeaks = [...filteredLeaks].sort((a, b) => {
+    if (sortOption === 'newest') return new Date(b.reported) - new Date(a.reported);
+    if (sortOption === 'oldest') return new Date(a.reported) - new Date(b.reported);
+    if (sortOption === 'severity') {
+      const sevMap = { 'High': 3, 'Medium': 2, 'Low': 1 };
+      return (sevMap[b.severity] || 0) - (sevMap[a.severity] || 0);
+    }
+    if (sortOption === 'status') {
+      const statMap = { 'Pending': 3, 'In Progress': 2, 'Resolved': 1 };
+      return (statMap[b.status] || 0) - (statMap[a.status] || 0);
+    }
+    return 0;
+  });
 
   return (
     <div className="dashboard-layout">
@@ -99,12 +121,31 @@ function WaterLeakagePage() {
             <MagicCard style={{ padding: 'var(--space-6)', marginTop: 'var(--space-6)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
                 <h3 style={{ margin: 0, fontSize: 'var(--text-xl)', fontWeight: 'var(--font-bold)' }}>Recent Leak Reports</h3>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <select
+                    value={sortOption}
+                    onChange={(e) => setSortOption(e.target.value)}
+                    style={{ padding: '8px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', fontSize: 'var(--text-sm)', outline: 'none', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}
+                  >
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="severity">Highest Severity</option>
+                    <option value="status">Unresolved First</option>
+                  </select>
+                  <input
+                    type="text"
+                    placeholder="Search by ID, Location..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{ padding: '8px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', fontSize: 'var(--text-sm)', outline: 'none', width: '200px' }}
+                  />
+                </div>
               </div>
               
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                   <thead>
-                    <tr style={{ borderBottom: '1px solid var(--border-default)', color: 'var(--text-secondary)' }}>
+                  <tr style={{ backgroundColor: 'var(--color-primary-50)',  borderBottom: '1px solid var(--border-default)', color: 'var(--text-secondary)' }}>
                       <th style={{ padding: 'var(--space-3)' }}>ID</th>
                       <th style={{ padding: 'var(--space-3)' }}>Location</th>
                       <th style={{ padding: 'var(--space-3)' }}>Type</th>
@@ -114,7 +155,7 @@ function WaterLeakagePage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {leakData.map((leak) => (
+                    {sortedLeaks.map((leak) => (
                       <tr 
                         key={leak.id} 
                         style={{ borderBottom: '1px solid var(--border-default)', transition: 'background-color 0.2s' }}
@@ -134,7 +175,7 @@ function WaterLeakagePage() {
               </div>
             </MagicCard>
 
-            {/* NEW: Charts Section - 2 column grid */}
+            {}
             <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
               {/* BarChart: Leak Severity Distribution */}
               <MagicCard style={{ padding: 'var(--space-6)' }}>
@@ -202,7 +243,7 @@ function WaterLeakagePage() {
               </MagicCard>
             </div>
 
-            {/* NEW: Charts Row 2 */}
+            {}
             <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
               {/* AreaChart: Daily Water Wastage */}
               <MagicCard style={{ padding: 'var(--space-6)' }}>

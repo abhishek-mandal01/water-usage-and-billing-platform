@@ -4,7 +4,6 @@ import Topbar from '../components/topbar';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area, Legend } from 'recharts';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
 
-// Hardcoded placeholders removed in favor of real API data
 function MainAdminDashboard() {const { t } = useTranslation();
   const [pendingVerifications, setPendingVerifications] = useState([]);
   const [dashboardData, setDashboardData] = useState({
@@ -79,7 +78,7 @@ function MainAdminDashboard() {const { t } = useTranslation();
         
         <main className="dashboard-content">
           <div className="page-header">
-            <h1>{t("mainAdmin.mainAdminDashboard")}</h1>
+            <h1>Welcome, {JSON.parse(localStorage.getItem('user') || '{}')?.name?.split(' ')[0] || 'Admin'} 👋</h1>
           </div>
           
           <MagicCardGrid>
@@ -120,7 +119,7 @@ function MainAdminDashboard() {const { t } = useTranslation();
               <div style={{ overflowX: 'auto' }}>
                   <table className="data-table">
                     <thead>
-                      <tr>
+                  <tr style={{ backgroundColor: 'var(--color-primary-50)' }}>
                         <th>{t("mainAdmin.userID")}</th>
                         <th>Name</th>
                         <th>{t("mainAdmin.aadhar")}</th>
@@ -173,7 +172,15 @@ function MainAdminDashboard() {const { t } = useTranslation();
                     <XAxis dataKey="month" stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
                     <YAxis stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
                     <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} cursor={{ fill: 'var(--bg-card-hover)' }} />
-                    <Bar dataKey="value" name="Usage (L)" fill="#5bbcaa" radius={[4, 4, 0, 0]} barSize={40} />
+                    <Bar dataKey="value" name="Usage (L)" radius={[4, 4, 0, 0]} barSize={40}>
+                      {dashboardData.consumptionTrend.map((entry, index) => {
+                        const maxVal = Math.max(...dashboardData.consumptionTrend.map(d => d.value)) || 1;
+                        let color = '#22c55e'; // green (low)
+                        if (entry.value > maxVal * 0.75) color = '#ef4444'; // red (high)
+                        else if (entry.value > maxVal * 0.4) color = '#f97316'; // orange (mid)
+                        return <Cell key={`cell-${index}`} fill={color} />;
+                      })}
+                    </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </MagicCard>
@@ -244,7 +251,7 @@ function MainAdminDashboard() {const { t } = useTranslation();
               </MagicCard>
             </div>
 
-            {/* NEW: Household Distribution by Community Pie Chart */}
+            {}
             <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
               <MagicCard className="chart-card" style={{ minHeight: '360px' }}>
                 <h3 style={{ margin: '0 0 var(--space-4) 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -327,7 +334,7 @@ function MainAdminDashboard() {const { t } = useTranslation();
               </MagicCard>
             </div>
 
-            {/* NEW: Platform Growth AreaChart */}
+            {}
             <MagicCard className="chart-card" style={{ minHeight: '320px', marginTop: 'var(--space-6)' }}>
               <h3 style={{ margin: '0 0 var(--space-4) 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #f472b6, #fb923c)' }}></span>
