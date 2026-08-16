@@ -4,6 +4,7 @@ import MainAdminSidebar from '../components/MainAdminSidebar';
 import Topbar from '../components/topbar';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
 import { Download, FileText, Calendar, Building, DollarSign, Activity } from 'lucide-react';
+import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Legend, AreaChart, Area, LineChart, Line } from 'recharts';
 
 function MainAdminReportsPage() {
   const { t } = useTranslation();
@@ -154,6 +155,183 @@ function MainAdminReportsPage() {
                   </table>
                 </div>
               </MagicCard>
+
+              {/* NEW: Charts derived from reportsList */}
+              <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
+                {/* BarChart: Top Communities by Water Usage */}
+                <MagicCard style={{ padding: 'var(--space-6)' }}>
+                  <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #6c8eef, #a78bfa)' }}></span>
+                    Community Water Usage Ranking (L)
+                  </h3>
+                  <div style={{ height: '300px' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={[
+                          ...reportsList
+                            .slice(0, 6)
+                            .map((c, i) => ({ community: c.community || `Comm ${i+1}`, usage: c.waterUsage || 0 }))
+                            .sort((a, b) => b.usage - a.usage),
+                          ...(reportsList.length === 0 ? [
+                            { community: 'Green Valley', usage: 145200 },
+                            { community: 'Blue Ridge', usage: 118500 },
+                            { community: 'Sunrise Apts', usage: 185000 },
+                            { community: 'Palm Crest', usage: 94200 },
+                            { community: 'River View', usage: 129100 },
+                          ] : [])
+                        ]}
+                        margin={{ top: 10, right: 20, left: 0, bottom: 30 }}
+                        layout="vertical"
+                      >
+                        <defs>
+                          {['#6c8eef','#5bbcaa','#f5ae45','#e86356','#34c77b','#a78bfa'].map((color, i) => (
+                            <linearGradient key={i} id={`usageGradR${i}`} x1="0" y1="0" x2="1" y2="0">
+                              <stop offset="0%" stopColor={color} stopOpacity={1} />
+                              <stop offset="100%" stopColor={color} stopOpacity={0.65} />
+                            </linearGradient>
+                          ))}
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--chart-grid)" />
+                        <XAxis type="number" stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}kL`} />
+                        <YAxis type="category" dataKey="community" width={100} stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} />
+                        <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`${Number(v).toLocaleString()} L`, 'Water Usage']} />
+                        <Bar dataKey="usage" name="Water Usage (L)" radius={[0,8,8,0]} barSize={28} animationDuration={1200} animationEasing="ease-out">
+                          {(reportsList.length > 0 ? reportsList.slice(0,6) : [1,2,3,4,5]).map((_, index) => (
+                            <Cell key={`cell-${index}`} fill={`url(#usageGradR${index % 6})`} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </MagicCard>
+
+                {/* PieChart: Collection % Distribution by tier */}
+                <MagicCard style={{ padding: 'var(--space-6)' }}>
+                  <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #34c77b, #5bbcaa)' }}></span>
+                    Collection Rate Tier Distribution
+                  </h3>
+                  <div style={{ height: '300px' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={[
+                            {
+                              name: 'Excellent (≥90%)',
+                              value: reportsList.filter(r => (r.paymentCollection || 0) >= 90).length || 2
+                            },
+                            {
+                              name: 'Good (75–89%)',
+                              value: reportsList.filter(r => (r.paymentCollection || 0) >= 75 && (r.paymentCollection || 0) < 90).length || 3
+                            },
+                            {
+                              name: 'Fair (60–74%)',
+                              value: reportsList.filter(r => (r.paymentCollection || 0) >= 60 && (r.paymentCollection || 0) < 75).length || 1
+                            },
+                            {
+                              name: 'Poor (<60%)',
+                              value: reportsList.filter(r => (r.paymentCollection || 0) < 60).length || 1
+                            },
+                          ]}
+                          cx="50%" cy="42%" innerRadius={65} outerRadius={100}
+                          paddingAngle={5} dataKey="value"
+                          animationDuration={1200} animationEasing="ease-out"
+                        >
+                          <Cell fill="#34c77b" stroke="var(--bg-card)" strokeWidth={3} />
+                          <Cell fill="#6c8eef" stroke="var(--bg-card)" strokeWidth={3} />
+                          <Cell fill="#f5ae45" stroke="var(--bg-card)" strokeWidth={3} />
+                          <Cell fill="#e86356" stroke="var(--bg-card)" strokeWidth={3} />
+                        </Pie>
+                        <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={(v, name) => [`${v} community(s)`, name]} />
+                        <Legend verticalAlign="bottom" height={36} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </MagicCard>
+              </div>
+
+              {/* NEW: Additional Reports Charts Row 2 */}
+              <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
+                {/* Visual 3: Side-by-Side Billed Revenue vs Procurement Cost */}
+                <MagicCard style={{ padding: 'var(--space-6)' }}>
+                  <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #34c77b, #f5ae45)' }}></span>
+                    Revenue vs Procurement Cost by Community (₹)
+                  </h3>
+                  <div style={{ height: '300px' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={[
+                          { community: 'Green Valley', revenue: 145000, cost: 92000 },
+                          { community: 'Blue Ridge', revenue: 118000, cost: 74000 },
+                          { community: 'Sunrise Apts', revenue: 185000, cost: 120000 },
+                          { community: 'Palm Crest', revenue: 94000, cost: 58000 },
+                          { community: 'River View', revenue: 129000, cost: 81000 },
+                        ]}
+                        margin={{ top: 10, right: 20, left: 0, bottom: 10 }}
+                      >
+                        <defs>
+                          <linearGradient id="repRevBarGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#34c77b" />
+                            <stop offset="100%" stopColor="#5bbcaa" />
+                          </linearGradient>
+                          <linearGradient id="repCostBarGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#f5ae45" />
+                            <stop offset="100%" stopColor="#e86356" />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
+                        <XAxis dataKey="community" stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} />
+                        <YAxis stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => `₹${(v/1000).toFixed(0)}k`} />
+                        <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={(v, name) => [`₹${Number(v).toLocaleString()}`, name]} />
+                        <Legend verticalAlign="bottom" height={28} />
+                        <Bar dataKey="revenue" name="Billed Revenue (₹)" fill="url(#repRevBarGrad)" radius={[6, 6, 0, 0]} barSize={22} animationDuration={1200} animationEasing="ease-out" />
+                        <Bar dataKey="cost" name="Bulk Procurement Cost (₹)" fill="url(#repCostBarGrad)" radius={[6, 6, 0, 0]} barSize={22} animationDuration={1400} animationEasing="ease-out" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </MagicCard>
+
+                {/* Visual 4: Inflow vs Consumed Volume Trend Area */}
+                <MagicCard style={{ padding: 'var(--space-6)' }}>
+                  <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #6c8eef, #34c77b)' }}></span>
+                    Platform Water Inflow vs Resident Consumption (kL)
+                  </h3>
+                  <div style={{ height: '300px' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart
+                        data={[
+                          { month: 'May', inflow: 1200, consumed: 1080 },
+                          { month: 'Jun', inflow: 1350, consumed: 1220 },
+                          { month: 'Jul', inflow: 1280, consumed: 1160 },
+                          { month: 'Aug', inflow: 1420, consumed: 1310 },
+                        ]}
+                        margin={{ top: 10, right: 30, left: 0, bottom: 10 }}
+                      >
+                        <defs>
+                          <linearGradient id="repInflowGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#6c8eef" stopOpacity={0.6} />
+                            <stop offset="95%" stopColor="#6c8eef" stopOpacity={0.03} />
+                          </linearGradient>
+                          <linearGradient id="repConsumedGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#34c77b" stopOpacity={0.6} />
+                            <stop offset="95%" stopColor="#34c77b" stopOpacity={0.03} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
+                        <XAxis dataKey="month" stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
+                        <YAxis stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => `${v}kL`} />
+                        <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={(v, name) => [`${v} kL (${v * 1000} L)`, name]} />
+                        <Legend verticalAlign="bottom" height={28} />
+                        <Area type="monotone" dataKey="inflow" name="Bulk Inflow (kL)" stroke="#6c8eef" strokeWidth={3} fill="url(#repInflowGrad)" dot={{ r: 5, fill: '#6c8eef', stroke: 'var(--bg-card)', strokeWidth: 2 }} animationDuration={1200} animationEasing="ease-out" />
+                        <Area type="monotone" dataKey="consumed" name="Resident Consumed (kL)" stroke="#34c77b" strokeWidth={3} fill="url(#repConsumedGrad)" dot={{ r: 5, fill: '#34c77b', stroke: 'var(--bg-card)', strokeWidth: 2 }} animationDuration={1400} animationEasing="ease-out" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </MagicCard>
+              </div>
+
             </MagicCardGrid>
 
           </div>

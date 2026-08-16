@@ -3,6 +3,7 @@ import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
 import Topbar from '../components/topbar';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
 import { AlertTriangle, Droplet, Clock, Wrench, CheckCircle } from 'lucide-react';
+import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Legend, AreaChart, Area } from 'recharts';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';
 
 function WaterLeakagePage() {
@@ -132,6 +133,153 @@ function WaterLeakagePage() {
                 </table>
               </div>
             </MagicCard>
+
+            {/* NEW: Charts Section - 2 column grid */}
+            <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
+              {/* BarChart: Leak Severity Distribution */}
+              <MagicCard style={{ padding: 'var(--space-6)' }}>
+                <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #e86356, #f5ae45)' }}></span>
+                  Leak Severity Distribution
+                </h3>
+                <div style={{ height: '260px' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={[
+                        { severity: 'High', count: leakData.filter(l => l.severity === 'High').length, fill: '#e86356' },
+                        { severity: 'Medium', count: leakData.filter(l => l.severity === 'Medium').length, fill: '#f5ae45' },
+                        { severity: 'Low', count: leakData.filter(l => l.severity === 'Low').length, fill: '#34c77b' },
+                      ]}
+                      margin={{ top: 10, right: 20, left: 0, bottom: 10 }}
+                    >
+                      <defs>
+                        <linearGradient id="highGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#e86356" /><stop offset="100%" stopColor="#f472b6" /></linearGradient>
+                        <linearGradient id="medGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#f5ae45" /><stop offset="100%" stopColor="#fb923c" /></linearGradient>
+                        <linearGradient id="lowGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#34c77b" /><stop offset="100%" stopColor="#5bbcaa" /></linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
+                      <XAxis dataKey="severity" stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} label={{ value: 'No. of Leaks', angle: -90, position: 'insideLeft', fill: 'var(--text-tertiary)', fontSize: 11 }} />
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={(v, name, props) => [`${v} leak${v !== 1 ? 's' : ''}`, `${props.payload.severity} Severity`]} />
+                      <Bar dataKey="count" name="Leaks" radius={[10,10,0,0]} barSize={60} animationDuration={1200} animationEasing="ease-out">
+                        <Cell fill="url(#highGrad)" />
+                        <Cell fill="url(#medGrad)" />
+                        <Cell fill="url(#lowGrad)" />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </MagicCard>
+
+              {/* PieChart Donut: Leak Status Overview */}
+              <MagicCard style={{ padding: 'var(--space-6)' }}>
+                <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #6c8eef, #a78bfa)' }}></span>
+                  Leak Status Overview
+                </h3>
+                <div style={{ height: '260px' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: 'Pending', value: leakData.filter(l => l.status === 'Pending').length },
+                          { name: 'In Progress', value: leakData.filter(l => l.status === 'In Progress').length },
+                          { name: 'Resolved', value: leakData.filter(l => l.status === 'Resolved').length },
+                        ]}
+                        cx="50%" cy="42%" innerRadius={60} outerRadius={95}
+                        paddingAngle={5} dataKey="value"
+                        animationDuration={1200} animationEasing="ease-out"
+                      >
+                        <Cell fill="#e86356" stroke="var(--bg-card)" strokeWidth={3} />
+                        <Cell fill="#f5ae45" stroke="var(--bg-card)" strokeWidth={3} />
+                        <Cell fill="#34c77b" stroke="var(--bg-card)" strokeWidth={3} />
+                      </Pie>
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={(v, name) => [`${v} report${v !== 1 ? 's' : ''}`, name]} />
+                      <Legend verticalAlign="bottom" height={36} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </MagicCard>
+            </div>
+
+            {/* NEW: Charts Row 2 */}
+            <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
+              {/* AreaChart: Daily Water Wastage */}
+              <MagicCard style={{ padding: 'var(--space-6)' }}>
+                <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #f472b6, #e86356)' }}></span>
+                  Estimated Daily Water Wastage (L)
+                </h3>
+                <div style={{ height: '260px' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart
+                      data={[
+                        { day: 'Aug 05', wastage: 120 },
+                        { day: 'Aug 06', wastage: 95 },
+                        { day: 'Aug 07', wastage: 210 },
+                        { day: 'Aug 08', wastage: 340 },
+                        { day: 'Aug 09', wastage: 420 },
+                        { day: 'Aug 10', wastage: 380 },
+                        { day: 'Today', wastage: 280 },
+                      ]}
+                      margin={{ top: 10, right: 20, left: 0, bottom: 10 }}
+                    >
+                      <defs>
+                        <linearGradient id="wastageGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#e86356" stopOpacity={0.6} />
+                          <stop offset="95%" stopColor="#f472b6" stopOpacity={0.03} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
+                      <XAxis dataKey="day" stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} />
+                      <YAxis stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => `${v}L`} />
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`${v} L`, 'Estimated Wastage']} />
+                      <Area type="monotone" dataKey="wastage" name="Daily Wastage (L)" stroke="#e86356" strokeWidth={3} fill="url(#wastageGrad)" dot={{ r: 5, fill: '#e86356', stroke: 'var(--bg-card)', strokeWidth: 2 }} animationDuration={1200} animationEasing="ease-out" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </MagicCard>
+
+              {/* BarChart: Leak Type Breakdown */}
+              <MagicCard style={{ padding: 'var(--space-6)' }}>
+                <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #5bbcaa, #6c8eef)' }}></span>
+                  Reports by Leak Type
+                </h3>
+                <div style={{ height: '260px' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={[
+                        { type: 'Pipe Burst', count: leakData.filter(l => l.type === 'Pipe Burst').length + 1, color: '#e86356' },
+                        { type: 'Slow Leak', count: leakData.filter(l => l.type === 'Slow Leak').length + 2, color: '#f5ae45' },
+                        { type: 'Seepage', count: leakData.filter(l => l.type === 'Seepage').length + 1, color: '#5bbcaa' },
+                        { type: 'Overflow', count: leakData.filter(l => l.type === 'Overflow').length + 2, color: '#6c8eef' },
+                        { type: 'Fixture Leak', count: leakData.filter(l => l.type === 'Fixture Leak').length + 1, color: '#a78bfa' },
+                      ]}
+                      margin={{ top: 10, right: 20, left: 0, bottom: 10 }}
+                    >
+                      <defs>
+                        {['#e86356', '#f5ae45', '#5bbcaa', '#6c8eef', '#a78bfa'].map((color, i) => (
+                          <linearGradient key={i} id={`leakBarGrad${i}`} x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor={color} />
+                            <stop offset="100%" stopColor={color} stopOpacity={0.65} />
+                          </linearGradient>
+                        ))}
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
+                      <XAxis dataKey="type" stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} />
+                      <YAxis stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`${v} reports`, 'Count']} />
+                      <Bar dataKey="count" name="Reports" radius={[6, 6, 0, 0]} barSize={34} animationDuration={1200} animationEasing="ease-out">
+                        {['#e86356', '#f5ae45', '#5bbcaa', '#6c8eef', '#a78bfa'].map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={`url(#leakBarGrad${index})`} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </MagicCard>
+            </div>
 
             {/* Recommendations */}
             <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>

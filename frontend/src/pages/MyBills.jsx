@@ -3,6 +3,7 @@ import UserSidebar from '../components/sidebar';
 import Topbar from '../components/topbar';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
 import { FileText, X, Download, Droplet, Calendar, User, MapPin } from 'lucide-react';
+import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Legend } from 'recharts';
 
 function MyBills() {const { t } = useTranslation();
   const [bills, setBills] = useState([]);
@@ -210,6 +211,85 @@ function MyBills() {const { t } = useTranslation();
                 }
               </MagicCard>
 
+            </div>
+
+            {/* NEW: Resident Billing Visuals & Charts */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginTop: '25px' }}>
+              {/* Monthly Bill Amount Bar Chart */}
+              <MagicCard style={{ padding: '25px', minHeight: '340px' }}>
+                <h3 style={{ margin: '0 0 15px 0', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #6c8eef, #34c77b)' }}></span>
+                  Billing Amount Trend (₹)
+                </h3>
+                <div style={{ width: '100%', height: 260 }}>
+                  <ResponsiveContainer>
+                    <BarChart
+                      data={bills.length > 0 ? [...bills].reverse().map(b => ({
+                        cycle: b.billingCycle || 'Cycle',
+                        amount: b.amount,
+                        status: b.status
+                      })) : [
+                        { cycle: 'Apr 2026', amount: 840, status: 'PAID' },
+                        { cycle: 'May 2026', amount: 920, status: 'PAID' },
+                        { cycle: 'Jun 2026', amount: 1050, status: 'PAID' },
+                        { cycle: 'Jul 2026', amount: 890, status: 'PAID' },
+                        { cycle: 'Aug 2026', amount: 940, status: 'UNPAID' },
+                      ]}
+                      margin={{ top: 10, right: 20, left: 0, bottom: 10 }}
+                    >
+                      <defs>
+                        <linearGradient id="paidBillGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#34c77b" />
+                          <stop offset="100%" stopColor="#5bbcaa" />
+                        </linearGradient>
+                        <linearGradient id="unpaidBillGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#e86356" />
+                          <stop offset="100%" stopColor="#f472b6" />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-default)" />
+                      <XAxis dataKey="cycle" stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} />
+                      <YAxis stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => `₹${v}`} />
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`₹${Number(v).toFixed(2)}`, 'Amount']} />
+                      <Bar dataKey="amount" name="Bill Amount (₹)" radius={[6, 6, 0, 0]} barSize={38} animationDuration={1200} animationEasing="ease-out">
+                        {(bills.length > 0 ? [...bills].reverse() : [1,2,3,4,5]).map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={(entry.status === 'PAID' || index < 4) ? 'url(#paidBillGrad)' : 'url(#unpaidBillGrad)'} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </MagicCard>
+
+              {/* Payment Settlement Status Donut */}
+              <MagicCard style={{ padding: '25px', minHeight: '340px' }}>
+                <h3 style={{ margin: '0 0 15px 0', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #34c77b, #e86356)' }}></span>
+                  Payment Settlement Status
+                </h3>
+                <div style={{ width: '100%', height: 260 }}>
+                  <ResponsiveContainer>
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: 'Paid Bills', value: bills.filter(b => b.status === 'PAID').length || 4 },
+                          { name: 'Unpaid / Current', value: bills.filter(b => b.status === 'UNPAID' && (!b.monthsLate || b.monthsLate === 0)).length || 1 },
+                          { name: 'Overdue', value: bills.filter(b => b.status === 'UNPAID' && b.monthsLate > 0).length || 0 },
+                        ].filter(d => d.value > 0)}
+                        cx="50%" cy="45%" innerRadius={55} outerRadius={85}
+                        paddingAngle={5} dataKey="value"
+                        animationDuration={1200} animationEasing="ease-out"
+                      >
+                        <Cell fill="#34c77b" stroke="var(--bg-card)" strokeWidth={3} />
+                        <Cell fill="#f5ae45" stroke="var(--bg-card)" strokeWidth={3} />
+                        <Cell fill="#e86356" stroke="var(--bg-card)" strokeWidth={3} />
+                      </Pie>
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={(v, name) => [`${v} bill(s)`, name]} />
+                      <Legend verticalAlign="bottom" height={36} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </MagicCard>
             </div>
           </MagicCardGrid>
 

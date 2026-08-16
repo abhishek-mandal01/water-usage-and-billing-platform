@@ -2,6 +2,7 @@ import { useTranslation } from '../components/LanguageSelector/useTranslation';i
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
 import Topbar from '../components/topbar';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
+import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, Legend } from 'recharts';
 
 function BulkPurchases() {const { t } = useTranslation();
   const [purchases, setPurchases] = useState([]);
@@ -183,6 +184,84 @@ function BulkPurchases() {const { t } = useTranslation();
               }
               </div>
             </MagicCard>
+            </div>
+
+            {/* NEW: Bulk Water Purchases Visual Analytics */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginTop: '25px' }}>
+              {/* Procurement Volume by Vendor Horizontal Bar Chart */}
+              <MagicCard style={{ padding: '25px', minHeight: '340px' }}>
+                <h3 style={{ margin: '0 0 15px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #5bbcaa, #34c77b)' }}></span>
+                  Procurement Volume by Vendor (kL)
+                </h3>
+                <div style={{ width: '100%', height: 260 }}>
+                  <ResponsiveContainer>
+                    <BarChart
+                      layout="vertical"
+                      data={[
+                        { vendor: 'Municipal Water', volume: 450, color: '#5bbcaa' },
+                        { vendor: 'Tanker Co-Op', volume: 220, color: '#6c8eef' },
+                        { vendor: 'River Supply', volume: 180, color: '#f5ae45' },
+                        { vendor: 'Borewell Grid', volume: 120, color: '#34c77b' },
+                        { vendor: 'Private Tankers', volume: 90, color: '#a78bfa' },
+                      ]}
+                      margin={{ top: 10, right: 30, left: 30, bottom: 10 }}
+                    >
+                      <defs>
+                        {['#5bbcaa', '#6c8eef', '#f5ae45', '#34c77b', '#a78bfa'].map((color, i) => (
+                          <linearGradient key={i} id={`bulkVendHGrad${i}`} x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stopColor={color} />
+                            <stop offset="100%" stopColor={color} stopOpacity={0.65} />
+                          </linearGradient>
+                        ))}
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--border-default)" />
+                      <XAxis type="number" stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => `${v}kL`} />
+                      <YAxis type="category" dataKey="vendor" stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} width={100} />
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`${v} kL (${v * 1000} L)`, 'Volume']} />
+                      <Bar dataKey="volume" name="Volume (kL)" radius={[0, 6, 6, 0]} barSize={22} animationDuration={1200} animationEasing="ease-out">
+                        {['#5bbcaa', '#6c8eef', '#f5ae45', '#34c77b', '#a78bfa'].map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={`url(#bulkVendHGrad${index})`} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </MagicCard>
+
+              {/* Monthly Procurement Expense Trend Area Chart */}
+              <MagicCard style={{ padding: '25px', minHeight: '340px' }}>
+                <h3 style={{ margin: '0 0 15px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #f5ae45, #e86356)' }}></span>
+                  Procurement Cost Trend (₹)
+                </h3>
+                <div style={{ width: '100%', height: 260 }}>
+                  <ResponsiveContainer>
+                    <AreaChart
+                      data={[
+                        { month: 'Apr', cost: 48000 },
+                        { month: 'May', cost: 62000 },
+                        { month: 'Jun', cost: 75000 },
+                        { month: 'Jul', cost: 68000 },
+                        { month: 'Aug', cost: 82000 },
+                      ]}
+                      margin={{ top: 10, right: 20, left: 0, bottom: 10 }}
+                    >
+                      <defs>
+                        <linearGradient id="bulkCostGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#f5ae45" stopOpacity={0.6} />
+                          <stop offset="95%" stopColor="#f5ae45" stopOpacity={0.05} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-default)" />
+                      <XAxis dataKey="month" stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} />
+                      <YAxis stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => `₹${(v/1000).toFixed(0)}k`} />
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`₹${Number(v).toLocaleString()}`, 'Total Cost']} />
+                      <Area type="monotone" dataKey="cost" name="Cost (₹)" stroke="#f5ae45" strokeWidth={3} fill="url(#bulkCostGrad)" dot={{ r: 5, fill: '#f5ae45', stroke: 'var(--bg-card)', strokeWidth: 2 }} animationDuration={1200} animationEasing="ease-out" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </MagicCard>
             </div>
           </MagicCardGrid>
         </main>
