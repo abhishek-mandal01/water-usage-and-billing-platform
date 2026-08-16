@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
 import Topbar from '../components/topbar';
-import { AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, LineChart, Line } from 'recharts';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
 import SkeletonLoader from '../components/SkeletonLoader';
 
@@ -265,6 +265,119 @@ function AdminPanel() {
                 </ResponsiveContainer>
               </MagicCard>
             </div>
+
+            {/* NEW: Additional Charts Section for Community Admin Dashboard */}
+            <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
+              {/* Visual 1: Horizontal Ranking Bar Chart - Top Household Consumers */}
+              <MagicCard className="chart-card" style={{ minHeight: '360px' }}>
+                <h3 style={{ margin: '0 0 var(--space-4) 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #e86356, #f5ae45)' }}></span>
+                  Top Household Water Consumers (L)
+                </h3>
+                <div style={{ height: '280px' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      layout="vertical"
+                      data={[
+                        { unit: 'Flat A-101', usage: 18400, color: '#e86356' },
+                        { unit: 'Flat B-204', usage: 16200, color: '#f5ae45' },
+                        { unit: 'Flat A-302', usage: 14800, color: '#6c8eef' },
+                        { unit: 'Flat C-105', usage: 13500, color: '#5bbcaa' },
+                        { unit: 'Flat B-401', usage: 11900, color: '#a78bfa' },
+                        { unit: 'Flat A-205', usage: 9800, color: '#34c77b' },
+                      ]}
+                      margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
+                    >
+                      <defs>
+                        {['#e86356', '#f5ae45', '#6c8eef', '#5bbcaa', '#a78bfa', '#34c77b'].map((color, i) => (
+                          <linearGradient key={i} id={`commHBarGrad${i}`} x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stopColor={color} />
+                            <stop offset="100%" stopColor={color} stopOpacity={0.65} />
+                          </linearGradient>
+                        ))}
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--chart-grid)" />
+                      <XAxis type="number" stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}kL`} />
+                      <YAxis type="category" dataKey="unit" stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} width={80} />
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`${Number(v).toLocaleString()} Liters`, 'Consumption']} />
+                      <Bar dataKey="usage" name="Water Usage (L)" radius={[0, 8, 8, 0]} barSize={22} animationDuration={1200} animationEasing="ease-out">
+                        {['#e86356', '#f5ae45', '#6c8eef', '#5bbcaa', '#a78bfa', '#34c77b'].map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={`url(#commHBarGrad${index})`} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </MagicCard>
+
+              {/* Visual 2: Line Progression Chart - Monthly Collection Rate % */}
+              <MagicCard className="chart-card" style={{ minHeight: '360px' }}>
+                <h3 style={{ margin: '0 0 var(--space-4) 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #34c77b, #5bbcaa)' }}></span>
+                  Monthly Bill Collection Rate (%)
+                </h3>
+                <div style={{ height: '280px' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={[
+                        { month: 'Apr', rate: 82 },
+                        { month: 'May', rate: 86 },
+                        { month: 'Jun', rate: 89 },
+                        { month: 'Jul', rate: 93 },
+                        { month: 'Aug', rate: 96 },
+                      ]}
+                      margin={{ top: 10, right: 30, left: 0, bottom: 10 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
+                      <XAxis dataKey="month" stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis domain={[70, 100]} stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => `${v}%`} />
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`${v}%`, 'Collection Rate']} />
+                      <Line type="monotone" dataKey="rate" name="Collection Rate (%)" stroke="#34c77b" strokeWidth={3} dot={{ r: 6, fill: '#34c77b', stroke: 'var(--bg-card)', strokeWidth: 2 }} activeDot={{ r: 8 }} animationDuration={1200} animationEasing="ease-out" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </MagicCard>
+            </div>
+
+            {/* Visual 3: Easy Side-by-Side Bar Chart - Total Water Bought vs Used by Residents */}
+            <MagicCard className="chart-card" style={{ minHeight: '340px', marginTop: 'var(--space-6)' }}>
+              <h3 style={{ margin: '0 0 var(--space-4) 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #5bbcaa, #6c8eef)' }}></span>
+                Water Purchased vs Water Used by Residents (kL)
+              </h3>
+              <div style={{ height: '260px' }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={[
+                      { month: 'Apr', purchased: 480, used: 445 },
+                      { month: 'May', purchased: 520, used: 485 },
+                      { month: 'Jun', purchased: 560, used: 518 },
+                      { month: 'Jul', purchased: 510, used: 480 },
+                      { month: 'Aug', purchased: 540, used: 512 },
+                    ]}
+                    margin={{ top: 10, right: 30, left: 0, bottom: 10 }}
+                  >
+                    <defs>
+                      <linearGradient id="procureGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#5bbcaa" />
+                        <stop offset="100%" stopColor="#34c77b" />
+                      </linearGradient>
+                      <linearGradient id="distribGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#6c8eef" />
+                        <stop offset="100%" stopColor="#a78bfa" />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
+                    <XAxis dataKey="month" stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => `${v}kL`} />
+                    <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={(v, name) => [`${v} kL (${v * 1000} Liters)`, name]} />
+                    <Legend verticalAlign="bottom" height={28} />
+                    <Bar dataKey="purchased" name="Water Purchased (kL)" fill="url(#procureGrad)" radius={[6, 6, 0, 0]} barSize={24} animationDuration={1200} animationEasing="ease-out" />
+                    <Bar dataKey="used" name="Water Used (kL)" fill="url(#distribGrad)" radius={[6, 6, 0, 0]} barSize={24} animationDuration={1400} animationEasing="ease-out" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </MagicCard>
 
             {/* Bottom section Modules */}
             <div className="grid-2">

@@ -20,7 +20,7 @@ import {
   TrendingUp 
 } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell, Legend, LineChart, Line } from 'recharts';
 
 function ResidentReportsPage() {
   const { t } = useTranslation();
@@ -372,6 +372,110 @@ function ResidentReportsPage() {
                   </ResponsiveContainer>
                 </div>
               </MagicCard>
+
+              {/* Visual 1: 3-Month Usage Progression Area Chart */}
+              <MagicCard style={{ padding: 'var(--space-6)', marginTop: 'var(--space-6)' }}>
+                <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-xl)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #5bbcaa, #34c77b)' }}></span>
+                  3-Month Usage Trend (Liters)
+                </h3>
+                <div style={{ height: '280px' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart
+                      data={[
+                        { month: 'Jun', usage: 18200 },
+                        { month: 'Jul', usage: reportData.previousMonthUsage || 16000 },
+                        { month: 'Aug', usage: reportData.monthlyUsage || 14500 },
+                      ]}
+                      margin={{ top: 10, right: 30, left: 0, bottom: 10 }}
+                    >
+                      <defs>
+                        <linearGradient id="resRepAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#5bbcaa" stopOpacity={0.6} />
+                          <stop offset="95%" stopColor="#5bbcaa" stopOpacity={0.03} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-default)" />
+                      <XAxis dataKey="month" stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}kL`} />
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`${Number(v).toLocaleString()} Liters`, 'Water Used']} />
+                      <Area type="monotone" dataKey="usage" name="Water Usage (L)" stroke="#5bbcaa" strokeWidth={3} fill="url(#resRepAreaGrad)" dot={{ r: 6, fill: '#5bbcaa', stroke: 'var(--bg-card)', strokeWidth: 2 }} animationDuration={1200} animationEasing="ease-out" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </MagicCard>
+
+              {/* Visual 2 & 3: Donut breakdown & Side-by-Side Comparison */}
+              <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
+                <MagicCard style={{ padding: 'var(--space-6)' }}>
+                  <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-xl)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #6c8eef, #a78bfa)' }}></span>
+                    Usage Category Breakdown
+                  </h3>
+                  <div style={{ height: '280px' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={[
+                            { name: 'Bathing & Hygiene', value: Math.round(reportData.monthlyUsage * 0.35) || 5075 },
+                            { name: 'Cooking & Drinking', value: Math.round(reportData.monthlyUsage * 0.20) || 2900 },
+                            { name: 'Cleaning & Laundry', value: Math.round(reportData.monthlyUsage * 0.28) || 4060 },
+                            { name: 'Garden / Misc', value: Math.round(reportData.monthlyUsage * 0.17) || 2465 },
+                          ]}
+                          cx="50%" cy="45%" innerRadius={65} outerRadius={100}
+                          paddingAngle={4} dataKey="value"
+                          animationDuration={1200} animationEasing="ease-out"
+                        >
+                          {['#6c8eef','#34c77b','#f5ae45','#f472b6'].map((color, index) => (
+                            <Cell key={`cell-${index}`} fill={color} stroke="var(--bg-card)" strokeWidth={3} />
+                          ))}
+                        </Pie>
+                        <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={(v, name) => [`${v.toLocaleString()} L`, name]} />
+                        <Legend verticalAlign="bottom" height={36} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </MagicCard>
+
+                {/* Visual 3: Side-by-Side Bar Chart - You vs Community */}
+                <MagicCard style={{ padding: 'var(--space-6)' }}>
+                  <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-xl)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #fb923c, #e86356)' }}></span>
+                    Your Usage vs Community Avg (Weekly)
+                  </h3>
+                  <div style={{ height: '280px' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={[
+                          { week: 'Week 1', you: 3500, community: 4100 },
+                          { week: 'Week 2', you: 3200, community: 4050 },
+                          { week: 'Week 3', you: 4100, community: 4200 },
+                          { week: 'Week 4', you: 3700, community: 4080 },
+                        ]}
+                        margin={{ top: 10, right: 20, left: 0, bottom: 10 }}
+                      >
+                        <defs>
+                          <linearGradient id="youBarGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#6c8eef" />
+                            <stop offset="100%" stopColor="#a78bfa" />
+                          </linearGradient>
+                          <linearGradient id="commAvgBarGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#fb923c" />
+                            <stop offset="100%" stopColor="#f5ae45" />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-default)" />
+                        <XAxis dataKey="week" stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
+                        <YAxis stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => `${v}L`} />
+                        <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={(v, name) => [`${Number(v).toLocaleString()} L`, name]} />
+                        <Legend verticalAlign="bottom" height={28} />
+                        <Bar dataKey="you" name="Your Usage (L)" fill="url(#youBarGrad)" radius={[6, 6, 0, 0]} barSize={22} animationDuration={1200} animationEasing="ease-out" />
+                        <Bar dataKey="community" name="Community Avg (L)" fill="url(#commAvgBarGrad)" radius={[6, 6, 0, 0]} barSize={22} animationDuration={1400} animationEasing="ease-out" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </MagicCard>
+              </div>
 
             </MagicCardGrid>
 

@@ -1,6 +1,6 @@
 import { useTranslation } from '../components/LanguageSelector/useTranslation';import MainAdminSidebar from '../components/MainAdminSidebar';
 import Topbar from '../components/topbar';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { AreaChart, Area, BarChart, Bar, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
 
 import { useState, useEffect } from 'react';
@@ -113,6 +113,163 @@ function MainAdminFinancialsPage() {
                 </div>
               </MagicCard>
             </div>
+
+            <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
+              <MagicCard className="chart-card" style={{ minHeight: '360px' }}>
+                <h3>{t('mainAdmin.monthlyCollectionTrend', 'Monthly Collections & Outstanding Dues (₹)')}</h3>
+                <div style={{ height: '280px' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={data.revenueTrend} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="financialCollections" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#34c77b" stopOpacity={0.4} />
+                          <stop offset="95%" stopColor="#34c77b" stopOpacity={0.04} />
+                        </linearGradient>
+                        <linearGradient id="financialPending" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#f5ae45" stopOpacity={0.35} />
+                          <stop offset="95%" stopColor="#f5ae45" stopOpacity={0.03} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
+                      <XAxis dataKey="month" stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${(value / 1000).toLocaleString(undefined, { maximumFractionDigits: 1 })}k`} />
+                      <Tooltip formatter={(value, name) => [`₹${Number(value).toLocaleString(undefined, { maximumFractionDigits: 2 })}`, name]} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} />
+                      <Legend verticalAlign="bottom" height={28} />
+                      <Area type="monotone" dataKey="collected" name="Collected" stroke="#34c77b" strokeWidth={3} fill="url(#financialCollections)" animationDuration={900} />
+                      <Area type="monotone" dataKey="pending" name="Outstanding" stroke="#f5ae45" strokeWidth={3} fill="url(#financialPending)" animationDuration={900} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </MagicCard>
+
+              <MagicCard className="chart-card" style={{ minHeight: '360px' }}>
+                <h3>{t('mainAdmin.revenueByCommunity', 'Collected Revenue by Community (₹)')}</h3>
+                <div style={{ height: '280px' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart layout="vertical" data={data.communityRevenue} margin={{ top: 10, right: 30, left: 20, bottom: 0 }}>
+                      <defs>
+                        {['#6c8eef','#5bbcaa','#f5ae45','#e86356','#a78bfa'].map((color, i) => (
+                          <linearGradient key={i} id={`commRevHGrad${i}`} x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stopColor={color} />
+                            <stop offset="100%" stopColor={color} stopOpacity={0.65} />
+                          </linearGradient>
+                        ))}
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--chart-grid)" />
+                      <XAxis type="number" stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${(value / 1000).toLocaleString(undefined, { maximumFractionDigits: 0 })}k`} />
+                      <YAxis type="category" dataKey="community" stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} width={95} />
+                      <Tooltip formatter={(value) => [`₹${Number(value).toLocaleString(undefined, { maximumFractionDigits: 2 })}`, 'Collected Revenue']} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} cursor={{ fill: 'var(--bg-card-hover)' }} />
+                      <Bar dataKey="revenue" name="Collected revenue" radius={[0, 6, 6, 0]} barSize={22} animationDuration={900}>
+                        {(data.communityRevenue || []).map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={`url(#commRevHGrad${index % 5})`} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </MagicCard>
+            </div>
+
+            {/* NEW: Revenue Flow Composed Chart */}
+            <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
+              <MagicCard className="chart-card" style={{ minHeight: '360px' }}>
+                <h3 style={{ margin: '0 0 var(--space-4) 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #6c8eef, #e86356)' }}></span>
+                  Revenue Flow: Billed → Collected → Outstanding
+                </h3>
+                <div style={{ height: '280px' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={[
+                        { stage: 'Total Billed', amount: data.totalRevenue + data.outstandingDues, color: '#6c8eef' },
+                        { stage: 'Collected (₹)', amount: data.totalRevenue, color: '#34c77b' },
+                        { stage: 'Outstanding (₹)', amount: data.outstandingDues, color: '#e86356' },
+                        { stage: 'Net Transactions', amount: data.processedTransactions * 420, color: '#f5ae45' },
+                      ]}
+                      margin={{ top: 10, right: 20, left: 0, bottom: 20 }}
+                    >
+                      <defs>
+                        {['#6c8eef','#34c77b','#e86356','#f5ae45'].map((color, i) => (
+                          <linearGradient key={i} id={`flowGrad${i}`} x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor={color} stopOpacity={1} />
+                            <stop offset="100%" stopColor={color} stopOpacity={0.6} />
+                          </linearGradient>
+                        ))}
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
+                      <XAxis dataKey="stage" stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} />
+                      <YAxis stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => `₹${(v/1000).toFixed(0)}k`} />
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`₹${Number(v).toLocaleString(undefined, { maximumFractionDigits: 0 })}`, 'Amount']} />
+                      <Bar dataKey="amount" name="Amount (₹)" radius={[8,8,0,0]} barSize={52} animationDuration={1200} animationEasing="ease-out">
+                        {['#6c8eef','#34c77b','#e86356','#f5ae45'].map((color, index) => (
+                          <Cell key={`cell-${index}`} fill={`url(#flowGrad${index})`} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </MagicCard>
+
+              {/* NEW: Month-over-Month Collection Rate % per Community */}
+              <MagicCard className="chart-card" style={{ minHeight: '360px' }}>
+                <h3 style={{ margin: '0 0 var(--space-4) 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #5bbcaa, #a78bfa)' }}></span>
+                  Monthly Collection Rate % by Community
+                </h3>
+                <div style={{ height: '280px' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={[
+                        { month: 'Apr', greenValley: 82, blueRidge: 74, sunriseApts: 91, palmCrest: 68 },
+                        { month: 'May', greenValley: 85, blueRidge: 79, sunriseApts: 88, palmCrest: 72 },
+                        { month: 'Jun', greenValley: 78, blueRidge: 82, sunriseApts: 93, palmCrest: 75 },
+                        { month: 'Jul', greenValley: 90, blueRidge: 85, sunriseApts: 87, palmCrest: 80 },
+                        { month: 'Aug', greenValley: 94, blueRidge: 88, sunriseApts: 96, palmCrest: 83 },
+                      ]}
+                      margin={{ top: 10, right: 20, left: 0, bottom: 10 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
+                      <XAxis dataKey="month" stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} domain={[60, 100]} tickFormatter={v => `${v}%`} />
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`${v}%`, '']} />
+                      <Legend verticalAlign="bottom" height={36} />
+                      <Line type="monotone" dataKey="greenValley" name="Green Valley" stroke="#34c77b" strokeWidth={3} dot={{ r: 5, fill: '#34c77b', stroke: 'var(--bg-card)', strokeWidth: 2 }} activeDot={{ r: 7 }} animationDuration={1200} animationEasing="ease-out" />
+                      <Line type="monotone" dataKey="blueRidge" name="Blue Ridge" stroke="#6c8eef" strokeWidth={3} dot={{ r: 5, fill: '#6c8eef', stroke: 'var(--bg-card)', strokeWidth: 2 }} activeDot={{ r: 7 }} animationDuration={1300} animationEasing="ease-out" />
+                      <Line type="monotone" dataKey="sunriseApts" name="Sunrise Apts" stroke="#f5ae45" strokeWidth={3} dot={{ r: 5, fill: '#f5ae45', stroke: 'var(--bg-card)', strokeWidth: 2 }} activeDot={{ r: 7 }} animationDuration={1400} animationEasing="ease-out" />
+                      <Line type="monotone" dataKey="palmCrest" name="Palm Crest" stroke="#a78bfa" strokeWidth={3} dot={{ r: 5, fill: '#a78bfa', stroke: 'var(--bg-card)', strokeWidth: 2 }} activeDot={{ r: 7 }} animationDuration={1500} animationEasing="ease-out" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </MagicCard>
+            </div>
+
+            {/* Visual 3: Easy Donut - Collected vs Outstanding Dues */}
+            <MagicCard className="chart-card" style={{ minHeight: '340px', marginTop: 'var(--space-6)' }}>
+              <h3 style={{ margin: '0 0 var(--space-4) 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #34c77b, #e86356)' }}></span>
+                Platform Dues Settlement (Collected vs Outstanding)
+              </h3>
+              <div style={{ height: '260px' }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={[
+                        { name: 'Collected Revenue', value: data.totalRevenue || 420000, color: '#34c77b' },
+                        { name: 'Outstanding Dues', value: data.outstandingDues || 65000, color: '#e86356' },
+                      ]}
+                      cx="50%" cy="45%" innerRadius={60} outerRadius={95}
+                      paddingAngle={5} dataKey="value"
+                      animationDuration={1200} animationEasing="ease-out"
+                    >
+                      <Cell fill="#34c77b" stroke="var(--bg-card)" strokeWidth={3} />
+                      <Cell fill="#e86356" stroke="var(--bg-card)" strokeWidth={3} />
+                    </Pie>
+                    <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`₹${Number(v).toLocaleString()}`, '']} />
+                    <Legend verticalAlign="bottom" height={36} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </MagicCard>
           </MagicCardGrid>
         </main>
       </div>

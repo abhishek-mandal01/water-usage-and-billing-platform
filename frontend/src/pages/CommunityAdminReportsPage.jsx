@@ -5,7 +5,7 @@ import Topbar from '../components/topbar';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
 import { Download, FileText, Calendar, Home, DollarSign, Package, TrendingUp, TrendingDown } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, BarChart, Bar, CartesianGrid, Legend, Line, ResponsiveContainer, Tooltip, XAxis, YAxis, PieChart, Pie, Cell } from 'recharts';
 
 function CommunityAdminReportsPage() {
   const { t } = useTranslation();
@@ -195,6 +195,101 @@ function CommunityAdminReportsPage() {
                         ))}
                       </tbody>
                     </table>
+                  </div>
+                </MagicCard>
+              </div>
+
+              <MagicCard className="chart-card" style={{ minHeight: '360px' }}>
+                <h3>Bulk Water Procurement Inflow (Liters)</h3>
+                <div style={{ height: '280px' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={reportData.bulkPurchases} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="commProcAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#5bbcaa" stopOpacity={0.6} />
+                          <stop offset="95%" stopColor="#5bbcaa" stopOpacity={0.03} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
+                      <XAxis dataKey="date" tickFormatter={(value) => value.slice(5)} stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${(value / 1000).toLocaleString()}k L`} />
+                      <Tooltip formatter={(value) => [`${Number(value).toLocaleString()} Liters`, 'Water Volume']} labelFormatter={(label) => `Purchase Date: ${label}`} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} />
+                      <Legend verticalAlign="bottom" height={28} />
+                      <Area type="monotone" dataKey="volume" name="Procured Volume (L)" stroke="#5bbcaa" strokeWidth={3} fill="url(#commProcAreaGrad)" dot={{ r: 5, fill: '#5bbcaa', stroke: 'var(--bg-card)', strokeWidth: 2 }} animationDuration={1000} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </MagicCard>
+
+              {/* NEW: Financial Distribution Pie Chart & Community Performance Bar */}
+              <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
+                {/* Donut PieChart: Financial Revenue vs Expenses */}
+                <MagicCard style={{ padding: 'var(--space-6)' }}>
+                  <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #34c77b, #6c8eef)' }}></span>
+                    Financial Allocation (Revenue vs Expense vs Margin)
+                  </h3>
+                  <div style={{ height: '280px' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={[
+                            { name: 'Bulk Procurement', value: reportData.bulkPurchaseCost },
+                            { name: 'Net Surplus / Profit', value: reportData.profit },
+                            { name: 'Maintenance & Ops', value: Math.round(reportData.totalEarnings * 0.15) },
+                          ]}
+                          cx="50%" cy="45%" innerRadius={60} outerRadius={95}
+                          paddingAngle={4} dataKey="value"
+                          animationDuration={1200} animationEasing="ease-out"
+                        >
+                          <Cell fill="#e86356" stroke="var(--bg-card)" strokeWidth={3} />
+                          <Cell fill="#34c77b" stroke="var(--bg-card)" strokeWidth={3} />
+                          <Cell fill="#6c8eef" stroke="var(--bg-card)" strokeWidth={3} />
+                        </Pie>
+                        <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`₹${Number(v).toLocaleString()}`, '']} />
+                        <Legend verticalAlign="bottom" height={36} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </MagicCard>
+
+                {/* Horizontal Bar Chart: Community Performance & Compliance */}
+                <MagicCard style={{ padding: 'var(--space-6)' }}>
+                  <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #a78bfa, #f472b6)' }}></span>
+                    Community Water Management Metrics (%)
+                  </h3>
+                  <div style={{ height: '280px' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        layout="vertical"
+                        data={[
+                          { metric: 'Billing Rate', score: 94, color: '#34c77b' },
+                          { metric: 'Payment On-Time', score: 90, color: '#6c8eef' },
+                          { metric: 'Leak Control', score: 88, color: '#5bbcaa' },
+                          { metric: 'Cost Efficiency', score: 82, color: '#f5ae45' },
+                        ]}
+                        margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
+                      >
+                        <defs>
+                          {['#34c77b','#6c8eef','#5bbcaa','#f5ae45'].map((color, i) => (
+                            <linearGradient key={i} id={`commScoreHGrad${i}`} x1="0" y1="0" x2="1" y2="0">
+                              <stop offset="0%" stopColor={color} />
+                              <stop offset="100%" stopColor={color} stopOpacity={0.65} />
+                            </linearGradient>
+                          ))}
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--chart-grid)" />
+                        <XAxis type="number" domain={[0, 100]} stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => `${v}%`} />
+                        <YAxis type="category" dataKey="metric" stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} width={100} />
+                        <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`${v}%`, 'Score']} />
+                        <Bar dataKey="score" name="Score %" radius={[0, 6, 6, 0]} barSize={22} animationDuration={1200} animationEasing="ease-out">
+                          {['#34c77b','#6c8eef','#5bbcaa','#f5ae45'].map((_, index) => (
+                            <Cell key={`cell-${index}`} fill={`url(#commScoreHGrad${index})`} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
                   </div>
                 </MagicCard>
               </div>
