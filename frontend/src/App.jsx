@@ -43,6 +43,7 @@ import MainAdminReportsPage from './pages/MainAdminReportsPage';
 import MainAdminVerifications from './pages/MainAdminVerifications';
 
 import SmartBotChat from './components/SmartBotChat';
+import PwaInstallModal from './components/PwaInstallModal';
 
 function App() {
   return (
@@ -106,9 +107,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
           <SmartBotChat />
-          {}
-          {/* <PwaInstallModal /> */}
-          {}
+          <PwaInstallModal />
         </Router>
       </SidebarProvider>
     </ThemeProvider>
