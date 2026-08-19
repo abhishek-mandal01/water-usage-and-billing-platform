@@ -10,9 +10,13 @@ import {
   VolumeX, 
   Sparkles, 
   GripHorizontal, 
-  RotateCcw 
+
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import SmartBotAvatar from './SmartBotAvatar';
+import chatWallpaper from './chat-wallpaper.svg';
+
 import './SmartBotChat.css';
 
 // Language mapping for Web Speech API
@@ -57,7 +61,7 @@ const getSuggestedQuestions = (lastBotReply = '', lastUserMessage = '') => {
     combined.includes('consumption')
   ) {
     return [
-      "How does the smart meter record data? ⏱️",
+      "How does the smart meter record data? ⏱¸",
       "What triggers a high usage alert? 🚨",
       "Top 5 water conservation tips 💡",
       "How does peer benchmarking work? 👥"
@@ -73,7 +77,7 @@ const getSuggestedQuestions = (lastBotReply = '', lastUserMessage = '') => {
     combined.includes('admin')
   ) {
     return [
-      "How fast is leak repair handled? 🛠️",
+      "How fast is leak repair handled? 🛠️¸",
       "Emergency water maintenance contact 📞",
       "How to track open support tickets? 📋",
       "What to do if water pressure is low? 🚰"
@@ -87,9 +91,9 @@ const getSuggestedQuestions = (lastBotReply = '', lastUserMessage = '') => {
     combined.includes('rule')
   ) {
     return [
-      "What are residential tariff slabs? 🏷️",
+      "What are residential tariff slabs? 🏷️¸",
       "Are there commercial tariff rates? 🏢",
-      "What are late payment penalty charges? ⚠️",
+      "What are late payment penalty charges? ⚠️",
       "How to request a tariff review? 📝"
     ];
   }
@@ -99,25 +103,26 @@ const getSuggestedQuestions = (lastBotReply = '', lastUserMessage = '') => {
     "How is my water bill calculated? 💧",
     "How to check my daily water usage? 📊",
     "How to pay my bill online? 💳",
-    "How do I report a water leak? ⚠️"
+    "How do I report a water leak? ⚠️"
   ];
 };
 
 const SmartBotChat = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [messages, setMessages] = useState([
     { sender: 'bot', text: 'Hi! I am SmartBot, the official AI assistant for Smart Water. You can ask me anything using voice or text! How can I help you today?' }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [voiceEnabled, setVoiceEnabled] = useState(false); // Default Muted
   const [isListening, setIsListening] = useState(false);
   const [suggestions, setSuggestions] = useState([
     "How is my water bill calculated? 💧",
     "How to check my daily water usage? 📊",
     "How to pay my bill online? 💳",
-    "How do I report a water leak? ⚠️"
+    "How do I report a water leak? ⚠️"
   ]);
 
   const messagesEndRef = useRef(null);
@@ -143,7 +148,7 @@ const SmartBotChat = () => {
       // Clean emojis and markdown formatting for clean speech
       const cleanText = text
         .replace(/[#*_`~>-]/g, '')
-        .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
         .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '')
         .trim();
 
@@ -188,7 +193,7 @@ const SmartBotChat = () => {
       if (recognitionRef.current) {
         try {
           recognitionRef.current.stop();
-        } catch (_) {}
+        } catch { /* ignore */ }
       }
     };
   }, []);
@@ -206,7 +211,7 @@ const SmartBotChat = () => {
       if (recognitionRef.current) {
         try {
           recognitionRef.current.stop();
-        } catch (_) {}
+        } catch { /* ignore */ }
       }
       setIsListening(false);
       return;
@@ -255,7 +260,7 @@ const SmartBotChat = () => {
     if (isListening && recognitionRef.current) {
       try {
         recognitionRef.current.stop();
-      } catch (_) {}
+      } catch { /* ignore */ }
       setIsListening(false);
     }
 
@@ -328,8 +333,8 @@ const SmartBotChat = () => {
             />
 
             <motion.div 
-              className="smartbot-window"
-              drag
+              className={`smartbot-window ${isExpanded ? 'expanded' : ''}`}
+              drag={!isExpanded}
               dragMomentum={false}
               dragElastic={0.08}
               initial={{ scale: 0.92, opacity: 0, y: 20 }}
@@ -349,15 +354,17 @@ const SmartBotChat = () => {
                   <div>
                     <h4>{t('chat.headerTitle', 'SmartBot AI')}</h4>
                     <span className="smartbot-status-text">
-                      {isSpeaking ? '🔊 Speaking...' : isTyping ? '✍️ Typing...' : isListening ? '🎙️ Listening...' : '🟢 Online'}
+                      {isSpeaking ? '🔊 Speaking...' : isTyping ? '✍️ Typing...' : isListening ? '🎙️¸ Listening...' : '🟢 Online'}
                     </span>
                   </div>
                 </div>
 
                 {/* Drag Grip Indicator */}
-                <div className="smartbot-drag-handle" title="Click & Drag across screen">
-                  <GripHorizontal size={18} />
-                </div>
+                {!isExpanded && (
+                  <div className="smartbot-drag-handle" title="Click & Drag across screen">
+                    <GripHorizontal size={18} />
+                  </div>
+                )}
 
                 {/* Header Actions */}
                 <div className="smartbot-header-actions" onPointerDown={(e) => e.stopPropagation()}>
@@ -368,10 +375,20 @@ const SmartBotChat = () => {
                       if (voiceEnabled) stopSpeech();
                       setVoiceEnabled(!voiceEnabled);
                     }} 
-                    title={voiceEnabled ? 'Mute Voice Responses' : 'Enable Voice Responses'}
+                    title={voiceEnabled ? 'Sound Enabled (Click to Mute)' : 'Sound Muted (Click to Unmute)'}
                     aria-label="Toggle Voice"
                   >
                     {voiceEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
+                  </button>
+
+                  {/* Expand / Minimize Button */}
+                  <button 
+                    className={`smartbot-header-btn ${isExpanded ? 'active' : ''}`}
+                    onClick={() => setIsExpanded(!isExpanded)} 
+                    title={isExpanded ? 'Restore Normal Window Size' : 'Expand Chat Window'}
+                    aria-label="Expand Chat Window"
+                  >
+                    {isExpanded ? <Minimize2 size={17} /> : <Maximize2 size={17} />}
                   </button>
 
                   {/* Close Button */}
@@ -390,7 +407,10 @@ const SmartBotChat = () => {
               </div>
               
               {/* Messages Thread */}
-              <div className="smartbot-messages">
+              <div 
+                className="smartbot-messages"
+                style={{ backgroundImage: `url(${chatWallpaper})` }}
+              >
                 {messages.map((msg, idx) => (
                   <div key={idx} className={`smartbot-msg-wrapper ${msg.sender}`}>
                     <div className={`smartbot-msg smartbot-msg-${msg.sender}`}>
@@ -513,3 +533,4 @@ const SmartBotChat = () => {
 };
 
 export default SmartBotChat;
+

@@ -12,9 +12,10 @@ function WaterTipsPage() {
 
   useEffect(() => {
     const userStr = localStorage.getItem('user');
-    const user = userStr ? JSON.parse(userStr) : { id: 1 };
+    const user = userStr ? JSON.parse(userStr) : null;
+    const userId = user?.id || 1;
     
-    fetch(`http://localhost:8081/api/dashboard/${user.id}`)
+    fetch(`http://localhost:8081/api/dashboard/${userId}`)
       .then(r => r.json())
       .then(dData => {
         if (dData) setData(dData);
@@ -32,6 +33,8 @@ function WaterTipsPage() {
     t('dashboard.tip4', "Install water-saving showerheads to reduce water consumption by up to 30%."),
     t('dashboard.tip5', "Collect rainwater for your garden plants.")
   ];
+
+  const displayFact = data.waterFact || "A running toilet can waste up to 200 gallons of water per day.";
 
   return (
     <div className="dashboard-layout">
@@ -53,13 +56,13 @@ function WaterTipsPage() {
             <MagicCardGrid>
               <MagicCard style={{ padding: 'var(--space-6)', background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1))' }}>
                 
-                {data.waterFact && (
+                {displayFact && (
                   <div style={{ marginBottom: 'var(--space-6)', padding: 'var(--space-5)', backgroundColor: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', borderLeft: '4px solid var(--color-accent-500)', boxShadow: 'var(--shadow-sm)' }}>
                     <h4 style={{ margin: '0 0 var(--space-2) 0', color: 'var(--color-accent-600)', fontSize: 'var(--text-sm)', fontWeight: 'var(--font-bold)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Info size={16} /> Did You Know?
                     </h4>
                     <p style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--text-primary)', fontStyle: 'italic', lineHeight: '1.6' }}>
-                      {data.waterFact.replace(/Did you know\?\s*/i, '')}
+                      {displayFact.replace(/Did you know\?\s*/i, '')}
                     </p>
                   </div>
                 )}
@@ -96,3 +99,4 @@ function WaterTipsPage() {
 }
 
 export default WaterTipsPage;
+

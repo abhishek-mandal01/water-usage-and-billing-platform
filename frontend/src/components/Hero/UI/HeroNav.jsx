@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '../../LanguageSelector/useTranslation';
 import BrandLogo from '../../BrandLogo';
@@ -33,3 +32,4 @@ const HeroNav = () => {
 };
 
 export default HeroNav;
+

@@ -4,10 +4,10 @@ import MainAdminSidebar from '../components/MainAdminSidebar';
 import Topbar from '../components/topbar';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
 import { Download, FileText, Calendar, Building, DollarSign, Activity } from 'lucide-react';
-import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Legend, AreaChart, Area, LineChart, Line } from 'recharts';
+import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Legend, AreaChart, Area } from 'recharts';
 
 function MainAdminReportsPage() {
-  const { t } = useTranslation();
+  useTranslation();
   const [dateRange, setDateRange] = useState('2026-08');
 
   const [data, setData] = useState({ reports: [] });
@@ -193,7 +193,7 @@ function MainAdminReportsPage() {
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--chart-grid)" />
                         <XAxis type="number" stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}kL`} />
-                        <YAxis type="category" dataKey="community" width={100} stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} />
+                        <YAxis type="category" dataKey="community" width={100} stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => v ? v.split(' ')[0] : ''} />
                         <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`${Number(v).toLocaleString()} L`, 'Water Usage']} />
                         <Bar dataKey="usage" name="Water Usage (L)" radius={[0,8,8,0]} barSize={28} animationDuration={1200} animationEasing="ease-out">
                           {(reportsList.length > 0 ? reportsList.slice(0,6) : [1,2,3,4,5]).map((_, index) => (

@@ -12,10 +12,10 @@ import {
   Bell, 
   FileText, 
   LogOut,
+  UserCheck,
   Menu,
   X,
-  PanelLeftClose,
-  PanelLeft
+  PanelLeftClose
 } from 'lucide-react';
 
 function MainAdminSidebar() {
@@ -26,6 +26,7 @@ function MainAdminSidebar() {
 
   const navItems = [
     { name: t('nav.dashboard', 'Dashboard'), path: '/main-admin-panel', icon: LayoutDashboard },
+    { name: t('nav.verifications', 'Verifications'), path: '/main-admin/verifications', icon: UserCheck },
     { name: t('nav.communities', 'Communities'), path: '/admin/communities', icon: Home },
     { name: t('nav.analytics', 'System Analytics'), path: '/admin/analytics', icon: Activity },
     { name: t('nav.financials', 'Financials'), path: '/admin/financials', icon: CreditCard },
@@ -34,7 +35,13 @@ function MainAdminSidebar() {
     { name: t('nav.reports', 'Reports'), path: '/admin/reports', icon: FileText },
   ];
 
-  return (
+const handleSidebarContainerClick = (e) => {
+    const isInteractive = e.target.closest('a') || e.target.closest('button') || e.target.closest('.sidebar-link');
+    if (!isInteractive) {
+      toggleCollapse();
+    }
+  };
+return (
     <>
       <button className="hamburger-btn" onClick={toggle} aria-label="Toggle menu">
         {isOpen ? <X size={20} /> : <Menu size={20} />}
@@ -45,7 +52,11 @@ function MainAdminSidebar() {
         onClick={close}
       />
 
-      <div className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}>
+      <div 
+        className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}
+        onClick={handleSidebarContainerClick}
+        style={{ cursor: isCollapsed ? 'pointer' : 'default' }}
+      >
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
@@ -138,3 +149,5 @@ function MainAdminSidebar() {
 }
 
 export default MainAdminSidebar;
+
+

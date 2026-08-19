@@ -14,9 +14,7 @@ import {
   LogOut,
   Menu,
   PieChart,
-  X,
-  PanelLeftClose,
-  PanelLeft
+  PanelLeftClose
 } from 'lucide-react';
 
 function Sidebar() {
@@ -27,6 +25,16 @@ function Sidebar() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const userId = JSON.parse(localStorage.getItem('user'))?.id;
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const effectiveCollapsed = isMobile ? false : isCollapsed;
 
   useEffect(() => {
     if (userId) {
@@ -48,12 +56,24 @@ function Sidebar() {
     { name: t('nav.profile'), path: '/profile', icon: User },
   ];
 
-  return (
+const handleSidebarContainerClick = (e) => {
+    if (isMobile) return;
+    const isInteractive = e.target.closest('a') || e.target.closest('button') || e.target.closest('.sidebar-link') || e.target.closest('.brand-logo-collapsed-container');
+    
+    // Only toggle if we're clicking empty space AND it's collapsed. 
+    // If it's expanded, clicking empty space shouldn't unexpectedly collapse it.
+    if (!isInteractive && isCollapsed) {
+      toggleCollapse();
+    }
+  };
+return (
     <>
-      {/* Mobile hamburger */}
-      <button className="hamburger-btn" onClick={toggle} aria-label="Toggle menu">
-        {isOpen ? <X size={20} /> : <Menu size={20} />}
-      </button>
+      {/* Mobile hamburger - hidden when drawer is open per user request */}
+      {!isOpen && (
+        <button className="hamburger-btn" onClick={toggle} aria-label="Toggle menu">
+          <Menu size={20} />
+        </button>
+      )}
 
       {/* Mobile backdrop */}
       <div
@@ -61,26 +81,33 @@ function Sidebar() {
         onClick={close}
       />
 
-      <div className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}>
+      <div 
+        className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}
+        onClick={handleSidebarContainerClick}
+        style={{ cursor: effectiveCollapsed ? 'pointer' : 'default' }}
+      >
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
-          justifyContent: isCollapsed ? 'center' : 'space-between', 
-          padding: isCollapsed ? '0' : '0 12px 0 16px', 
+          justifyContent: effectiveCollapsed ? 'center' : 'space-between', 
+          padding: effectiveCollapsed ? '0' : '0 12px 0 16px', 
           marginTop: '12px',
           width: '100%'
         }}>
           <BrandLogo 
-            style={{ borderBottom: 'none', padding: isCollapsed ? '16px 0' : 0 }} 
-            isCollapsed={isCollapsed} 
+            style={{ borderBottom: 'none', padding: effectiveCollapsed ? '16px 0' : 0 }} 
+            isCollapsed={effectiveCollapsed} 
             onToggleCollapse={toggleCollapse} 
             logoSize={55} 
             textSize="20px" 
             subTextSize="10px" 
           />
-          {!isCollapsed && (
+          {!effectiveCollapsed && !isMobile && (
             <button 
-              onClick={toggleCollapse}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleCollapse();
+              }}
               title="Collapse sidebar"
               className="sidebar-collapse-btn"
             >
@@ -98,12 +125,12 @@ function Sidebar() {
               <Link 
                 key={item.name} 
                 to={item.path}
-                title={isCollapsed ? item.name : ""}
+                title={effectiveCollapsed ? item.name : ""}
                 className={`sidebar-link ${isActive ? 'active' : ''}`}
                 onClick={close}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: isCollapsed ? 'center' : 'space-between' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: effectiveCollapsed ? 'center' : 'space-between' }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: isCollapsed ? 0 : 'var(--space-3)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: effectiveCollapsed ? 0 : 'var(--space-3)' }}>
                   <Icon size={18} />
                   <span>{item.name}</span>
                 </div>
@@ -165,4 +192,5 @@ function Sidebar() {
   );
 }
 
-export default Sidebar;
+export default Sidebar;
+

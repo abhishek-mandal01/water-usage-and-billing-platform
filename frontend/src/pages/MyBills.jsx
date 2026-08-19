@@ -1,13 +1,18 @@
-import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from '../components/LanguageSelector/useTranslation';
+import { useState, useEffect, useRef } from 'react';
 import UserSidebar from '../components/sidebar';
 import Topbar from '../components/topbar';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
 import { FileText, X, Download, Droplet, Calendar, User, MapPin } from 'lucide-react';
 import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Legend } from 'recharts';
 
-function MyBills() {const { t } = useTranslation();
+import SkeletonLoader from '../components/SkeletonLoader';
+import DebouncedButton from '../components/DebouncedButton';
+function MyBills() {
+  const { t } = useTranslation();
   const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [message, setMessage] = useState('');
 
   const [selectedBill, setSelectedBill] = useState(null);
@@ -24,7 +29,10 @@ function MyBills() {const { t } = useTranslation();
 
   useEffect(() => {
     const fetchBills = async () => {
-      if (!residentId) return;
+      if (!residentId) {
+        setInitialLoading(false);
+        return;
+      }
       try {
         const res = await fetch(`http://localhost:8081/api/billing/my/${residentId}`);
         if (res.ok) {
@@ -32,6 +40,8 @@ function MyBills() {const { t } = useTranslation();
         }
       } catch (e) {
         console.error(e);
+      } finally {
+        setInitialLoading(false);
       }
     };
     fetchBills();
@@ -109,30 +119,7 @@ function MyBills() {const { t } = useTranslation();
     }
   };
 
-  const payBtnStyle = {
-    padding: '8px 16px',
-    backgroundColor: 'var(--color-primary-600)',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    fontSize: '13px'
-  };
 
-  const viewBtnStyle = {
-    padding: '8px 16px',
-    backgroundColor: 'white',
-    color: 'var(--text-secondary)',
-    border: '1px solid var(--border-default)',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    fontSize: '13px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px'
-  };
 
   const handleDownloadPdf = () => {
     window.open(`http://localhost:8081/api/billing/pdf/${selectedBill.id}`, '_blank');
@@ -169,7 +156,12 @@ function MyBills() {const { t } = useTranslation();
         <Topbar />
         
         <main className="dashboard-content">
-          <h1 style={{ marginBottom: '20px' }}>{t("resident.myBillsPayments")}</h1>
+          <div className="page-header" style={{ marginBottom: '20px' }}>
+            <h1 style={{ margin: 0 }}>{t("resident.myBillsPayments")}</h1>
+            <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: 'var(--text-sm)' }}>
+              View and pay your utility invoices, and track your billing history.
+            </p>
+          </div>
 
           {message && <div style={{ padding: '15px', backgroundColor: 'var(--color-success-50)', color: 'var(--color-success-700)', marginBottom: '20px', borderRadius: '8px', border: '1px solid var(--color-success-400)' }}>{message}</div>}
 
@@ -208,67 +200,72 @@ function MyBills() {const { t } = useTranslation();
                     />
                   </div>
                 </div>
-                {bills.length === 0 ?
-                <p style={{ color: 'var(--text-secondary)' }}>{t("resident.nobillsgeneratedyet")}</p> :
-                <>
-                <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
-                    <thead>
-                  <tr style={{ backgroundColor: 'var(--color-primary-50)', textAlign: 'left' }}>
-                        <th style={{ padding: '12px', borderBottom: '1px solid var(--border-default)' }}>{t("resident.cycle")}</th>
-                        <th style={{ padding: '12px', borderBottom: '1px solid var(--border-default)' }}>{t("resident.dueDate")}</th>
-                        <th style={{ padding: '12px', borderBottom: '1px solid var(--border-default)' }}>{t("resident.amount")}</th>
-                        <th style={{ padding: '12px', borderBottom: '1px solid var(--border-default)' }}>{t("resident.status")}</th>
-                        <th style={{ padding: '12px', borderBottom: '1px solid var(--border-default)' }}>{t("resident.action")}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {currentBills.map((b) =>
-                    <tr key={b.id} style={{ transition: 'background-color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-card-hover)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
-                          <td style={{ padding: '12px', borderBottom: '1px solid var(--border-default)', fontWeight: '500' }}>{b.billingCycle}</td>
-                          <td style={{ padding: '12px', borderBottom: '1px solid var(--border-default)', fontSize: '13px', color: 'var(--text-secondary)' }}>{b.dueDate || 'N/A'}</td>
-                          <td style={{ padding: '12px', borderBottom: '1px solid var(--border-default)', fontWeight: '600' }}>₹{b.amount.toFixed(2)}</td>
-                          <td style={{ padding: '12px', borderBottom: '1px solid var(--border-default)' }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
-                              <span style={{
-                            padding: '4px 8px',
-                            borderRadius: '12px',
-                            fontSize: '12px',
-                            fontWeight: 'bold',
-                            backgroundColor: b.status === 'PAID' ? 'var(--color-success-50)' : 'var(--color-danger-50)',
-                            color: b.status === 'PAID' ? 'var(--color-success-700)' : 'var(--color-danger-700)'
-                          }}>
-                                {b.status}
-                              </span>
-                              {b.status === 'UNPAID' && b.monthsLate > 0 &&
-                          <span style={{ fontSize: '11px', color: 'var(--color-danger-600)', fontWeight: 'bold' }}>{t("resident.overdue")}
-                            {b.monthsLate}{t("resident.mo")}
-                          </span>
-                          }
-                            </div>
-                          </td>
-                          <td style={{ padding: '12px', borderBottom: '1px solid var(--border-default)' }}>
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                              {b.status === 'UNPAID' &&
-                          <button
-                            onClick={() => handlePay(b.id)}
-                            disabled={loading}
-                            style={payBtnStyle}>{t("resident.payNow")}
-
-
-                          </button>
-                          }
-                              <button
-                            onClick={() => setSelectedBill(b)}
-                            style={viewBtnStyle}>
-                            
-                                <FileText size={16} />{t("resident.viewEBill")}
-                          </button>
-                            </div>
-                          </td>
+                {initialLoading ? (
+                  <SkeletonLoader type="table" rows={6} />
+                ) : bills.length === 0 ? (
+                  <p style={{ color: 'var(--text-secondary)' }}>{t("resident.nobillsgeneratedyet")}</p>
+                ) : (
+                  <>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
+                      <thead>
+                        <tr style={{ backgroundColor: 'var(--color-primary-50)', textAlign: 'left' }}>
+                          <th style={{ padding: '12px', borderBottom: '1px solid var(--border-default)' }}>{t("resident.cycle")}</th>
+                          <th style={{ padding: '12px', borderBottom: '1px solid var(--border-default)' }}>{t("resident.dueDate")}</th>
+                          <th style={{ padding: '12px', borderBottom: '1px solid var(--border-default)' }}>{t("resident.amount")}</th>
+                          <th style={{ padding: '12px', borderBottom: '1px solid var(--border-default)' }}>{t("resident.status")}</th>
+                          <th style={{ padding: '12px', borderBottom: '1px solid var(--border-default)' }}>{t("resident.action")}</th>
                         </tr>
-                    )}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {currentBills.map((b) => (
+                          <tr key={b.id} style={{ transition: 'background-color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-card-hover)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                            <td style={{ padding: '12px', borderBottom: '1px solid var(--border-default)', fontWeight: '500' }}>{b.billingCycle}</td>
+                            <td style={{ padding: '12px', borderBottom: '1px solid var(--border-default)', fontSize: '13px', color: 'var(--text-secondary)' }}>{b.dueDate || 'N/A'}</td>
+                            <td style={{ padding: '12px', borderBottom: '1px solid var(--border-default)', fontWeight: '600' }}>₹{b.amount.toFixed(2)}</td>
+                            <td style={{ padding: '12px', borderBottom: '1px solid var(--border-default)' }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
+                                <span style={{
+                                  padding: '4px 8px',
+                                  borderRadius: '12px',
+                                  fontSize: '12px',
+                                  fontWeight: 'bold',
+                                  backgroundColor: b.status === 'PAID' ? 'var(--color-success-50)' : 'var(--color-danger-50)',
+                                  color: b.status === 'PAID' ? 'var(--color-success-700)' : 'var(--color-danger-700)'
+                                }}>
+                                  {b.status}
+                                </span>
+                                {b.status === 'UNPAID' && b.monthsLate > 0 && (
+                                  <span style={{ fontSize: '11px', color: 'var(--color-danger-600)', fontWeight: 'bold' }}>{t("resident.overdue")}
+                                    {b.monthsLate}{t("resident.mo")}
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td style={{ padding: '12px', borderBottom: '1px solid var(--border-default)' }}>
+                              <div style={{ display: 'flex', gap: '8px' }}>
+                                {b.status === 'UNPAID' && (
+                                  <DebouncedButton
+                                    onClick={() => handlePay(b.id)}
+                                    disabled={loading}
+                                    style={payBtnStyle}
+                                  >
+                                    {t("resident.payNow")}
+                                  </DebouncedButton>
+                                )}
+                                <DebouncedButton
+                                  onClick={() => setSelectedBill(b)}
+                                  style={viewBtnStyle}
+                                >
+                                  <FileText size={16} />{t("resident.viewEBill")}
+                                </DebouncedButton>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </>
+                )}
                   
                   {totalPages > 1 && (
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px' }}>
@@ -293,8 +290,6 @@ function MyBills() {const { t } = useTranslation();
                       </div>
                     </div>
                   )}
-                </>
-                }
               </MagicCard>
 
             </div>
@@ -302,8 +297,8 @@ function MyBills() {const { t } = useTranslation();
             {}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginTop: '25px' }}>
               {/* Monthly Bill Amount Bar Chart */}
-              <MagicCard style={{ padding: '25px', minHeight: '340px' }}>
-                <h3 style={{ margin: '0 0 15px 0', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
+              <MagicCard className="chart-card" style={{ minHeight: '340px' }}>
+                <h3>
                   <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #6c8eef, #34c77b)' }}></span>
                   Billing Amount Trend (₹)
                 </h3>
@@ -348,8 +343,8 @@ function MyBills() {const { t } = useTranslation();
               </MagicCard>
 
               {/* Payment Settlement Status Donut */}
-              <MagicCard style={{ padding: '25px', minHeight: '340px' }}>
-                <h3 style={{ margin: '0 0 15px 0', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
+              <MagicCard className="chart-card" style={{ minHeight: '340px' }}>
+                <h3>
                   <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #34c77b, #e86356)' }}></span>
                   Payment Settlement Status
                 </h3>
@@ -371,6 +366,35 @@ function MyBills() {const { t } = useTranslation();
                         <Cell fill="#e86356" stroke="var(--bg-card)" strokeWidth={3} />
                       </Pie>
                       <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={(v, name) => [`${v} bill(s)`, name]} />
+                      <Legend verticalAlign="bottom" height={36} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </MagicCard>
+
+              {/* Tariff Tier Cost Distribution Donut Chart */}
+              <MagicCard className="chart-card" style={{ minHeight: '340px' }}>
+                <h3>
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }}></span>
+                  Tariff Tier Cost Breakdown
+                </h3>
+                <div style={{ width: '100%', height: 260 }}>
+                  <ResponsiveContainer>
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: 'Base Rate (0-12 KL)', value: selectedBill ? Number(selectedBill.baseCharge || 360) : 360 },
+                          { name: 'Shared Cost & Tax', value: selectedBill ? Number((selectedBill.sharedCostAllocation || 150) + (selectedBill.taxAmount || 45) + (selectedBill.platformFee || 5)) : 200 },
+                        ]}
+                        cx="50%" cy="45%" innerRadius={55} outerRadius={85}
+                        paddingAngle={5} dataKey="value"
+                        animationDuration={1200} animationEasing="ease-out"
+                      >
+                        <Cell fill="#8b5cf6" stroke="var(--bg-card)" strokeWidth={3} />
+                        <Cell fill="#ec4899" stroke="var(--bg-card)" strokeWidth={3} />
+                        <Cell fill="#3b82f6" stroke="var(--bg-card)" strokeWidth={3} />
+                      </Pie>
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={(v) => [`₹${Number(v).toFixed(2)}`, 'Cost']} />
                       <Legend verticalAlign="bottom" height={36} />
                     </PieChart>
                   </ResponsiveContainer>
@@ -549,7 +573,7 @@ function MyBills() {const { t } = useTranslation();
 
 }
 
-const payBtnStyle = { padding: '8px 16px', backgroundColor: 'var(--color-success-600)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px', transition: 'background-color 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' };
-const viewBtnStyle = { display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', backgroundColor: 'var(--color-primary-50)', color: 'var(--color-primary-600)', border: '1px solid var(--color-primary-200)', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px', transition: 'background-color 0.2s' };
 
 export default MyBills;
+
+

@@ -10,6 +10,7 @@ import { Award, Lightbulb, Droplet } from 'lucide-react';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';
 
 import SkeletonLoader from '../components/SkeletonLoader';
+import AnimatedNumber from '../components/AnimatedNumber';
 
 function UserDashboard() {
   const [dashboardData, setDashboardData] = useState(null);
@@ -19,11 +20,21 @@ function UserDashboard() {
 
   useEffect(() => {
     const userStr = localStorage.getItem('user');
-    const user = userStr ? JSON.parse(userStr) : { id: 1 };
+    if (!userStr) {
+      window.location.href = '/login';
+      return;
+    }
+    const parsedUser = JSON.parse(userStr);
+    if (!parsedUser || !parsedUser.id) {
+      window.location.href = '/login';
+      return;
+    }
+    
+    const userId = parsedUser.id;
     
     Promise.all([
-      fetch(`http://localhost:8081/api/dashboard/${user.id}`).then(r => r.json()).catch(() => null),
-      fetch(`http://localhost:8081/api/dashboard/peer-benchmarking/${user.id}`).then(r => r.json()).catch(() => null)
+      fetch(`http://localhost:8081/api/dashboard/${userId}`).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(`http://localhost:8081/api/dashboard/peer-benchmarking/${userId}`).then(r => r.ok ? r.json() : null).catch(() => null)
     ]).then(([dData, pData]) => {
       if (dData) setDashboardData(dData);
       if (pData) setPeerData(pData);
@@ -88,7 +99,7 @@ function UserDashboard() {
   const displayCycle = data.billingCycle || 'August';
   const displayAlerts = data.alerts || 0;
 
-  const displayPeerData = (peerData && peerData.userConsumption != null) ? peerData : {
+  const displayPeerData = (peerData && peerData.userConsumption > 0) ? peerData : {
     percentileRank: "Top 20% Water Saver",
     userConsumption: 145,
     apartmentAverage: 180,
@@ -100,10 +111,10 @@ function UserDashboard() {
     ? monthlyConsumptionData[monthlyConsumptionData.length - 1].value 
     : (data.todaysUsage || 0);
 
-  const peerComparisonData = peerData ? [
-    { name: t('dashboard.yourHome', 'Your home'), usage: peerData.userConsumption ?? 0 },
-    { name: t('dashboard.apartmentAverage', 'Apartment average'), usage: peerData.apartmentAverage ?? 0 },
-    { name: t('dashboard.similarFlatSize', 'Similar flat size'), usage: peerData.similarSizeAverage ?? 0 }
+  const peerComparisonData = displayPeerData ? [
+    { name: t('dashboard.yourHome', 'Your home'), usage: displayPeerData.userConsumption ?? 0 },
+    { name: t('dashboard.apartmentAverage', 'Apartment average'), usage: displayPeerData.apartmentAverage ?? 0 },
+    { name: t('dashboard.similarFlatSize', 'Similar flat size'), usage: displayPeerData.similarSizeAverage ?? 0 }
   ] : [];
 
   return (
@@ -113,28 +124,38 @@ function UserDashboard() {
         <Topbar />
         
         <main className="dashboard-content">
-          <div className="page-header">
-            <h1>Welcome, {JSON.parse(localStorage.getItem('user') || '{}')?.name?.split(' ')[0] || 'Resident'} 👋</h1>
-          </div>
+          {loading ? (
+            <SkeletonLoader type="dashboard" />
+          ) : (
+            <>
+              <div className="page-header">
+                <h1>Welcome, {JSON.parse(localStorage.getItem('user') || '{}')?.name?.split(' ')[0] || 'Resident'} 👋</h1>
+              </div>
           
           <MagicCardGrid>
             {/* Top Metrics */}
             <div className="grid-4">
               <MagicCard className="stat-card">
                 <h3>{t('dashboard.lastMonthUsage', "Last Month's Usage")}</h3>
-                <div className="stat-value" style={{ color: 'var(--color-primary-600)' }}>{lastMonthUsage} L</div>
+                <div className="stat-value" style={{ color: 'var(--color-primary-600)' }}>
+                  <AnimatedNumber value={lastMonthUsage} suffix=" L" duration={1200} />
+                </div>
                 <div className="stat-sub" style={{ color: 'var(--color-success-500)' }}>{t('dashboard.latestReading', "Based on billing cycle")}</div>
               </MagicCard>
               
               <MagicCard className="stat-card">
                 <h3>{t('dashboard.currentBill')}</h3>
-                <div className="stat-value">₹{displayBill.toFixed(2)}</div>
+                <div className="stat-value">
+                  <AnimatedNumber value={displayBill} prefix="₹" decimals={2} duration={1400} />
+                </div>
                 <div className="stat-sub">{t('dashboard.cycle')} {displayCycle}</div>
               </MagicCard>
               
               <MagicCard className="stat-card">
                 <h3>{t('dashboard.activeAlerts')}</h3>
-                <div className="stat-value" style={{ color: displayAlerts > 0 ? 'var(--color-danger-500)' : 'var(--color-success-500)' }}>{displayAlerts}</div>
+                <div className="stat-value" style={{ color: displayAlerts > 0 ? 'var(--color-danger-500)' : 'var(--color-success-500)' }}>
+                  <AnimatedNumber value={displayAlerts} duration={800} />
+                </div>
                 <div className="stat-sub">{t('dashboard.leakActive')}</div>
               </MagicCard>
               
@@ -152,36 +173,63 @@ function UserDashboard() {
               <MagicCard style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-4)' }}>
                   <Award color="var(--color-accent-600)" size={24} />
-                  <h3 style={{ margin: 0, fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>
+                  <h3>
                     {t('dashboard.peerBenchmarking')}
                   </h3>
                 </div>
 
                 <div className="grid-3" style={{ marginBottom: 'var(--space-4)' }}>
-                  <div style={{ padding: 'var(--space-4)', backgroundColor: 'var(--bg-card-hover)', borderRadius: 'var(--radius-md)' }}>
-                    <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>{t('dashboard.yourAverage')}</span>
-                    <div style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-bold)', color: 'var(--color-primary-600)' }}>
-                      {displayPeerData.userConsumption} L
+                  {/* Your Average Pill - Blue Cyan */}
+                  <div style={{ 
+                    padding: 'var(--space-4)', 
+                    background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.14) 0%, rgba(37, 99, 235, 0.06) 100%)', 
+                    border: '1px solid rgba(59, 130, 246, 0.3)', 
+                    borderRadius: 'var(--radius-lg)',
+                    boxShadow: '0 4px 14px rgba(59, 130, 246, 0.08)'
+                  }}>
+                    <span style={{ fontSize: 'var(--text-xs)', color: '#3b82f6', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      {t('dashboard.yourAverage')}
+                    </span>
+                    <div style={{ fontSize: 'var(--text-2xl)', fontWeight: '800', color: '#2563eb', marginTop: '4px' }}>
+                      <AnimatedNumber value={displayPeerData.userConsumption} suffix=" L" duration={1200} />
                     </div>
                   </div>
 
-                  <div style={{ padding: 'var(--space-4)', backgroundColor: 'var(--bg-card-hover)', borderRadius: 'var(--radius-md)' }}>
-                    <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>{t('dashboard.apartmentAverage')}</span>
-                    <div style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-bold)', color: 'var(--text-secondary)' }}>
-                      {displayPeerData.apartmentAverage} L
+                  {/* Apartment Average Pill - Emerald Green */}
+                  <div style={{ 
+                    padding: 'var(--space-4)', 
+                    background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.14) 0%, rgba(5, 150, 105, 0.06) 100%)', 
+                    border: '1px solid rgba(16, 185, 129, 0.3)', 
+                    borderRadius: 'var(--radius-lg)',
+                    boxShadow: '0 4px 14px rgba(16, 185, 129, 0.08)'
+                  }}>
+                    <span style={{ fontSize: 'var(--text-xs)', color: '#10b981', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      {t('dashboard.apartmentAverage')}
+                    </span>
+                    <div style={{ fontSize: 'var(--text-2xl)', fontWeight: '800', color: '#059669', marginTop: '4px' }}>
+                      <AnimatedNumber value={displayPeerData.apartmentAverage} suffix=" L" duration={1300} />
                     </div>
                   </div>
 
-                  <div style={{ padding: 'var(--space-4)', backgroundColor: 'var(--bg-card-hover)', borderRadius: 'var(--radius-md)' }}>
-                    <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>{t('dashboard.similarFlatSize')}</span>
-                    <div style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-bold)', color: 'var(--text-secondary)' }}>
-                      {displayPeerData.similarSizeAverage} L
+                  {/* Similar Flat Size Pill - Purple Violet */}
+                  <div style={{ 
+                    padding: 'var(--space-4)', 
+                    background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.14) 0%, rgba(124, 58, 237, 0.06) 100%)', 
+                    border: '1px solid rgba(139, 92, 246, 0.3)', 
+                    borderRadius: 'var(--radius-lg)',
+                    boxShadow: '0 4px 14px rgba(139, 92, 246, 0.08)'
+                  }}>
+                    <span style={{ fontSize: 'var(--text-xs)', color: '#8b5cf6', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      {t('dashboard.similarFlatSize')}
+                    </span>
+                    <div style={{ fontSize: 'var(--text-2xl)', fontWeight: '800', color: '#7c3aed', marginTop: '4px' }}>
+                      <AnimatedNumber value={displayPeerData.similarSizeAverage} suffix=" L" duration={1400} />
                     </div>
                   </div>
                 </div>
 
                 <div style={{ height: '240px', marginBottom: 'var(--space-4)' }}>
-                  <h4 style={{ margin: '0 0 var(--space-3) 0', fontSize: 'var(--text-base)', color: 'var(--text-primary)' }}>
+                  <h4>
                     {t('dashboard.usageComparison', 'Usage Comparison (Liters)')}
                   </h4>
                   <ResponsiveContainer width="100%" height={196}>
@@ -207,25 +255,29 @@ function UserDashboard() {
               </MagicCard>
             )}
 
-            {/* Charts Section */}
+            {/* Charts Section with Multi-colored Gradient Bar Charts */}
             <div className="grid-2">
               <MagicCard className="chart-card">
                 <h3>{t('dashboard.monthlyConsumption')}</h3>
                 <div style={{ height: '250px' }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={monthlyConsumptionData} margin={{ top: 10, right: 20, left: 0, bottom: 15 }}>
+                      <defs>
+                        {['#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#ef4444'].map((color, i) => (
+                          <linearGradient key={i} id={`userMonthGrad${i}`} x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor={color} stopOpacity={1} />
+                            <stop offset="100%" stopColor={color} stopOpacity={0.5} />
+                          </linearGradient>
+                        ))}
+                      </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                       <XAxis dataKey="label" stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
                       <YAxis stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}kL`} />
                       <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`${Number(v).toLocaleString()} Liters`, 'Consumption']} />
                       <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={34} animationDuration={1200} animationEasing="ease-out">
-                        {monthlyConsumptionData.map((entry, index) => {
-                          const maxVal = Math.max(...monthlyConsumptionData.map(d => d.value)) || 1;
-                          let color = '#22c55e'; // green (low)
-                          if (entry.value > maxVal * 0.75) color = '#ef4444'; // red (high)
-                          else if (entry.value > maxVal * 0.4) color = '#f97316'; // orange (mid)
-                          return <Cell key={`cell-${index}`} fill={color} />;
-                        })}
+                        {monthlyConsumptionData.map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={`url(#userMonthGrad${index % 7})`} />
+                        ))}
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
@@ -236,46 +288,29 @@ function UserDashboard() {
                 <h3>{t('dashboard.weeklyUsage')}</h3>
                 <div style={{ height: '250px' }}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={weeklyUsageData} margin={{ top: 10, right: 30, left: 0, bottom: 15 }}>
+                    <AreaChart data={weeklyUsageData} margin={{ top: 10, right: 30, left: 0, bottom: 15 }}>
+                      <defs>
+                        <linearGradient id="userWeeklyGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.6} />
+                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05} />
+                        </linearGradient>
+                      </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                       <XAxis dataKey="label" stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
                       <YAxis stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={v => `${v}L`} />
                       <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`${v} Liters`, 'Usage']} />
-                      <Line type="monotone" dataKey="value" stroke="#34c77b" strokeWidth={3} dot={{ r: 5, fill: '#34c77b', stroke: 'var(--bg-card)', strokeWidth: 2 }} activeDot={{ r: 7 }} animationDuration={1200} animationEasing="ease-out" />
-                    </LineChart>
+                      <Area type="monotone" dataKey="value" stroke="#06b6d4" strokeWidth={3} fill="url(#userWeeklyGrad)" dot={{ r: 5, fill: '#06b6d4', stroke: 'var(--bg-card)', strokeWidth: 2 }} activeDot={{ r: 7 }} animationDuration={1200} animationEasing="ease-out" />
+                    </AreaChart>
                   </ResponsiveContainer>
                 </div>
               </MagicCard>
             </div>
 
 
-            <MagicCard style={{ padding: 'var(--space-6)', marginTop: 'var(--space-6)', background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1))' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-4)' }}>
-                <Droplet color="var(--color-primary-600)" size={24} />
-                <h3 style={{ margin: 0, fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>
-                  {t('dashboard.waterSavingTips')}
-                </h3>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-                {tips && tips.map((tip, idx) => (
-                  <div key={idx} style={{ 
-                    padding: 'var(--space-3)', 
-                    backgroundColor: 'var(--bg-card)', 
-                    borderRadius: 'var(--radius-md)',
-                    borderLeft: '4px solid var(--color-primary-500)',
-                    display: 'flex', alignItems: 'center', gap: 'var(--space-3)'
-                  }}>
-                    <Lightbulb size={18} color="var(--color-primary-500)" />
-                    <span style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>{tip}</span>
-                  </div>
-                ))}
-              </div>
-            </MagicCard>
-
             {/* Visual 1: Easy Donut - Water Breakdown by Activity */}
             <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
-              <MagicCard style={{ padding: 'var(--space-6)' }}>
-                <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <MagicCard className="chart-card">
+                <h3>
                   <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #6c8eef, #34c77b)' }}></span>
                   Where Your Water Goes (By Activity)
                 </h3>
@@ -305,8 +340,8 @@ function UserDashboard() {
               </MagicCard>
 
               {/* Visual 2: Easy Bar Chart - Daily Water Consumption */}
-              <MagicCard style={{ padding: 'var(--space-6)' }}>
-                <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <MagicCard className="chart-card">
+                <h3>
                   <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #f5ae45, #e86356)' }}></span>
                   Daily Usage This Week (Liters)
                 </h3>
@@ -348,8 +383,8 @@ function UserDashboard() {
             </div>
 
             {/* Visual 3: Easy Line Chart - Monthly Water Bill Amount (₹) */}
-            <MagicCard style={{ padding: 'var(--space-6)', marginTop: 'var(--space-6)' }}>
-              <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <MagicCard className="chart-card" style={{ marginTop: 'var(--space-6)' }}>
+              <h3>
                 <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #34c77b, #5bbcaa)' }}></span>
                 Monthly Water Bill (₹) History
               </h3>
@@ -385,10 +420,10 @@ function UserDashboard() {
             {/* FULL-PAGE COVERAGE: 3-column Insights, Peak Hours & Smart Goals */}
             <div className="grid-3" style={{ marginTop: 'var(--space-6)' }}>
               {/* Card 1: Eco Score & Efficiency Badge */}
-              <MagicCard style={{ padding: 'var(--space-5)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <MagicCard className="chart-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-3)' }}>
-                    <h3 style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--text-primary)' }}>Water Saver Tier</h3>
+                    <h3>Water Saver Tier</h3>
                     <span style={{ backgroundColor: 'rgba(52, 199, 123, 0.15)', color: '#34c77b', padding: '4px 10px', borderRadius: 'var(--radius-full)', fontSize: 'var(--text-xs)', fontWeight: 'bold' }}>Top 15%</span>
                   </div>
                   <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#34c77b', marginBottom: 'var(--space-2)' }}>
@@ -405,40 +440,40 @@ function UserDashboard() {
               </MagicCard>
 
               {/* Card 2: Peak Consumption Hours Guide */}
-              <MagicCard style={{ padding: 'var(--space-5)' }}>
-                <h3 style={{ margin: '0 0 var(--space-3) 0', fontSize: 'var(--text-base)', color: 'var(--text-primary)' }}>
+              <MagicCard className="chart-card">
+                <h3>
                   Community Usage Hours
                 </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 10px', backgroundColor: 'rgba(232, 99, 86, 0.1)', borderRadius: 'var(--radius-md)' }}>
-                    <span style={{ fontSize: 'var(--text-xs)', color: '#e86356', fontWeight: 'bold' }}>🔴 Peak Hours</span>
-                    <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>7:00 AM – 9:30 AM</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', backgroundColor: 'rgba(232, 99, 86, 0.1)', borderRadius: 'var(--radius-md)' }}>
+                    <span style={{ fontSize: 'var(--text-sm)', color: '#e86356', fontWeight: 'bold' }}>🔴 Peak Hours</span>
+                    <span style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>7:00 AM – 9:30 AM</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 10px', backgroundColor: 'rgba(245, 174, 69, 0.1)', borderRadius: 'var(--radius-md)' }}>
-                    <span style={{ fontSize: 'var(--text-xs)', color: '#f5ae45', fontWeight: 'bold' }}>🟡 Moderate Hours</span>
-                    <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>6:30 PM – 9:00 PM</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', backgroundColor: 'rgba(245, 174, 69, 0.1)', borderRadius: 'var(--radius-md)' }}>
+                    <span style={{ fontSize: 'var(--text-sm)', color: '#f5ae45', fontWeight: 'bold' }}>🟡 Moderate Hours</span>
+                    <span style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>6:30 PM – 9:00 PM</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 10px', backgroundColor: 'rgba(52, 199, 123, 0.1)', borderRadius: 'var(--radius-md)' }}>
-                    <span style={{ fontSize: 'var(--text-xs)', color: '#34c77b', fontWeight: 'bold' }}>🟢 Best Off-Peak</span>
-                    <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>1:00 PM – 4:00 PM</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', backgroundColor: 'rgba(52, 199, 123, 0.1)', borderRadius: 'var(--radius-md)' }}>
+                    <span style={{ fontSize: 'var(--text-sm)', color: '#34c77b', fontWeight: 'bold' }}>🟢 Best Off-Peak</span>
+                    <span style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>1:00 PM – 4:00 PM</span>
                   </div>
                 </div>
               </MagicCard>
 
               {/* Card 3: Quick Action & Conservation Checklist */}
-              <MagicCard style={{ padding: 'var(--space-5)' }}>
-                <h3 style={{ margin: '0 0 var(--space-3) 0', fontSize: 'var(--text-base)', color: 'var(--text-primary)' }}>
+              <MagicCard className="chart-card">
+                <h3>
                   Home Checklist
                 </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: 'var(--text-xs)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
-                    <span style={{ color: '#34c77b' }}>✓</span> Faucet aerators checked (Normal)
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: 'var(--text-sm)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', padding: '6px 0' }}>
+                    <span style={{ color: '#34c77b', fontSize: 'var(--text-lg)' }}>✓</span> Faucet aerators checked (Normal)
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
-                    <span style={{ color: '#34c77b' }}>✓</span> Zero household leak alerts active
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', padding: '6px 0' }}>
+                    <span style={{ color: '#34c77b', fontSize: 'var(--text-lg)' }}>✓</span> Zero household leak alerts active
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
-                    <span style={{ color: '#6c8eef' }}>ℹ</span> Next cycle meter read on <strong>Aug 31</strong>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-primary)', padding: '6px 0' }}>
+                    <span style={{ color: '#6c8eef', fontSize: 'var(--text-lg)' }}>ℹ</span> Next cycle meter read on <strong>Aug 31</strong>
                   </div>
                 </div>
               </MagicCard>
@@ -446,6 +481,8 @@ function UserDashboard() {
 
 
           </MagicCardGrid>
+            </>
+          )}
         </main>
       </div>
     </div>
@@ -453,3 +490,7 @@ function UserDashboard() {
 }
 
 export default UserDashboard;
+
+
+
+

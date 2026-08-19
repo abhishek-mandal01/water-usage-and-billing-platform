@@ -18,8 +18,7 @@ import {
   PieChart,
   Menu,
   X,
-  PanelLeftClose,
-  PanelLeft
+  PanelLeftClose
 } from 'lucide-react';
 
 function CommunityAdminSidebar() {
@@ -54,7 +53,13 @@ function CommunityAdminSidebar() {
     { name: t('nav.profile', 'Profile'), path: '/community/profile', icon: User },
   ];
 
-  return (
+const handleSidebarContainerClick = (e) => {
+    const isInteractive = e.target.closest('a') || e.target.closest('button') || e.target.closest('.sidebar-link');
+    if (!isInteractive) {
+      toggleCollapse();
+    }
+  };
+return (
     <>
       <button className="hamburger-btn" onClick={toggle} aria-label="Toggle menu">
         {isOpen ? <X size={20} /> : <Menu size={20} />}
@@ -65,7 +70,11 @@ function CommunityAdminSidebar() {
         onClick={close}
       />
 
-      <div className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}>
+      <div 
+        className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}
+        onClick={handleSidebarContainerClick}
+        style={{ cursor: isCollapsed ? 'pointer' : 'default' }}
+      >
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
@@ -170,3 +179,4 @@ function CommunityAdminSidebar() {
 }
 
 export default CommunityAdminSidebar;
+

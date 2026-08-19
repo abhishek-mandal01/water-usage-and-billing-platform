@@ -141,10 +141,15 @@ function HouseholdsDirectory() {
         <Topbar />
         
         <main className="dashboard-content">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-              <h1 style={{ margin: 0 }}>Households Directory</h1>
-              <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '14px', backgroundColor: 'var(--color-surface-100)', padding: '4px 10px', borderRadius: 'var(--radius-full)' }}>Total: {households.length}</p>
+          <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                <h1 style={{ margin: 0 }}>Households Directory</h1>
+                <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '14px', backgroundColor: 'var(--color-surface-100)', padding: '4px 10px', borderRadius: 'var(--radius-full)' }}>Total: {households.length}</p>
+              </div>
+              <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: 'var(--text-sm)' }}>
+                Manage resident profiles, view their details, and monitor individual water usage.
+              </p>
             </div>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
               <select 
@@ -366,3 +371,4 @@ function HouseholdsDirectory() {
 }
 
 export default HouseholdsDirectory;
+

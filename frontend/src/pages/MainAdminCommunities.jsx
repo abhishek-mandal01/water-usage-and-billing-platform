@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainAdminSidebar from '../components/MainAdminSidebar';
 import Topbar from '../components/topbar';
-import { Building2, Search, ArrowRight } from 'lucide-react';
+import { Search, ArrowRight } from 'lucide-react';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
 
 function MainAdminCommunities() {
@@ -159,3 +159,4 @@ const thStyle = { padding: '16px', color: '#4b5563', fontSize: '14px', fontWeigh
 const tdStyle = { padding: '16px', color: '#111827', fontSize: '15px' };
 
 export default MainAdminCommunities;
+

@@ -1,4 +1,3 @@
-import React from 'react';
 
 const DropletShadow = ({ breathing }) => {
   return (
@@ -28,7 +27,7 @@ const DropletShadow = ({ breathing }) => {
           }
         `}
       </style>
-      <div className={\`hero-droplet-shadow \${breathing ? 'breathing' : ''}\`} />
+      <div className={`hero-droplet-shadow ${breathing ? 'breathing' : ''}`} />
     </>
   );
 };

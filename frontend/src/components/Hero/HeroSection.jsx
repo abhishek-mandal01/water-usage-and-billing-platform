@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import BaseGradient from './Background/BaseGradient';
 import CausticLighting from './Background/CausticLighting';
 import SurfaceRipples from './Surface/SurfaceRipples';
@@ -125,3 +125,4 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
+

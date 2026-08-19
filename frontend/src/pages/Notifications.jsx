@@ -125,8 +125,13 @@ function Notifications({ role: propRole }) {
         }
         
         <main className="dashboard-content">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h1 style={{ margin: 0 }}>{t("resident.notificationsAlerts")}</h1>
+          <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <div>
+              <h1 style={{ margin: 0 }}>{t("resident.notificationsAlerts")}</h1>
+              <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: 'var(--text-sm)' }}>
+                Stay updated on leak warnings, billing notices, and community announcements.
+              </p>
+            </div>
             <div style={{ display: 'flex', gap: '10px' }}>
               <button
                 onClick={handleMarkAllAsRead}

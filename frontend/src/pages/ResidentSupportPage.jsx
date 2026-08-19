@@ -1,4 +1,4 @@
-import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
+﻿import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
 import Sidebar from '../components/sidebar';
 import Topbar from '../components/topbar';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
@@ -13,9 +13,10 @@ function ResidentSupportPage() {const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState('newest');
 
-  const user = JSON.parse(localStorage.getItem('user')) || { id: 1 };
+  const user = JSON.parse(localStorage.getItem('user')) || {};
 
   const fetchTickets = async () => {
+    if (!user || !user.id) return;
     try {
       const res = await fetch(`http://localhost:8081/api/tickets/my/${user.id}`);
       if (res.ok) {

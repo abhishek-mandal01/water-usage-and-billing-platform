@@ -1,4 +1,6 @@
 export const GOOGLE_TRANSLATE_LANGUAGES = [
+  { code: 'en', englishName: 'English', nativeName: 'English' },
+  { code: 'hi', englishName: 'Hindi', nativeName: 'हिन्दी' },
   { code: 'af', englishName: 'Afrikaans', nativeName: 'Afrikaans' },
   { code: 'sq', englishName: 'Albanian', nativeName: 'Shqip' },
   { code: 'am', englishName: 'Amharic', nativeName: 'አማርኛ' },
@@ -25,7 +27,6 @@ export const GOOGLE_TRANSLATE_LANGUAGES = [
   { code: 'dv', englishName: 'Dhivehi', nativeName: 'ދިވެހިބަސް' },
   { code: 'doi', englishName: 'Dogri', nativeName: 'डोगरी' },
   { code: 'nl', englishName: 'Dutch', nativeName: 'Nederlands' },
-  { code: 'en', englishName: 'English', nativeName: 'English' },
   { code: 'eo', englishName: 'Esperanto', nativeName: 'Esperanto' },
   { code: 'et', englishName: 'Estonian', nativeName: 'Eesti' },
   { code: 'ee', englishName: 'Ewe', nativeName: 'Eʋegbe' },
@@ -43,7 +44,6 @@ export const GOOGLE_TRANSLATE_LANGUAGES = [
   { code: 'ha', englishName: 'Hausa', nativeName: 'Hausa' },
   { code: 'haw', englishName: 'Hawaiian', nativeName: 'ʻŌlelo Hawaiʻi' },
   { code: 'iw', englishName: 'Hebrew', nativeName: 'עברית' },
-  { code: 'hi', englishName: 'Hindi', nativeName: 'हिन्दी' },
   { code: 'hmn', englishName: 'Hmong', nativeName: 'Hmoob' },
   { code: 'hu', englishName: 'Hungarian', nativeName: 'Magyar' },
   { code: 'is', englishName: 'Icelandic', nativeName: 'Íslenska' },
@@ -134,3 +134,4 @@ export const GOOGLE_TRANSLATE_LANGUAGES = [
   { code: 'yo', englishName: 'Yoruba', nativeName: 'Yorùbá' },
   { code: 'zu', englishName: 'Zulu', nativeName: 'isiZulu' }
 ];
+

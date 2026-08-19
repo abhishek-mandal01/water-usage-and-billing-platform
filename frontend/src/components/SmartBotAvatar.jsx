@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './SmartBotAvatar.css';
 
 /**
- * SmartBotAvatar — High-fidelity 3D claymorphic robot mascot
+ * SmartBotAvatar - High-fidelity 3D claymorphic robot mascot
  * Features:
  * - 3D lighting gradients & specular glass reflections
  * - Animated cyan glowing eyes with natural blinking
@@ -15,7 +15,7 @@ const SmartBotAvatar = ({
   size = 'large', // 'large' | 'medium' | 'mini'
   isInteractive = true,
   showTooltip = true,
-  tooltipText = 'Hi! How can I help with your water bills? 💧',
+  tooltipText = 'Hi! How can I help with your water bills? ??',
   isTyping = false,
   isSpeaking = false,
   onClick,
@@ -43,8 +43,23 @@ const SmartBotAvatar = ({
     >
       {/* Interactive Speech Callout (Large mode only) */}
       {!isMini && showTooltip && (
-        <div className={`smartbot-speech-bubble ${isHovered ? 'visible' : ''}`}>
-          <span>{tooltipText}</span>
+        <div 
+          className={`smartbot-speech-bubble ${isHovered ? 'visible' : ''}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick?.();
+          }}
+          title="Click to chat with SmartBot AI"
+        >
+          <span className="smartbot-speech-text">
+            {tooltipText.includes('??') ? (
+              <>
+                {tooltipText.replace('??', '').trim()} <span className="smartbot-droplet-icon">??</span>
+              </>
+            ) : (
+              tooltipText
+            )}
+          </span>
           <div className="smartbot-bubble-tail"></div>
         </div>
       )}
@@ -63,26 +78,28 @@ const SmartBotAvatar = ({
           viewBox="0 0 160 170"
           className="smartbot-svg"
           xmlns="http://www.w3.org/2000/svg"
+          shapeRendering="geometricPrecision"
+          textRendering="geometricPrecision"
+          imageRendering="optimizeQuality"
         >
           <defs>
-            {/* Visor & Eye Glow Filter */}
+            {/* Visor & Eye Glow Filter - Sharp Precision Neon */}
             <filter id="cyanGlow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="2.5" result="blur" />
+              <feGaussianBlur stdDeviation="1.2" result="blur" />
               <feMerge>
-                <feMergeNode in="blur" />
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
 
             <filter id="ambientShadow" x="-30%" y="-30%" width="160%" height="160%">
-              <feDropShadow dx="0" dy="6" stdDeviation="6" floodColor="#0f172a" floodOpacity="0.25" />
+              <feDropShadow dx="0" dy="4" stdDeviation="3" floodColor="#0f172a" floodOpacity="0.22" />
             </filter>
 
             <filter id="innerSoftGaze" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="1.5" result="blur" />
+              <feGaussianBlur stdDeviation="1" result="blur" />
               <feComposite in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadowDiff" />
-              <feFlood floodColor="#00e5ff" floodOpacity="0.4" />
+              <feFlood floodColor="#00e5ff" floodOpacity="0.3" />
               <feComposite in2="shadowDiff" operator="in" />
               <feComposite in2="SourceGraphic" operator="over" />
             </filter>
@@ -343,3 +360,4 @@ const SmartBotAvatar = ({
 };
 
 export default SmartBotAvatar;
+

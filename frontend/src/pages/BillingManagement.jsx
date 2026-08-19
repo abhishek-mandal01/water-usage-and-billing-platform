@@ -141,7 +141,12 @@ function BillingManagement() {
         <Topbar />
         
         <main className="dashboard-content">
-          <h1 style={{ marginBottom: '20px' }}>Billing Cycles & Distribution</h1>
+          <div className="page-header" style={{ marginBottom: '20px' }}>
+            <h1 style={{ margin: 0 }}>Billing Cycles & Distribution</h1>
+            <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: 'var(--text-sm)' }}>
+              Open new billing cycles, review generated bills, and manage distribution statuses.
+            </p>
+          </div>
 
           <MagicCardGrid>
             <div style={{ display: 'flex', gap: '30px', flexWrap: 'wrap', alignItems: 'stretch' }}>
@@ -555,3 +560,4 @@ function BillingManagement() {
 const viewBtnStyle = { display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', backgroundColor: 'var(--color-primary-50)', color: 'var(--color-primary-600)', border: '1px solid var(--color-primary-200)', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 'var(--font-bold)', fontSize: 'var(--text-sm)', transition: 'background-color 0.2s' };
 
 export default BillingManagement;
+

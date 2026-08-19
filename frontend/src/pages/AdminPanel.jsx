@@ -270,7 +270,7 @@ function AdminPanel() {
             <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
               {/* Visual 1: Horizontal Ranking Bar Chart - Top Household Consumers */}
               <MagicCard className="chart-card" style={{ minHeight: '360px' }}>
-                <h3 style={{ margin: '0 0 var(--space-4) 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h3>
                   <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #e86356, #f5ae45)' }}></span>
                   Top Household Water Consumers (L)
                 </h3>
@@ -312,7 +312,7 @@ function AdminPanel() {
 
               {/* Visual 2: Line Progression Chart - Monthly Collection Rate % */}
               <MagicCard className="chart-card" style={{ minHeight: '360px' }}>
-                <h3 style={{ margin: '0 0 var(--space-4) 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h3>
                   <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #34c77b, #5bbcaa)' }}></span>
                   Monthly Bill Collection Rate (%)
                 </h3>
@@ -341,7 +341,7 @@ function AdminPanel() {
 
             {/* Visual 3: Easy Side-by-Side Bar Chart - Total Water Bought vs Used by Residents */}
             <MagicCard className="chart-card" style={{ minHeight: '340px', marginTop: 'var(--space-6)' }}>
-              <h3 style={{ margin: '0 0 var(--space-4) 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h3>
                 <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #5bbcaa, #6c8eef)' }}></span>
                 Water Purchased vs Water Used by Residents (kL)
               </h3>
@@ -380,9 +380,9 @@ function AdminPanel() {
             </MagicCard>
 
             {/* Bottom section Modules */}
-            <div className="grid-2">
+            <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
               <MagicCard className="chart-card">
-                <h3 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                <h3>
                   <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--color-warning-500)' }}></span> Pending Bills
                 </h3>
                 {adminStats.pendingBills && adminStats.pendingBills.length > 0 ? (
@@ -397,7 +397,7 @@ function AdminPanel() {
               </MagicCard>
               
               <MagicCard className="chart-card">
-                <h3 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                <h3>
                   <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--color-danger-500)' }}></span> Recent Alerts
                 </h3>
                 {adminStats.recentAlerts && adminStats.recentAlerts.length > 0 ? (
@@ -428,3 +428,4 @@ function AdminPanel() {
 }
 
 export default AdminPanel;
+

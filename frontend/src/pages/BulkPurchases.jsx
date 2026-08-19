@@ -2,7 +2,7 @@ import { useTranslation } from '../components/LanguageSelector/useTranslation';i
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
 import Topbar from '../components/topbar';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
-import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, Legend } from 'recharts';
+import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, Legend, PieChart, Pie } from 'recharts';
 
 function BulkPurchases() {const { t } = useTranslation();
   const [purchases, setPurchases] = useState([]);
@@ -103,7 +103,12 @@ function BulkPurchases() {const { t } = useTranslation();
         <Topbar />
         
         <main className="dashboard-content">
-          <h1 style={{ marginBottom: '20px' }}>{t("communityAdmin.bulkWaterPurchases")}</h1>
+          <div className="page-header" style={{ marginBottom: '20px' }}>
+            <h1 style={{ margin: 0 }}>{t("communityAdmin.bulkWaterPurchases")}</h1>
+            <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: 'var(--text-sm)' }}>
+              Log bulk water tanker orders and manage procurement expenses.
+            </p>
+          </div>
           {msg && <p style={{ color: 'var(--color-success-500)', marginBottom: '10px' }}>{msg}</p>}
 
           <MagicCardGrid>
@@ -282,6 +287,37 @@ function BulkPurchases() {const { t } = useTranslation();
                       <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`₹${Number(v).toLocaleString()}`, 'Total Cost']} />
                       <Area type="monotone" dataKey="cost" name="Cost (₹)" stroke="#f5ae45" strokeWidth={3} fill="url(#bulkCostGrad)" dot={{ r: 5, fill: '#f5ae45', stroke: 'var(--bg-card)', strokeWidth: 2 }} animationDuration={1200} animationEasing="ease-out" />
                     </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </MagicCard>
+
+              {/* Water Source Supply Sourcing Breakdown Pie Chart */}
+              <MagicCard style={{ padding: '25px', minHeight: '340px' }}>
+                <h3 style={{ margin: '0 0 15px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #06b6d4, #3b82f6)' }}></span>
+                  Water Sourcing Breakdown (%)
+                </h3>
+                <div style={{ width: '100%', height: 260 }}>
+                  <ResponsiveContainer>
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: 'Municipal Pipeline Grid', value: 58 },
+                          { name: 'Rainwater Harvesting', value: 10 },
+                          { name: 'STP Recycled Water', value: 5 },
+                        ]}
+                        cx="50%" cy="45%" innerRadius={55} outerRadius={85}
+                        paddingAngle={5} dataKey="value"
+                        animationDuration={1200} animationEasing="ease-out"
+                      >
+                        <Cell fill="#06b6d4" stroke="var(--bg-card)" strokeWidth={3} />
+                        <Cell fill="#f5ae45" stroke="var(--bg-card)" strokeWidth={3} />
+                        <Cell fill="#10b981" stroke="var(--bg-card)" strokeWidth={3} />
+                        <Cell fill="#8b5cf6" stroke="var(--bg-card)" strokeWidth={3} />
+                      </Pie>
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={(v) => [`${v}%`, 'Share']} />
+                      <Legend verticalAlign="bottom" height={36} />
+                    </PieChart>
                   </ResponsiveContainer>
                 </div>
               </MagicCard>

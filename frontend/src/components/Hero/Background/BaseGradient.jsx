@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+﻿import { useEffect, useRef } from 'react';
 
 const BaseGradient = ({ mousePos }) => {
   const containerRef = useRef(null);
@@ -96,3 +96,4 @@ const BaseGradient = ({ mousePos }) => {
 };
 
 export default BaseGradient;
+

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';
 import { useTheme } from '../context/ThemeContext';
@@ -30,12 +29,12 @@ function AboutUs() {
           zIndex: 100,
           minHeight: '76px'
         }}>
-          <div style={{ transform: 'scale(0.8)', transformOrigin: 'left center', display: 'flex', alignItems: 'center' }}>
-            <BrandLogo style={{ borderBottom: 'none', padding: 0, margin: 0 }} />
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <BrandLogo style={{ borderBottom: 'none', padding: 0, margin: 0 }} logoSize={85} textSize="23px" subTextSize="10px" />
           </div>
           
           {/* Center Links (hidden on mobile) */}
-          <div className="landing-nav-links" style={{ display: 'flex', gap: 'var(--space-8)', position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontWeight: 'var(--font-semibold)', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
+          <div className="landing-nav-links" style={{ display: 'flex', gap: 'var(--space-8)', position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontWeight: 'var(--font-semibold)', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', fontFamily: "'Poppins', sans-serif" }}>
              <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>Home</Link>
              <a href="/#features" style={{ color: 'inherit', textDecoration: 'none' }}>Features</a>
              <Link to="/pricing" style={{ color: 'inherit', textDecoration: 'none' }}>Pricing</Link>
@@ -128,3 +127,4 @@ function AboutUs() {
 }
 
 export default AboutUs;
+

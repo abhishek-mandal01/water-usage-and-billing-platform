@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '../../LanguageSelector/useTranslation';
 import { Droplets, ArrowRight, CheckCircle } from 'lucide-react';
@@ -169,3 +168,4 @@ const HeroContent = () => {
 };
 
 export default HeroContent;
+

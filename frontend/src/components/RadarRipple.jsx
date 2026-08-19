@@ -1,4 +1,3 @@
-import React from 'react';
 import './RadarRipple.css';
 
 const RadarRipple = ({ x = '22vw', y = '50%' }) => {
@@ -13,3 +12,4 @@ const RadarRipple = ({ x = '22vw', y = '50%' }) => {
 };
 
 export default RadarRipple;
+

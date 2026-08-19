@@ -14,7 +14,10 @@ function BrandLogo({
     return (
       <div 
         className="brand-logo-collapsed-container"
-        onClick={onToggleCollapse}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleCollapse();
+        }}
         title="Expand sidebar"
         style={style}
       >
@@ -85,5 +88,4 @@ function BrandLogo({
 }
 
 export default BrandLogo;
-
 

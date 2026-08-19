@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LanguageSearch from './LanguageSearch';
 import LanguageItem from './LanguageItem';
@@ -22,7 +22,8 @@ const LanguageDropdown = ({ isOpen, onClose }) => {
     });
   }, [query]);
 
-  useEffect(() => {
+  useEffect(() => {// eslint-disable-next-line react-hooks/set-state-in-effect
+
     setActiveIndex(0);
   }, [query]);
 
@@ -157,3 +158,4 @@ const LanguageDropdown = ({ isOpen, onClose }) => {
 };
 
 export default LanguageDropdown;
+

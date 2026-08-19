@@ -95,22 +95,27 @@ function MainAdminFinancialsPage() {
                 </ResponsiveContainer>
               </MagicCard>
 
-              <MagicCard style={{ padding: 'var(--space-6)' }}>
-                <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>{t("mainAdmin.razorpayGatewayStatus")}</h3>
-                <div className="alert alert-info" style={{ marginBottom: 'var(--space-3)' }}>
-                  <strong>{t("mainAdmin.gatewayActiveLiveTestMode")}</strong>
-                  <p style={{ margin: '4px 0 0 0', fontSize: 'var(--text-xs)' }}>{t("mainAdmin.webhooksSignatureverificationfunctional")}</p>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>{t("mainAdmin.successRate")}</span>
-                    <strong style={{ color: 'var(--color-success-500)' }}>{t("mainAdmin.994")}</strong>
+              <MagicCard style={{ padding: 'var(--space-6)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
+                <div>
+                  <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', color: 'var(--text-primary)' }}>{t("mainAdmin.razorpayGatewayStatus")}</h3>
+                  <div className="alert alert-info" style={{ marginBottom: 'var(--space-4)' }}>
+                    <strong>{t("mainAdmin.gatewayActiveLiveTestMode")}</strong>
+                    <p style={{ margin: '4px 0 0 0', fontSize: 'var(--text-xs)' }}>{t("mainAdmin.webhooksSignatureverificationfunctional")}</p>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>{t("mainAdmin.avgSettlementTime")}</span>
-                    <strong>{t("mainAdmin.t1Days")}</strong>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '8px', borderBottom: '1px solid var(--border-light)' }}>
+                      <span>{t("mainAdmin.successRate")}</span>
+                      <strong style={{ color: 'var(--color-success-500)' }}>{t("mainAdmin.994")}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '8px', borderBottom: '1px solid var(--border-light)' }}>
+                      <span>{t("mainAdmin.avgSettlementTime")}</span>
+                      <strong>{t("mainAdmin.t1Days")}</strong>
+                    </div>
                   </div>
                 </div>
+                <button className="btn btn-primary" style={{ width: '100%', marginTop: 'var(--space-4)', padding: '10px', fontSize: '14px' }}>
+                  Manage Gateway Settings
+                </button>
               </MagicCard>
             </div>
 
@@ -157,7 +162,7 @@ function MainAdminFinancialsPage() {
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--chart-grid)" />
                       <XAxis type="number" stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${(value / 1000).toLocaleString(undefined, { maximumFractionDigits: 0 })}k`} />
-                      <YAxis type="category" dataKey="community" stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} width={95} />
+                      <YAxis type="category" dataKey="community" stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} width={95} tickFormatter={(v) => v ? v.split(' ')[0] : ''} />
                       <Tooltip formatter={(value) => [`₹${Number(value).toLocaleString(undefined, { maximumFractionDigits: 2 })}`, 'Collected Revenue']} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} cursor={{ fill: 'var(--bg-card-hover)' }} />
                       <Bar dataKey="revenue" name="Collected revenue" radius={[0, 6, 6, 0]} barSize={22} animationDuration={900}>
                         {(data.communityRevenue || []).map((_, index) => (
@@ -278,3 +283,4 @@ function MainAdminFinancialsPage() {
 }
 
 export default MainAdminFinancialsPage;
+

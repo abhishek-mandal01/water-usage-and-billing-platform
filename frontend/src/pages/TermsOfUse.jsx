@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';
 import ThemeToggle from '../components/ThemeToggle';
 import LanguageSelector from '../components/LanguageSelector';
@@ -99,3 +99,4 @@ const TermsOfUse = () => {
   );
 };
 export default TermsOfUse;
+

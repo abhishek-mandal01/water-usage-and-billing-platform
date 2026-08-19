@@ -1,4 +1,4 @@
-/* =========================================
+﻿/* =========================================
    MAGIC BENTO — Claymorphism Edition
    ========================================= */
 
@@ -6,7 +6,7 @@
   position: relative;
 }
 
-/* ── Clay Card Base ── */
+/* ─”€ Clay Card Base ─”€ */
 .magic-bento-card {
   background: var(--bg-card);
   border-radius: var(--radius-xl);
@@ -40,7 +40,7 @@
   transform: translateY(-3px);
 }
 
-/* ── Border Glow (softened for clay) ── */
+/* ─”€ Border Glow (softened for clay) ─”€ */
 .magic-bento-card--border-glow {
   --glow-x: 50%;
   --glow-y: 50%;
@@ -79,7 +79,7 @@
   );
 }
 
-/* ── Global Spotlight (subtle for clay) ── */
+/* ─”€ Global Spotlight (subtle for clay) ─”€ */
 .bento-spotlight {
   position: fixed;
   pointer-events: none;
@@ -94,7 +94,7 @@
   background: radial-gradient(circle, rgba(122, 162, 247, 0.06) 0%, transparent 70%);
 }
 
-/* ── Particle Effects (warm clay tones) ── */
+/* ─”€ Particle Effects (warm clay tones) ─”€ */
 .bento-particle {
   position: absolute;
   border-radius: var(--radius-full);
@@ -107,3 +107,4 @@
 [data-theme="dark"] .bento-particle {
   background: var(--color-primary-400);
 }
+

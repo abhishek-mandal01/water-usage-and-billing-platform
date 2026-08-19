@@ -1,4 +1,3 @@
-import React from 'react';
 import { Search, X } from 'lucide-react';
 
 const LanguageSearch = ({ query, setQuery }) => {
@@ -60,3 +59,4 @@ const LanguageSearch = ({ query, setQuery }) => {
 };
 
 export default LanguageSearch;
+

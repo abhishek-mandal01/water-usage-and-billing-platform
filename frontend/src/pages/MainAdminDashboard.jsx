@@ -1,10 +1,12 @@
 import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MainAdminSidebar from '../components/MainAdminSidebar';
 import Topbar from '../components/topbar';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area, Legend } from 'recharts';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
 
 function MainAdminDashboard() {const { t } = useTranslation();
+  const navigate = useNavigate();
   const [pendingVerifications, setPendingVerifications] = useState([]);
   const [dashboardData, setDashboardData] = useState({
     totalHouseholds: 0,
@@ -43,7 +45,8 @@ function MainAdminDashboard() {const { t } = useTranslation();
     }
   };
 
-  useEffect(() => {
+  useEffect(() => {// eslint-disable-next-line react-hooks/set-state-in-effect
+
     fetchPendingVerifications();
     fetchDashboardData();
   }, []);
@@ -52,7 +55,8 @@ function MainAdminDashboard() {const { t } = useTranslation();
     try {
       await fetch(`http://localhost:8081/api/verification/approve/${id}`, { method: 'POST' });
       alert('Community Admin Approved!');
-      setSelectedVerification(null);
+      setSelectedVerification(null);// eslint-disable-next-line react-hooks/set-state-in-effect
+
       fetchPendingVerifications();
     } catch (err) {
       console.error(err);
@@ -63,7 +67,8 @@ function MainAdminDashboard() {const { t } = useTranslation();
     try {
       await fetch(`http://localhost:8081/api/verification/decline/${id}`, { method: 'POST' });
       alert('Community Admin Verification Denied!');
-      setSelectedVerification(null);
+      setSelectedVerification(null);// eslint-disable-next-line react-hooks/set-state-in-effect
+
       fetchPendingVerifications();
     } catch (err) {
       console.error(err);
@@ -129,7 +134,7 @@ function MainAdminDashboard() {const { t } = useTranslation();
                       </tr>
                     </thead>
                     <tbody>
-                      {pendingVerifications.map((v) =>
+                      {pendingVerifications.slice(0, 3).map((v) =>
                         <tr key={v.id} onClick={() => setSelectedVerification(v)} style={{ cursor: 'pointer' }} className="clickable-row">
                           <td>{v.id}</td>
                           <td>{v.name || 'N/A'}</td>
@@ -160,6 +165,13 @@ function MainAdminDashboard() {const { t } = useTranslation();
                   </table>
                 </div>
               }
+              {pendingVerifications.length > 3 && (
+                <div style={{ marginTop: 'var(--space-4)', display: 'flex', justifyContent: 'center' }}>
+                  <button onClick={() => navigate('/main-admin/verifications')} className="btn btn-primary" style={{ padding: '8px 24px' }}>
+                    View All {pendingVerifications.length} Verifications
+                  </button>
+                </div>
+              )}
             </MagicCard>
             
             {/* Charts section */}
@@ -320,7 +332,7 @@ function MainAdminDashboard() {const { t } = useTranslation();
                         ))}
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
-                      <XAxis dataKey="community" stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} />
+                      <XAxis dataKey="community" stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => v ? v.split(' ')[0] : ''} />
                       <YAxis stroke="var(--text-tertiary)" fontSize={11} tickLine={false} axisLine={false} />
                       <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={v => [`${v} Active Users`, 'Users']} />
                       <Bar dataKey="users" name="Active Users" radius={[8, 8, 0, 0]} barSize={38} animationDuration={1200} animationEasing="ease-out">
@@ -408,3 +420,5 @@ function MainAdminDashboard() {const { t } = useTranslation();
 }
 
 export default MainAdminDashboard;
+
+

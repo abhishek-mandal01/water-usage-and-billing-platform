@@ -1,4 +1,3 @@
-import React from 'react';
 
 const DropletVisuals = () => {
   return (
@@ -36,3 +35,4 @@ const DropletVisuals = () => {
 };
 
 export default DropletVisuals;
+

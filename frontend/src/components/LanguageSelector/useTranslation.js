@@ -1,4 +1,4 @@
-import { useTranslation as useI18nTranslation } from 'react-i18next';
+﻿import { useTranslation as useI18nTranslation } from 'react-i18next';
 import enTranslations from '../../locales/en.json';
 
 const resolveKey = (obj, path) => {
@@ -45,3 +45,4 @@ export const useTranslation = () => {
 };
 
 export default useTranslation;
+

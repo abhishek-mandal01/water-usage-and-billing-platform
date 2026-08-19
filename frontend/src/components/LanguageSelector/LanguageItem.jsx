@@ -1,4 +1,3 @@
-import React from 'react';
 import { Check } from 'lucide-react';
 
 const LanguageItem = ({ language, isSelected, onClick, isActive }) => {
@@ -28,20 +27,25 @@ const LanguageItem = ({ language, isSelected, onClick, isActive }) => {
         if (!isSelected) e.currentTarget.style.background = 'transparent';
       }}
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-        <span style={{ 
-          fontSize: 'var(--text-base)', 
-          fontWeight: isSelected ? 'var(--font-semibold)' : 'var(--font-medium)',
-          color: isSelected ? 'var(--color-primary-600)' : 'var(--text-primary)'
-        }}>
-          {language.nativeName}
-        </span>
-        <span style={{ 
-          fontSize: 'var(--text-xs)', 
-          color: isSelected ? 'var(--color-primary-500)' : 'var(--text-tertiary)' 
-        }}>
-          {language.englishName}
-        </span>
+      <div className="notranslate" style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+          <span style={{ 
+            fontSize: '14px', 
+            fontWeight: '600',
+            color: isSelected ? 'var(--color-primary-600)' : 'var(--text-primary)'
+          }}>
+            {language.nativeName}
+          </span>
+          {language.nativeName !== language.englishName && (
+            <span style={{ 
+              fontSize: '12px', 
+              fontWeight: '400',
+              color: isSelected ? 'var(--color-primary-500)' : 'var(--text-tertiary)' 
+            }}>
+              ({language.englishName})
+            </span>
+          )}
+        </div>
       </div>
       
       {isSelected && (
@@ -59,3 +63,4 @@ const LanguageItem = ({ language, isSelected, onClick, isActive }) => {
 };
 
 export default LanguageItem;
+

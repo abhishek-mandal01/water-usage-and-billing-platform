@@ -18,6 +18,7 @@ import {
 } from 'recharts';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
 
+import SkeletonLoader from '../components/SkeletonLoader';
 function UsageHistory() {const { t } = useTranslation();
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -76,7 +77,12 @@ function UsageHistory() {const { t } = useTranslation();
         <Topbar />
         
         <main className="dashboard-content">
-          <h1 style={{ marginBottom: '25px', color: 'var(--text-primary)' }}>{t("resident.myUsageHistory")}</h1>
+          <div className="page-header" style={{ marginBottom: '25px' }}>
+            <h1 style={{ margin: 0, color: 'var(--text-primary)' }}>{t("resident.myUsageHistory")}</h1>
+            <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: 'var(--text-sm)' }}>
+              Track your daily, weekly, and monthly water consumption trends.
+            </p>
+          </div>
 
           <MagicCardGrid>
             {/* Summary Cards */}
@@ -96,20 +102,20 @@ function UsageHistory() {const { t } = useTranslation();
             
             {/* Chart Section */}
             <MagicCard style={{ flex: '1 1 500px', padding: '25px' }}>
-              <h3 style={{ margin: '0 0 20px 0', color: 'var(--text-secondary)' }}>{t("resident.consumptionTrend")}</h3>
-              {loading ?
-                <p>{t("resident.loadingchartdata")}</p> :
-                chartData.length === 0 ?
-                <p style={{ color: 'var(--text-secondary)' }}>{t("resident.nousagedataavailableto")}</p> :
-
+              <h3>{t("resident.consumptionTrend")}</h3>
+              {loading ? (
+                <SkeletonLoader type="chart" />
+              ) : chartData.length === 0 ? (
+                <p style={{ color: 'var(--text-secondary)' }}>{t("resident.nousagedataavailableto")}</p>
+              ) : (
                 <div style={{ width: '100%', height: 350 }}>
                   <ResponsiveContainer>
                     <BarChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 15 }}>
                       <defs>
-                        {['#6c8eef', '#5bbcaa', '#f5ae45', '#e86356', '#a78bfa', '#34c77b', '#f472b6', '#fb923c'].map((color, i) => (
+                        {['#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#ef4444', '#a855f7'].map((color, i) => (
                           <linearGradient key={i} id={`histBarGrad${i}`} x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor={color} />
-                            <stop offset="100%" stopColor={color} stopOpacity={0.6} />
+                            <stop offset="0%" stopColor={color} stopOpacity={1} />
+                            <stop offset="100%" stopColor={color} stopOpacity={0.55} />
                           </linearGradient>
                         ))}
                       </defs>
@@ -127,28 +133,24 @@ function UsageHistory() {const { t } = useTranslation();
                         barSize={36}
                         animationDuration={1000}
                       >
-                        {chartData.map((entry, index) => {
-                          const maxVal = Math.max(...chartData.map(d => d.consumption)) || 1;
-                          let color = '#22c55e'; // green (low)
-                          if (entry.consumption > maxVal * 0.75) color = '#ef4444'; // red (high)
-                          else if (entry.consumption > maxVal * 0.4) color = '#f97316'; // orange (mid)
-                          return <Cell key={`cell-${index}`} fill={color} />;
-                        })}
+                        {chartData.map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={`url(#histBarGrad${index % 8})`} />
+                        ))}
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
-                }
+              )}
             </MagicCard>
 
             {/* Historical Table */}
             <MagicCard style={{ flex: '1 1 400px', padding: '25px' }}>
-              <h3 style={{ margin: '0 0 15px 0', color: 'var(--text-secondary)' }}>{t("resident.meterReadingLog")}</h3>
-              {loading ?
-                <p>{t("resident.loadinglogs")}</p> :
-                logs.length === 0 ?
-                <p style={{ color: 'var(--text-secondary)' }}>{t("resident.nohistoricallogsavailable")}</p> :
-
+              <h3>{t("resident.meterReadingLog")}</h3>
+              {loading ? (
+                <SkeletonLoader type="table" rows={6} />
+              ) : logs.length === 0 ? (
+                <p style={{ color: 'var(--text-secondary)' }}>{t("resident.nohistoricallogsavailable")}</p>
+              ) : (
                 <div style={{ overflowX: 'auto' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
                     <thead>
@@ -169,7 +171,7 @@ function UsageHistory() {const { t } = useTranslation();
                     </tbody>
                   </table>
                 </div>
-                }
+              )}
             </MagicCard>
 
           </div>
@@ -177,8 +179,8 @@ function UsageHistory() {const { t } = useTranslation();
           {}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginTop: '25px' }}>
             {/* Cumulative Area Chart */}
-            <MagicCard style={{ padding: '25px', minHeight: '340px' }}>
-              <h3 style={{ margin: '0 0 15px 0', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
+            <MagicCard className="chart-card" style={{ minHeight: '340px' }}>
+              <h3>
                 <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #5bbcaa, #34c77b)' }}></span>
                 Cumulative Meter Progression (L)
               </h3>
@@ -211,8 +213,8 @@ function UsageHistory() {const { t } = useTranslation();
             </MagicCard>
 
             {/* Consumption Tier Donut Chart */}
-            <MagicCard style={{ padding: '25px', minHeight: '340px' }}>
-              <h3 style={{ margin: '0 0 15px 0', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
+            <MagicCard className="chart-card" style={{ minHeight: '340px' }}>
+              <h3>
                 <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #34c77b, #e86356)' }}></span>
                 Usage Category Distribution
               </h3>
@@ -223,7 +225,6 @@ function UsageHistory() {const { t } = useTranslation();
                       data={[
                         { name: 'Eco Days (<150L)', value: logs.filter(l => l.consumption < 150).length || 8 },
                         { name: 'Standard (150-300L)', value: logs.filter(l => l.consumption >= 150 && l.consumption <= 300).length || 14 },
-                        { name: 'High Usage (>300L)', value: logs.filter(l => l.consumption > 300).length || 4 },
                       ]}
                       cx="50%" cy="45%" innerRadius={55} outerRadius={85}
                       paddingAngle={5} dataKey="value"
@@ -241,8 +242,8 @@ function UsageHistory() {const { t } = useTranslation();
             </MagicCard>
 
             {/* Daily Rhythm Bar Chart */}
-            <MagicCard style={{ padding: '25px', minHeight: '340px' }}>
-              <h3 style={{ margin: '0 0 15px 0', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
+            <MagicCard className="chart-card" style={{ minHeight: '340px' }}>
+              <h3>
                 <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #a78bfa, #f472b6)' }}></span>
                 Average Usage by Day of Week (L)
               </h3>
@@ -317,3 +318,5 @@ function UsageHistory() {const { t } = useTranslation();
 }
 
 export default UsageHistory;
+
+

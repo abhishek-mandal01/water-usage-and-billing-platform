@@ -62,21 +62,16 @@ const variants = {
 
 function AuthSidePanel({ variant = 'login' }) {
   const content = variants[variant] ?? variants.login;
-  const isResident = variant === 'resident';
-
+  
   return (
-    <div
-      className="auth-left"
-      style={isResident ? { justifyContent: 'flex-start', paddingTop: 'var(--space-16)' } : undefined}
-    >
+    <div className="auth-left">
       <div
         style={{
           maxWidth: '560px',
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
-          gap: 'var(--space-6)',
-          marginTop: isResident ? '0' : '0',
+          gap: 'var(--space-4)',
         }}
       >
         <div>
@@ -84,7 +79,7 @@ function AuthSidePanel({ variant = 'login' }) {
             className="auth-panel-eyebrow"
             style={{
               margin: 0,
-              fontSize: 'var(--text-sm)',
+              fontSize: 'var(--text-xs)',
               fontWeight: 'var(--font-semibold)',
               letterSpacing: '0.08em',
               textTransform: 'uppercase',
@@ -92,10 +87,10 @@ function AuthSidePanel({ variant = 'login' }) {
           >
             {content.eyebrow}
           </p>
-          <h1 className="auth-marketing-title" style={{ marginTop: 'var(--space-3)', maxWidth: '18ch' }}>
+          <h1 className="auth-marketing-title" style={{ marginTop: 'var(--space-2)', maxWidth: '18ch', fontSize: '1.8rem', lineHeight: 1.25 }}>
             {content.title}
           </h1>
-          <p style={{ margin: 'var(--space-4) 0 0', fontSize: 'var(--text-lg)', color: 'var(--text-secondary)', lineHeight: 1.7, maxWidth: '34rem' }}>
+          <p style={{ margin: 'var(--space-2) 0 0', fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', lineHeight: 1.5, maxWidth: '34rem' }}>
             {content.description}
           </p>
         </div>
@@ -105,7 +100,7 @@ function AuthSidePanel({ variant = 'login' }) {
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-            gap: 'var(--space-4)',
+            gap: 'var(--space-3)',
           }}
         >
           {content.highlights.map((item) => {
@@ -115,9 +110,9 @@ function AuthSidePanel({ variant = 'login' }) {
                 className="auth-panel-card auth-panel-highlight-card"
                 key={item.title}
                 style={{
-                  borderRadius: 'var(--radius-xl)',
-                  padding: 'var(--space-4)',
-                  minHeight: '160px',
+                  borderRadius: 'var(--radius-lg)',
+                  padding: 'var(--space-3)',
+                  minHeight: '125px',
                 }}
               >
                 <div
@@ -146,20 +141,20 @@ function AuthSidePanel({ variant = 'login' }) {
           })}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 'var(--space-4)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 'var(--space-3)' }}>
           {content.stats.map((stat) => (
             <div
               className="auth-panel-card auth-panel-stat-card"
               key={stat.label}
               style={{
-                padding: 'var(--space-5)',
-                borderRadius: 'var(--radius-xl)',
+                padding: 'var(--space-3) var(--space-4)',
+                borderRadius: 'var(--radius-lg)',
               }}
             >
-              <div style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-extrabold)', color: 'var(--text-primary)', lineHeight: 1.1 }}>
+              <div style={{ fontSize: 'var(--text-xl)', fontWeight: 'var(--font-extrabold)', color: 'var(--text-primary)', lineHeight: 1.1 }}>
                 {stat.value}
               </div>
-              <div style={{ marginTop: 'var(--space-2)', fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>
+              <div style={{ marginTop: 'var(--space-1)', fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>
                 {stat.label}
               </div>
             </div>
@@ -171,15 +166,15 @@ function AuthSidePanel({ variant = 'login' }) {
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 'var(--space-4)',
-            padding: 'var(--space-5)',
-            borderRadius: 'var(--radius-2xl)',
+            gap: 'var(--space-3)',
+            padding: 'var(--space-3) var(--space-4)',
+            borderRadius: 'var(--radius-xl)',
           }}
         >
           <div
             style={{
-              width: '48px',
-              height: '48px',
+              width: '36px',
+              height: '36px',
               borderRadius: '50%',
               background: 'var(--gradient-primary)',
               display: 'flex',
@@ -188,13 +183,13 @@ function AuthSidePanel({ variant = 'login' }) {
               flexShrink: 0,
             }}
           >
-            <Droplets size={22} color="white" />
+            <Droplets size={18} color="white" />
           </div>
           <div>
-            <p style={{ margin: 0, fontSize: 'var(--text-sm)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
+            <p style={{ margin: 0, fontSize: 'var(--text-xs)', fontWeight: 'var(--font-semibold)', color: 'var(--text-primary)' }}>
               Built for clear utility workflows
             </p>
-            <p style={{ margin: 'var(--space-1) 0 0', fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+            <p style={{ margin: '2px 0 0', fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
               {content.callout}
             </p>
           </div>

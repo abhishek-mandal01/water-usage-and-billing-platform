@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle';
 import LanguageSelector from './LanguageSelector';
@@ -17,11 +17,16 @@ function Topbar() {
         const u = JSON.parse(userStr);
         setUser(u);
         
-        // Fetch unread notifications
-        fetch(`http://localhost:8081/api/notifications/unreadCount/${u.id}`)
-          .then(res => res.json())
-          .then(data => setUnreadCount(data))
-          .catch(err => console.error(err));
+        // Fetch unread notifications safely
+        if (u && u.id) {
+          fetch(`http://localhost:8081/api/notifications/unreadCount/${u.id}`)
+            .then(res => {
+              if (res.ok) return res.json();
+              return 0;
+            })
+            .then(data => setUnreadCount(data || 0))
+            .catch(err => console.error(err));
+        }
       }
     };
 
@@ -39,13 +44,8 @@ function Topbar() {
   const avatarUrl = user?.avatarUrl || defaultAvatar;
 
   const getDashboardTitle = () => {
-    if (!user) return '';
-    switch (user.role) {
-      case 'MAIN_ADMIN': return t('nav.mainAdmin', 'Main Admin');
-      case 'COMMUNITY_ADMIN':
-      case 'ADMIN': return t('nav.communityAdmin', 'Community Admin');
-      default: return t('nav.resident', 'Resident');
-    }
+    if (!user) return 'Resident';
+    return user.name || user.fullName || user.username || 'Resident';
   };
 
   return (
@@ -112,3 +112,4 @@ function Topbar() {
 }
 
 export default Topbar;
+

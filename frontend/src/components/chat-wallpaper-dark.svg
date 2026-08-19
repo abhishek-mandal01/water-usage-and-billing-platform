@@ -1,0 +1,263 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <g fill="none" stroke="rgba(150,200,255,0.14)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <!-- Water drops -->
+    <path d="M18 8 C18 8 26 20 26 26 A8 8 0 0 1 10 26 C10 20 18 8 18 8Z" transform="rotate(10 18 18)"/>
+    <path d="M75 52 C75 52 80 60 80 64 A5 5 0 0 1 70 64 C70 60 75 52 75 52Z" transform="rotate(-15 75 60)"/>
+    <path d="M542 88 C542 88 549 98 549 104 A7 7 0 0 1 535 104 C535 98 542 88 542 88Z"/>
+    <path d="M310 35 C310 35 316 44 316 49 A6 6 0 0 1 304 49 C304 44 310 35 310 35Z" transform="rotate(20 310 43)"/>
+    <path d="M460 185 C460 185 466 194 466 199 A6 6 0 0 1 454 199 C454 194 460 185 460 185Z" transform="rotate(-8 460 193)"/>
+    <path d="M130 380 C130 380 137 392 137 398 A7 7 0 0 1 123 398 C123 392 130 380 130 380Z" transform="rotate(25 130 390)"/>
+    <path d="M580 320 C580 320 586 330 586 335 A6 6 0 0 1 574 335 C574 330 580 320 580 320Z" transform="rotate(-20 580 328)"/>
+    <path d="M25 510 C25 510 31 520 31 525 A6 6 0 0 1 19 525 C19 520 25 510 25 510Z" transform="rotate(30 25 518)"/>
+    <path d="M390 540 C390 540 396 550 396 555 A6 6 0 0 1 384 555 C384 550 390 540 390 540Z" transform="rotate(-12 390 548)"/>
+
+    <!-- Faucets/Taps -->
+    <path d="M55 30 L55 42 L68 42 L68 36 L80 36 L80 42 L80 50 L55 50 L55 42"/>
+    <circle cx="67" cy="50" r="5"/>
+    <path d="M200 110 L200 122 L213 122 L213 116 L225 116 L225 122 L225 130 L200 130 L200 122"/>
+    <circle cx="212" cy="130" r="5"/>
+    <path d="M490 450 L490 462 L503 462 L503 456 L515 456 L515 462 L515 470 L490 470 L490 462" transform="rotate(-25 502 460)"/>
+    <circle cx="502" cy="470" r="5" transform="rotate(-25 502 460)"/>
+
+    <!-- Pipes -->
+    <path d="M100 70 L130 70 L130 90 L160 90"/>
+    <circle cx="100" cy="70" r="4"/>
+    <circle cx="160" cy="90" r="4"/>
+    <path d="M350 150 L380 150 L380 170 L410 170" transform="rotate(15 380 160)"/>
+    <path d="M20 250 L50 250 L50 270 L80 270" transform="rotate(-10 50 260)"/>
+    <path d="M430 510 L460 510 L460 530 L490 530" transform="rotate(8 460 520)"/>
+
+    <!-- Water Meter gauges -->
+    <circle cx="170" cy="55" r="14"/>
+    <path d="M156 55 L184 55 M170 41 L170 69"/>
+    <path d="M170 55 L178 47"/>
+    <path d="M162 47 Q170 41 178 47"/>
+    <circle cx="440" cy="130" r="14" transform="rotate(30 440 130)"/>
+    <path d="M426 130 L454 130 M440 116 L440 144" transform="rotate(30 440 130)"/>
+    <path d="M440 130 L448 122" transform="rotate(30 440 130)"/>
+    <circle cx="560" cy="230" r="12"/>
+    <path d="M548 230 L572 230 M560 218 L560 242"/>
+    <path d="M560 230 L567 223"/>
+
+    <!-- Waves -->
+    <path d="M0 160 Q15 150 30 160 Q45 170 60 160 Q75 150 90 160"/>
+    <path d="M10 172 Q25 162 40 172 Q55 182 70 172 Q85 162 100 172"/>
+    <path d="M320 440 Q335 430 350 440 Q365 450 380 440 Q395 430 410 440"/>
+    <path d="M330 452 Q345 442 360 452 Q375 462 390 452 Q405 442 420 452"/>
+    <path d="M100 580 Q115 570 130 580 Q145 590 160 580 Q175 570 190 580"/>
+    <path d="M450 580 Q465 570 480 580 Q495 590 510 580 Q525 570 540 580"/>
+
+    <!-- Clouds -->
+    <path d="M235 25 A10 10 0 0 1 255 25 A8 8 0 0 1 270 35 A8 8 0 0 1 262 42 L222 42 A8 8 0 0 1 214 35 A10 10 0 0 1 235 25Z"/>
+    <path d="M490 60 A8 8 0 0 1 506 60 A6 6 0 0 1 518 68 A6 6 0 0 1 512 74 L484 74 A6 6 0 0 1 478 68 A8 8 0 0 1 490 60Z"/>
+    <path d="M30 340 A9 9 0 0 1 48 340 A7 7 0 0 1 62 348 A7 7 0 0 1 55 355 L23 355 A7 7 0 0 1 16 348 A9 9 0 0 1 30 340Z" transform="rotate(-10 39 348)"/>
+    <path d="M550 400 A8 8 0 0 1 566 400 A6 6 0 0 1 578 408 A6 6 0 0 1 572 415 L544 415 A6 6 0 0 1 538 408 A8 8 0 0 1 550 400Z" transform="rotate(8 558 408)"/>
+    <path d="M260 500 A9 9 0 0 1 278 500 A7 7 0 0 1 292 508 A7 7 0 0 1 285 515 L253 515 A7 7 0 0 1 246 508 A9 9 0 0 1 260 500Z"/>
+
+    <!-- Houses -->
+    <polygon points="380,25 400,8 420,25"/>
+    <rect x="383" y="25" width="34" height="26" rx="2"/>
+    <rect x="392" y="36" width="8" height="15"/>
+    <polygon points="50 445 70 428 90 445" transform="rotate(15 70 437)"/>
+    <rect x="53" y="445" width="34" height="26" rx="2" transform="rotate(15 70 437)"/>
+    <rect x="62" y="456" width="8" height="15" transform="rotate(15 70 437)"/>
+    <polygon points="510 290 530 273 550 290" transform="rotate(-10 530 282)"/>
+    <rect x="513" y="290" width="34" height="26" rx="2" transform="rotate(-10 530 282)"/>
+    <rect x="522" y="301" width="8" height="15" transform="rotate(-10 530 282)"/>
+
+    <!-- Stars -->
+    <polygon points="290,85 292,92 299,92 294,97 296,104 290,99 284,104 286,97 281,92 288,92"/>
+    <polygon points="480,340 482,347 489,347 484,352 486,359 480,354 474,359 476,352 471,347 478,347"/>
+    <polygon points="145,200 147,207 154,207 149,212 151,219 145,214 139,219 141,212 136,207 143,207"/>
+    <polygon points="540,480 542,487 549,487 544,492 546,499 540,494 534,499 536,492 531,487 538,487"/>
+    <polygon points="190,430 192,437 199,437 194,442 196,449 190,444 184,449 186,442 181,437 188,437"/>
+    <polygon points="90,305 91,309 95,309 92,312 93,316 90,313 87,316 88,312 85,309 89,309"/>
+    <polygon points="370,250 371,254 375,254 372,257 373,261 370,258 367,261 368,257 365,254 369,254"/>
+    <polygon points="560,155 561,159 565,159 562,162 563,166 560,163 557,166 558,162 555,159 559,159"/>
+    <polygon points="215,560 216,564 220,564 217,567 218,571 215,568 212,571 213,567 210,564 214,564"/>
+    <polygon points="440,575 441,579 445,579 442,582 443,586 440,583 437,586 438,582 435,579 439,579"/>
+
+    <!-- Wi-Fi -->
+    <path d="M260 175 Q275 162 290 175"/>
+    <path d="M253 167 Q275 150 297 167"/>
+    <circle cx="275" cy="182" r="4"/>
+    <path d="M510 385 Q525 372 540 385"/>
+    <path d="M503 377 Q525 360 547 377"/>
+    <circle cx="525" cy="392" r="4"/>
+    <path d="M40 195 Q55 182 70 195"/>
+    <path d="M33 187 Q55 170 77 187"/>
+    <circle cx="55" cy="202" r="4"/>
+
+    <!-- Charts -->
+    <rect x="320" y="100" width="8" height="20" rx="1"/>
+    <rect x="332" y="90" width="8" height="30" rx="1"/>
+    <rect x="344" y="110" width="8" height="10" rx="1"/>
+    <rect x="356" y="95" width="8" height="25" rx="1"/>
+    <line x1="316" y1="120" x2="368" y2="120"/>
+    <rect x="10" y="430" width="7" height="18" rx="1" transform="rotate(20 14 440)"/>
+    <rect x="21" y="422" width="7" height="26" rx="1" transform="rotate(20 25 432)"/>
+    <rect x="32" y="435" width="7" height="13" rx="1" transform="rotate(20 36 443)"/>
+    <line x1="6" y1="448" x2="44" y2="448" transform="rotate(20 25 448)"/>
+
+    <!-- Coins -->
+    <circle cx="445" cy="230" r="12"/>
+    <circle cx="445" cy="230" r="9"/>
+    <circle cx="155" cy="470" r="10"/>
+    <circle cx="155" cy="470" r="7"/>
+    <circle cx="570" cy="500" r="11"/>
+    <circle cx="570" cy="500" r="8"/>
+
+    <!-- Phone -->
+    <rect x="103" y="130" width="24" height="40" rx="5"/>
+    <circle cx="115" cy="165" r="3"/>
+    <line x1="108" y1="137" x2="122" y2="137"/>
+    <rect x="335" y="330" width="22" height="38" rx="5" transform="rotate(-18 346 349)"/>
+    <circle cx="346" cy="363" r="3" transform="rotate(-18 346 349)"/>
+
+    <!-- Leaf -->
+    <path d="M188 320 C188 320 170 298 188 282 C206 298 188 320 188 320Z" transform="rotate(30 188 301)"/>
+    <line x1="188" y1="320" x2="188" y2="284" transform="rotate(30 188 301)"/>
+    <path d="M520 140 C520 140 502 118 520 102 C538 118 520 140 520 140Z" transform="rotate(-20 520 121)"/>
+    <line x1="520" y1="140" x2="520" y2="104" transform="rotate(-20 520 121)"/>
+    <path d="M240 380 C240 380 222 358 240 342 C258 358 240 380 240 380Z" transform="rotate(45 240 361)"/>
+    <line x1="240" y1="380" x2="240" y2="344" transform="rotate(45 240 361)"/>
+
+    <!-- Lightning bolt -->
+    <path d="M272 205 L265 225 L273 225 L263 248 L280 222 L271 222Z"/>
+    <path d="M415 390 L408 410 L416 410 L406 433 L423 407 L414 407Z" transform="rotate(15 415 411)"/>
+    <path d="M80 530 L73 550 L81 550 L71 573 L88 547 L79 547Z" transform="rotate(-10 80 550)"/>
+
+    <!-- Bell -->
+    <path d="M488 175 C488 165 496 158 505 158 C514 158 522 165 522 175 L525 195 L485 195 Z"/>
+    <path d="M501 195 C501 200 509 200 509 195"/>
+    <line x1="505" y1="158" x2="505" y2="153"/>
+    <path d="M150 275 C150 265 158 258 167 258 C176 258 184 265 184 275 L187 295 L147 295 Z" transform="rotate(-20 167 275)"/>
+    <path d="M163 295 C163 300 171 300 171 295" transform="rotate(-20 167 275)"/>
+
+    <!-- Lock -->
+    <rect x="578" y="65" width="18" height="16" rx="3"/>
+    <path d="M581 65 C581 58 595 58 595 65"/>
+    <circle cx="587" cy="72" r="2"/>
+    <line x1="587" y1="74" x2="587" y2="78"/>
+    <rect x="230" y="250" width="16" height="14" rx="3" transform="rotate(12 238 257)"/>
+    <path d="M233 250 C233 243 247 243 247 250" transform="rotate(12 238 257)"/>
+    <circle cx="238" cy="257" r="2" transform="rotate(12 238 257)"/>
+
+    <!-- Shield -->
+    <path d="M405 62 C405 62 390 58 390 48 L390 32 C390 32 398 36 405 32 C412 36 420 32 420 32 L420 48 C420 58 405 62 405 62Z"/>
+    <path d="M400 44 L403 48 L412 38"/>
+    <path d="M110 490 C110 490 95 486 95 476 L95 460 C95 460 103 464 110 460 C117 464 125 460 125 460 L125 476 C125 486 110 490 110 490Z" transform="rotate(20 110 475)"/>
+
+    <!-- Calculator -->
+    <rect x="220" y="50" width="30" height="38" rx="4"/>
+    <rect x="224" y="54" width="22" height="10" rx="2"/>
+    <circle cx="228" cy="72" r="2"/>
+    <circle cx="235" cy="72" r="2"/>
+    <circle cx="242" cy="72" r="2"/>
+    <circle cx="228" cy="80" r="2"/>
+    <circle cx="235" cy="80" r="2"/>
+    <circle cx="242" cy="80" r="2"/>
+
+    <!-- Clock -->
+    <circle cx="475" cy="490" r="14"/>
+    <line x1="475" y1="490" x2="475" y2="480"/>
+    <line x1="475" y1="490" x2="482" y2="495"/>
+    <circle cx="475" cy="490" r="2"/>
+    <circle cx="145" cy="330" r="12" transform="rotate(25 145 330)"/>
+    <line x1="145" y1="330" x2="145" y2="321" transform="rotate(25 145 330)"/>
+    <line x1="145" y1="330" x2="152" y2="335" transform="rotate(25 145 330)"/>
+
+    <!-- Recycling arrows -->
+    <path d="M340 475 L352 462 L364 475"/>
+    <path d="M364 475 L364 492 L340 492 L340 475"/>
+    <path d="M565 355 L577 342 L589 355"/>
+    <path d="M589 355 L589 372 L565 372 L565 355"/>
+
+    <!-- Plus signs -->
+    <line x1="440" y1="260" x2="440" y2="272"/>
+    <line x1="434" y1="266" x2="446" y2="266"/>
+    <line x1="200" y1="145" x2="200" y2="157"/>
+    <line x1="194" y1="151" x2="206" y2="151"/>
+    <line x1="555" y1="195" x2="555" y2="207"/>
+    <line x1="549" y1="201" x2="561" y2="201"/>
+    <line x1="300" y1="550" x2="300" y2="562"/>
+    <line x1="294" y1="556" x2="306" y2="556"/>
+    <line x1="65" y1="390" x2="65" y2="402"/>
+    <line x1="59" y1="396" x2="71" y2="396"/>
+
+    <!-- Bubbles -->
+    <circle cx="340" cy="220" r="5"/>
+    <circle cx="355" cy="212" r="3"/>
+    <circle cx="365" cy="225" r="4"/>
+    <circle cx="580" cy="140" r="4"/>
+    <circle cx="592" cy="130" r="3"/>
+    <circle cx="570" cy="128" r="5"/>
+    <circle cx="170" cy="540" r="4"/>
+    <circle cx="182" cy="530" r="3"/>
+    <circle cx="160" cy="528" r="5"/>
+    <circle cx="50" cy="95" r="4"/>
+    <circle cx="62" cy="85" r="3"/>
+    <circle cx="40" cy="83" r="5"/>
+
+    <!-- Diamond -->
+    <polygon points="430,418 442,430 430,442 418,430"/>
+    <polygon points="90,158 102,170 90,182 78,170"/>
+    <polygon points="575,530 587,542 575,554 563,542"/>
+
+    <!-- Heart -->
+    <path d="M500 230 C500 224 507 221 511 227 C515 221 522 224 522 230 C522 238 511 248 511 248 C511 248 500 238 500 230Z" transform="rotate(-15 511 234)"/>
+    <path d="M25 465 C25 459 32 456 36 462 C40 456 47 459 47 465 C47 473 36 483 36 483 C36 483 25 473 25 465Z" transform="rotate(20 36 469)"/>
+    <path d="M290 155 C290 149 297 146 301 152 C305 146 312 149 312 155 C312 163 301 173 301 173 C301 173 290 163 290 155Z"/>
+
+    <!-- Checkmark -->
+    <path d="M355 490 L362 498 L376 480"/>
+    <path d="M510 550 L517 558 L531 540" transform="rotate(-10 520 549)"/>
+    <path d="M130 430 L137 438 L151 420" transform="rotate(15 140 429)"/>
+
+    <!-- Signal bars -->
+    <rect x="590" y="278" width="4" height="8" rx="1"/>
+    <rect x="597" y="272" width="4" height="14" rx="1"/>
+    <rect x="604" y="266" width="4" height="20" rx="1"/>
+    <rect x="240" y="498" width="4" height="8" rx="1" transform="rotate(-15 244 502)"/>
+    <rect x="247" y="492" width="4" height="14" rx="1" transform="rotate(-15 251 499)"/>
+    <rect x="254" y="486" width="4" height="20" rx="1" transform="rotate(-15 258 496)"/>
+
+    <!-- Arrows -->
+    <path d="M420 310 L440 310 M434 304 L440 310 L434 316"/>
+    <path d="M170 370 L190 370 M184 364 L190 370 L184 376" transform="rotate(30 180 370)"/>
+    <path d="M340 560 L360 560 M354 554 L360 560 L354 566" transform="rotate(-20 350 560)"/>
+
+    <!-- Solar/Grid panel -->
+    <rect x="480" y="22" width="40" height="28" rx="3"/>
+    <line x1="480" y1="31" x2="520" y2="31"/>
+    <line x1="480" y1="40" x2="520" y2="40"/>
+    <line x1="493" y1="22" x2="493" y2="50"/>
+    <line x1="507" y1="22" x2="507" y2="50"/>
+
+    <!-- Flower -->
+    <circle cx="212" cy="490" r="6"/>
+    <circle cx="212" cy="476" r="5"/>
+    <circle cx="212" cy="504" r="5"/>
+    <circle cx="198" cy="490" r="5"/>
+    <circle cx="226" cy="490" r="5"/>
+
+    <!-- Tiny squares -->
+    <rect x="435" y="540" width="8" height="8" rx="1" transform="rotate(25 439 544)"/>
+    <rect x="30" y="210" width="7" height="7" rx="1" transform="rotate(15 34 214)"/>
+    <rect x="580" y="430" width="7" height="7" rx="1" transform="rotate(-20 584 434)"/>
+    <rect x="270" y="320" width="8" height="8" rx="1" transform="rotate(40 274 324)"/>
+
+    <!-- Rain drops -->
+    <line x1="600" y1="190" x2="595" y2="205"/>
+    <line x1="608" y1="198" x2="603" y2="213"/>
+    <line x1="590" y1="196" x2="585" y2="211"/>
+    <line x1="112" y1="240" x2="107" y2="255"/>
+    <line x1="120" y1="248" x2="115" y2="263"/>
+    <line x1="104" y1="245" x2="99" y2="260"/>
+    <line x1="372" y1="490" x2="367" y2="505"/>
+    <line x1="380" y1="498" x2="375" y2="513"/>
+    <line x1="364" y1="495" x2="359" y2="510"/>
+
+  </g>
+</svg>

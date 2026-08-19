@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';
 import ThemeToggle from '../components/ThemeToggle';
@@ -100,3 +100,4 @@ const PrivacyPolicy = () => {
   );
 };
 export default PrivacyPolicy;
+

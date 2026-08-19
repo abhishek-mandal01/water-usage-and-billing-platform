@@ -24,7 +24,7 @@ function ResidentReportsPage() {
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const reportRef = useRef(null);
 
-  const user = JSON.parse(localStorage.getItem('user')) || { id: 1 };
+  const user = JSON.parse(localStorage.getItem('user')) || {};
 
   const [reportData, setReportData] = useState({
     monthlyUsage: 14500,
@@ -53,12 +53,20 @@ function ResidentReportsPage() {
         const res = await fetch(`http://localhost:8081/api/reports/resident/${user.id}?dateRange=${dateRange}`);
         if (!res.ok) throw new Error('Failed to fetch resident report');
         const data = await res.json();
-        if (data) {
-          setReportData(prev => ({
-            ...prev,
-            ...data
-          }));
-        }
+          if (data) {
+            setReportData(prev => {
+              const mappedTrend = data.dailyUsageTrend ? data.dailyUsageTrend.map(item => ({
+                day: item.label || item.day || 'Unknown',
+                usage: item.value ?? item.usage ?? 0
+              })) : prev.dailyUsageTrend;
+              
+              return {
+                ...prev,
+                ...data,
+                dailyUsageTrend: mappedTrend
+              };
+            });
+          }
       } catch (err) {
         console.warn('Backend report fetch failed, using localized report state:', err);
       }
@@ -351,8 +359,8 @@ function ResidentReportsPage() {
               </div>
 
               {/* Chart */}
-              <MagicCard style={{ padding: 'var(--space-6)', marginTop: 'var(--space-6)' }}>
-                <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-xl)' }}>Weekly Consumption Breakdown</h3>
+              <MagicCard className="chart-card" style={{ marginTop: 'var(--space-6)' }}>
+                <h3>Weekly Consumption Breakdown</h3>
                 <div style={{ height: '350px' }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={reportData.dailyUsageTrend} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
@@ -375,8 +383,8 @@ function ResidentReportsPage() {
               </MagicCard>
 
               {/* Visual 1: 3-Month Usage Progression Area Chart */}
-              <MagicCard style={{ padding: 'var(--space-6)', marginTop: 'var(--space-6)' }}>
-                <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-xl)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <MagicCard className="chart-card" style={{ marginTop: 'var(--space-6)' }}>
+                <h3>
                   <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #5bbcaa, #34c77b)' }}></span>
                   3-Month Usage Trend (Liters)
                 </h3>
@@ -408,8 +416,8 @@ function ResidentReportsPage() {
 
               {/* Visual 2 & 3: Donut breakdown & Side-by-Side Comparison */}
               <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
-                <MagicCard style={{ padding: 'var(--space-6)' }}>
-                  <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-xl)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <MagicCard className="chart-card">
+                  <h3>
                     <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #6c8eef, #a78bfa)' }}></span>
                     Usage Category Breakdown
                   </h3>
@@ -439,8 +447,8 @@ function ResidentReportsPage() {
                 </MagicCard>
 
                 {/* Visual 3: Side-by-Side Bar Chart - You vs Community */}
-                <MagicCard style={{ padding: 'var(--space-6)' }}>
-                  <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-xl)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <MagicCard className="chart-card">
+                  <h3>
                     <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #fb923c, #e86356)' }}></span>
                     Your Usage vs Community Avg (Weekly)
                   </h3>
@@ -494,3 +502,6 @@ function ResidentReportsPage() {
 }
 
 export default ResidentReportsPage;
+
+
+

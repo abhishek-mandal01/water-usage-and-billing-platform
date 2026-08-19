@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DropletVisuals from './DropletVisuals';
 import DropletShadow from './DropletShadow';
@@ -12,7 +12,8 @@ const Droplet = ({ mousePos, onSplash }) => {
   const visualsRef = useRef(null);
   const [isTouch, setIsTouch] = useState(false);
 
-  useEffect(() => {
+  useEffect(() => {// eslint-disable-next-line react-hooks/set-state-in-effect
+
     setIsTouch('ontouchstart' in window || navigator.maxTouchPoints > 0);
   }, []);
 
@@ -154,3 +155,4 @@ const Droplet = ({ mousePos, onSplash }) => {
 };
 
 export default Droplet;
+

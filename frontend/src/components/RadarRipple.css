@@ -1,4 +1,4 @@
-/* src/components/RadarRipple.css */
+﻿/* src/components/RadarRipple.css */
 .radar-ripple-container {
   position: absolute;
   top: var(--ripple-y, 50%);
@@ -54,3 +54,4 @@
     100% { width: 350px; height: 350px; opacity: 0; border-width: 0.5px; }
   }
 }
+

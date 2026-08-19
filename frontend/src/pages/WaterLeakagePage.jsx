@@ -1,9 +1,9 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
 import Topbar from '../components/topbar';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
 import { AlertTriangle, Droplet, Clock, Wrench, CheckCircle } from 'lucide-react';
-import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Legend, AreaChart, Area } from 'recharts';
+import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Legend, AreaChart, Area, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';
 
 function WaterLeakagePage() {
@@ -322,6 +322,67 @@ function WaterLeakagePage() {
               </MagicCard>
             </div>
 
+            {/* IoT Pressure Telemetry & Anomaly Severity Radar */}
+            <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
+              <MagicCard style={{ padding: 'var(--space-6)' }}>
+                <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #a78bfa, #ec4899)' }}></span>
+                  IoT Sensor Anomaly Severity Radar
+                </h3>
+                <div style={{ height: '260px' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart cx="50%" cy="50%" outerRadius="75%" data={[
+                      { subject: 'Pipe Pressure Spike', current: 85, baseline: 40 },
+                      { subject: 'Night Flow Rate', current: 92, baseline: 20 },
+                      { subject: 'Vibration Signal', current: 65, baseline: 30 },
+                      { subject: 'Temp Variation', current: 45, baseline: 35 },
+                      { subject: 'Acoustic Leak Frequency', current: 78, baseline: 25 },
+                    ]}>
+                      <PolarGrid stroke="var(--border-default)" />
+                      <PolarAngleAxis dataKey="subject" stroke="var(--text-secondary)" fontSize={11} />
+                      <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="var(--text-tertiary)" fontSize={10} />
+                      <Radar name="Active Sensor Severity" dataKey="current" stroke="#ec4899" fill="#ec4899" fillOpacity={0.5} />
+                      <Radar name="Expected Baseline" dataKey="baseline" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.2} />
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} />
+                      <Legend verticalAlign="bottom" height={36} />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </div>
+              </MagicCard>
+
+              <MagicCard style={{ padding: 'var(--space-6)' }}>
+                <h3 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-bold)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #3b82f6, #06b6d4)' }}></span>
+                  Real-Time Valve Pressure Gauge (Bar)
+                </h3>
+                <div style={{ height: '260px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                  <ResponsiveContainer width="100%" height={190}>
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: 'Optimal (1.5-2.5 Bar)', value: 60 },
+                          { name: 'Warning (2.5-3.5 Bar)', value: 25 },
+                          { name: 'Critical (>3.5 Bar)', value: 15 },
+                        ]}
+                        startAngle={180} endAngle={0}
+                        cx="50%" cy="75%" innerRadius={70} outerRadius={105}
+                        paddingAngle={3} dataKey="value"
+                      >
+                        <Cell fill="#10b981" />
+                        <Cell fill="#f5ae45" />
+                        <Cell fill="#ef4444" />
+                      </Pie>
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: 'var(--shadow-lg)', background: 'var(--bg-card)', color: 'var(--text-primary)' }} formatter={(v) => [`${v}% Grid Zone`, 'Pressure Level']} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div style={{ textAlign: 'center', marginTop: '-15px' }}>
+                    <span style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--color-primary-600)' }}>2.14 Bar</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'block' }}>Normal Colony Riser Pressure</span>
+                  </div>
+                </div>
+              </MagicCard>
+            </div>
+
             {/* Recommendations */}
             <div className="grid-2" style={{ marginTop: 'var(--space-6)' }}>
               <MagicCard style={{ padding: 'var(--space-6)', background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(220, 38, 38, 0.05))' }}>
@@ -387,3 +448,4 @@ function WaterLeakagePage() {
 }
 
 export default WaterLeakagePage;
+

@@ -3,12 +3,12 @@ import { useTranslation } from '../components/LanguageSelector/useTranslation';
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
 import Topbar from '../components/topbar';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
-import { Download, FileText, Calendar, Home, DollarSign, Package, TrendingUp, TrendingDown } from 'lucide-react';
+import { Download, FileText, Calendar, DollarSign, Package, TrendingUp, TrendingDown } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
-import { AreaChart, Area, BarChart, Bar, CartesianGrid, Legend, Line, ResponsiveContainer, Tooltip, XAxis, YAxis, PieChart, Pie, Cell } from 'recharts';
+import { AreaChart, Area, BarChart, Bar, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis, PieChart, Pie, Cell } from 'recharts';
 
 function CommunityAdminReportsPage() {
-  const { t } = useTranslation();
+  useTranslation();
   const [dateRange, setDateRange] = useState('2026-08');
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const reportRef = useRef(null);
@@ -310,3 +310,4 @@ function CommunityAdminReportsPage() {
 }
 
 export default CommunityAdminReportsPage;
+

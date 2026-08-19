@@ -1,4 +1,4 @@
-/* eslint-disable react-refresh/only-export-components */
+﻿/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from 'react';
 
 const ThemeContext = createContext();
@@ -30,3 +30,4 @@ export function useTheme() {
   if (!context) throw new Error('useTheme must be used within a ThemeProvider');
   return context;
 }
+

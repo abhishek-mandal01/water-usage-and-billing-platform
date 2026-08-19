@@ -1,8 +1,9 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import i18n from '../../i18n';
 
 const LanguageContext = createContext();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useLanguage = () => useContext(LanguageContext);
 
 export const LanguageProvider = ({ children }) => {
@@ -18,7 +19,8 @@ export const LanguageProvider = ({ children }) => {
         new window.google.translate.TranslateElement({
           pageLanguage: 'en',
           autoDisplay: false,
-        }, 'google_translate_element');
+        }, 'google_translate_element');// eslint-disable-next-line react-hooks/set-state-in-effect
+
         setIsGoogleLoaded(true);
       };
 
@@ -27,7 +29,8 @@ export const LanguageProvider = ({ children }) => {
       script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
       script.async = true;
       document.body.appendChild(script);
-    } else {
+    } else {// eslint-disable-next-line react-hooks/set-state-in-effect
+
       setIsGoogleLoaded(true);
     }
   }, []);
@@ -65,3 +68,4 @@ export const LanguageProvider = ({ children }) => {
     </LanguageContext.Provider>
   );
 };
+

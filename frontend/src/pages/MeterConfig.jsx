@@ -87,7 +87,12 @@ function MeterConfig() {
         <Topbar />
         
         <main className="dashboard-content">
-          <h1 style={{ marginBottom: '20px' }}>Meter Readings & Billing Setup</h1>
+          <div className="page-header" style={{ marginBottom: '20px' }}>
+            <h1 style={{ margin: 0 }}>Meter Readings & Billing Setup</h1>
+            <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: 'var(--text-sm)' }}>
+              Configure base rates, input monthly meter readings, or perform bulk uploads.
+            </p>
+          </div>
 
           {message && <div style={{ padding: '15px', backgroundColor: 'var(--color-success-50)', color: 'var(--color-success-700)', marginBottom: '20px', borderRadius: '8px', border: '1px solid var(--color-success-400)' }}>{message}</div>}
 
@@ -158,15 +163,16 @@ function MeterConfig() {
               <p style={{ fontSize: '15.5px', lineHeight: '1.6', color: 'var(--text-secondary)', marginBottom: '25px' }}>
                 Upload a CSV file containing <code style={{backgroundColor: 'transparent', padding:'2px 4px', borderRadius:'4px'}}>HouseholdNumber</code>, <code style={{backgroundColor: 'transparent', padding:'2px 4px', borderRadius:'4px'}}>ReadingVolume</code>, and <code style={{backgroundColor: 'transparent', padding:'2px 4px', borderRadius:'4px'}}>Date</code> to automatically log usage and generate bills.
               </p>
-              <form onSubmit={handleCsvUpload} style={formStyle}>
-                <input 
-                  id="csvInput"
-                  type="file" 
-                  accept=".csv"
-                  onChange={e => setCsvFile(e.target.files[0])}
-                  style={inputStyle}
-                  required
-                />
+                <form onSubmit={handleCsvUpload} style={formStyle}>
+                  <input 
+                    id="csvInput"
+                    type="file" 
+                    accept=".csv"
+                    className="custom-file-input"
+                    onChange={e => setCsvFile(e.target.files[0])}
+                    style={{ ...inputStyle, padding: '8px' }}
+                    required
+                  />
                 <button type="submit" disabled={csvLoading || !csvFile} style={{ ...btnStyle, backgroundColor: 'var(--color-primary-600)', marginTop: 'auto' }}>
                   {csvLoading ? 'Uploading...' : 'Upload CSV'}
                   </button>
@@ -188,3 +194,4 @@ const inputStyle = { width: '100%', boxSizing: 'border-box', padding: '12px', bo
 const btnStyle = { padding: '12px', backgroundColor: 'var(--color-primary-500)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '15px', transition: 'background-color 0.2s' };
 
 export default MeterConfig;
+

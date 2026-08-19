@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, ArrowLeft, Loader2, CheckCircle2, Droplets } from 'lucide-react';
+import { Mail, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react';
 import AuthSidePanel from '../components/AuthSidePanel';
 import LanguageSelector from '../components/LanguageSelector';
 import ThemeToggle from '../components/ThemeToggle';
@@ -50,30 +50,40 @@ const ForgotPassword = () => {
       <WaterBackground darkMode={theme === 'dark'} />
       <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column' }}>
       
+      {/* ═•═ TOP NAVBAR STRIP ═•═ */}
       <nav style={{ 
-        position: 'relative', 
+        position: 'sticky',
+        top: '12px',
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
-        padding: '0 var(--space-6)',
-        margin: 'var(--space-6) 5%',
-        backgroundColor: theme === 'dark' ? 'var(--bg-card)' : 'var(--color-primary-50)', 
-        borderRadius: 'var(--radius-2xl)',
-        boxShadow: 'var(--shadow-card)',
-        zIndex: 100,
-        minHeight: '76px'
+        padding: '6px 22px',
+        margin: '12px 5% 0 5%',
+        backgroundColor: theme === 'dark' ? 'rgba(10, 17, 35, 0.85)' : 'rgba(255, 255, 255, 0.85)', 
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderRadius: '50px',
+        border: theme === 'dark' ? '1px solid rgba(255, 255, 255, 0.12)' : '1px solid rgba(37, 99, 235, 0.15)',
+        boxShadow: theme === 'dark' 
+          ? '0 8px 24px rgba(0, 0, 0, 0.4)' 
+          : '0 8px 24px rgba(37, 99, 235, 0.1), 0 2px 6px rgba(0, 0, 0, 0.04)',
+        zIndex: 10000,
+        height: '52px',
+        boxSizing: 'border-box',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
       }}>
-        <div style={{ transform: 'scale(0.8)', transformOrigin: 'left center', display: 'flex', alignItems: 'center' }}>
-          <BrandLogo style={{ borderBottom: 'none', padding: 0, margin: 0 }} />
+        {/* Brand Logo */}
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <BrandLogo style={{ borderBottom: 'none', padding: 0, margin: 0 }} logoSize={60} textSize="19px" subTextSize="8.5px" />
         </div>
         
-        <div className="landing-nav-links" style={{ display: 'flex', gap: 'var(--space-8)', position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontWeight: 'var(--font-semibold)', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
+        <div className="landing-nav-links" style={{ display: 'flex', gap: 'var(--space-6)', position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontWeight: '500', color: 'var(--text-secondary)', fontSize: '14px' }}>
            <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>Home</Link>
            <Link to="/pricing" style={{ color: 'inherit', textDecoration: 'none' }}>Pricing</Link>
            <Link to="/about" style={{ color: 'inherit', textDecoration: 'none' }}>About Us</Link>
         </div>
         
-        <div style={{ display: 'flex', gap: 'var(--space-3)', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
           <ThemeToggle />
           <LanguageSelector />
         </div>
@@ -147,3 +157,4 @@ const ForgotPassword = () => {
 };
 
 export default ForgotPassword;
+

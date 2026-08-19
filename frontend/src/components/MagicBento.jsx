@@ -1,4 +1,4 @@
-/* eslint-disable react-refresh/only-export-components */
+﻿/* eslint-disable react-refresh/only-export-components */
 import { useRef, useEffect, useCallback, useState } from 'react';
 import { gsap } from 'gsap';
 import './MagicBento.css';
@@ -461,3 +461,4 @@ export const MagicCard = ({ children, className = '', style, disableAnimations =
     </ParticleCard>
   );
 };
+

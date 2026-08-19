@@ -1,0 +1,50 @@
+{
+  "short_name": "Smart Water",
+  "name": "Smart Water — Smart Water Billing Platform",
+  "description": "Smart Sub-Metering, Telemetry & Automated Slab Billing Platform",
+  "_comment": "Changes by Krishna Mohan - Added PWA screenshots for Smartphone, Tablet, and Desktop download preview",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Smart Water Desktop Water Billing Dashboard"
+    },
+    {
+      "src": "/screenshots/tablet.png",
+      "sizes": "1024x768",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Smart Water Tablet Telemetry & Billing View"
+    },
+    {
+      "src": "/screenshots/mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Smart Water Smartphone Mobile Billing Interface"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#020617",
+  "theme_color": "#0284c7",
+  "display": "standalone",
+  "orientation": "any",
+  "scope": "/"
+}
+

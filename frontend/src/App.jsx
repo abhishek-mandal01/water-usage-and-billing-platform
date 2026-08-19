@@ -40,6 +40,7 @@ import MainAdminFinancialsPage from './pages/MainAdminFinancialsPage';
 import MainAdminTariffsPage from './pages/MainAdminTariffsPage';
 import MainAdminSupportPage from './pages/MainAdminSupportPage';
 import MainAdminReportsPage from './pages/MainAdminReportsPage';
+import MainAdminVerifications from './pages/MainAdminVerifications';
 
 import SmartBotChat from './components/SmartBotChat';
 
@@ -90,6 +91,7 @@ function App() {
 
             {/* Protected Dashboard Route (Main Admin) */}
             <Route path="/main-admin-panel" element={<MainAdminDashboard />} />
+                  <Route path="/main-admin/verifications" element={<MainAdminVerifications />} />
             <Route path="/admin/community-admin/:id" element={<CommunityAdminDetails />} />
 
             {/* Main Admin Sidebar Modules */}
@@ -104,6 +106,9 @@ function App() {
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
           <SmartBotChat />
+          {}
+          {/* <PwaInstallModal /> */}
+          {}
         </Router>
       </SidebarProvider>
     </ThemeProvider>
@@ -111,3 +116,5 @@ function App() {
 }
 
 export default App;
+
+
