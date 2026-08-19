@@ -1,16 +1,17 @@
-const CACHE_NAME = 'Smart Water-v2';
+const CACHE_NAME = 'Smart Water-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/logo.svg',
   '/favicon.svg',
+  '/logo-192x192.png',
+  '/logo-512x512.png',
   '/manifest.json',
   '/Girl watering plants animation.svg',
   '/screenshots/desktop.png',
   '/screenshots/tablet.png',
   '/screenshots/mobile.png'
 ];
-/ Install Event: Cache Core Assets
+// Install Event: Cache Core Assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
