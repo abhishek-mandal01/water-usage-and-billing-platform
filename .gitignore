@@ -65,3 +65,7 @@ build/
 *.njsproj
 *.sln
 *.sw?
+
+# Temporary script files
+TestPdf.java
+fetch_err.py

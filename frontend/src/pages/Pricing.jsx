@@ -30,8 +30,8 @@ function Pricing() {
           zIndex: 100,
           minHeight: '76px'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <BrandLogo style={{ borderBottom: 'none', padding: 0, margin: 0 }} logoSize={85} textSize="23px" subTextSize="10px" />
+          <div style={{ transform: 'scale(0.8)', transformOrigin: 'left center', display: 'flex', alignItems: 'center' }}>
+            <BrandLogo style={{ borderBottom: 'none', padding: 0, margin: 0 }} />
           </div>
           
           {/* Center Links (hidden on mobile) */}
@@ -71,7 +71,7 @@ function Pricing() {
             </div>
             
             <div style={{ marginBottom: 'var(--space-8)' }}>
-              <span style={{ fontSize: '3.5rem', fontWeight: 'var(--font-extrabold)', color: 'var(--color-primary-600)', letterSpacing: '-0.05em' }}>?49</span>
+              <span style={{ fontSize: '3.5rem', fontWeight: 'var(--font-extrabold)', color: 'var(--color-primary-600)', letterSpacing: '-0.05em' }}>₹49</span>
               <span style={{ fontSize: 'var(--text-base)', color: 'var(--text-tertiary)', fontWeight: 'var(--font-medium)' }}> / household / month</span>
             </div>
 

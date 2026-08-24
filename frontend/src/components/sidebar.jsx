@@ -19,9 +19,8 @@ import {
 
 function Sidebar() {
   const location = useLocation();
-  const { isOpen, isCollapsed, toggle, close, toggleCollapse } = useSidebar();
+  const { isOpen, isCollapsed, toggle, close, toggleCollapse, unreadCount } = useSidebar();
   const { t } = useTranslation();
-  const [unreadCount, setUnreadCount] = useState(0);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const userId = JSON.parse(localStorage.getItem('user'))?.id;
@@ -35,15 +34,6 @@ function Sidebar() {
   }, []);
 
   const effectiveCollapsed = isMobile ? false : isCollapsed;
-
-  useEffect(() => {
-    if (userId) {
-      fetch(`http://localhost:8081/api/notifications/unreadCount/${userId}`)
-        .then(res => res.json())
-        .then(data => setUnreadCount(data))
-        .catch(err => console.error("Error fetching unread count:", err));
-    }
-  }, [userId]);
 
   const navItems = [
     { name: t('nav.dashboard'), path: '/dashboard', icon: LayoutDashboard },

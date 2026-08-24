@@ -37,21 +37,21 @@ public class PdfService {
                 PDType1Font fontRegular = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
 
                 // Header Banner
-                cs.setNonStrokingColor(37, 99, 235); // Blue #2563eb
+                cs.setNonStrokingColor(new java.awt.Color(37, 99, 235)); // Blue #2563eb
                 cs.addRect(0, 720, 612, 72);
                 cs.fill();
 
                 // Header Text
                 cs.beginText();
                 cs.setFont(fontBold, 22);
-                cs.setNonStrokingColor(255, 255, 255);
+                cs.setNonStrokingColor(new java.awt.Color(255, 255, 255));
                 cs.newLineAtOffset(40, 750);
                 cs.showText("SMART WATER PLATFORM");
                 cs.endText();
 
                 cs.beginText();
                 cs.setFont(fontRegular, 12);
-                cs.setNonStrokingColor(255, 255, 255);
+                cs.setNonStrokingColor(new java.awt.Color(255, 255, 255));
                 cs.newLineAtOffset(420, 750);
                 cs.showText("INVOICE #" + bill.getId());
                 cs.endText();
@@ -59,7 +59,7 @@ public class PdfService {
                 // Invoice Title & Status
                 cs.beginText();
                 cs.setFont(fontBold, 16);
-                cs.setNonStrokingColor(17, 24, 39);
+                cs.setNonStrokingColor(new java.awt.Color(17, 24, 39));
                 cs.newLineAtOffset(40, 670);
                 cs.showText("Water Usage & Apportionment Bill");
                 cs.endText();
@@ -68,16 +68,16 @@ public class PdfService {
                 cs.beginText();
                 cs.setFont(fontBold, 12);
                 if ("PAID".equalsIgnoreCase(bill.getStatus())) {
-                    cs.setNonStrokingColor(16, 185, 129); // Green
+                    cs.setNonStrokingColor(new java.awt.Color(16, 185, 129)); // Green
                 } else {
-                    cs.setNonStrokingColor(239, 68, 68); // Red
+                    cs.setNonStrokingColor(new java.awt.Color(239, 68, 68)); // Red
                 }
                 cs.newLineAtOffset(480, 670);
                 cs.showText("STATUS: " + bill.getStatus());
                 cs.endText();
 
                 // Horizontal Line
-                cs.setStrokingColor(229, 231, 235);
+                cs.setStrokingColor(new java.awt.Color(229, 231, 235));
                 cs.setLineWidth(1);
                 cs.moveTo(40, 655);
                 cs.lineTo(572, 655);
@@ -101,13 +101,13 @@ public class PdfService {
 
                 // Consumption Table Header
                 y -= 40;
-                cs.setNonStrokingColor(243, 244, 246);
+                cs.setNonStrokingColor(new java.awt.Color(243, 244, 246));
                 cs.addRect(40, y, 532, 25);
                 cs.fill();
 
                 cs.beginText();
                 cs.setFont(fontBold, 11);
-                cs.setNonStrokingColor(55, 65, 81);
+                cs.setNonStrokingColor(new java.awt.Color(55, 65, 81));
                 cs.newLineAtOffset(50, y + 8);
                 cs.showText("Item Description");
                 cs.newLineAtOffset(280, 0);
@@ -152,20 +152,20 @@ public class PdfService {
 
                 // Table Bottom Line
                 y -= 15;
-                cs.setStrokingColor(229, 231, 235);
+                cs.setStrokingColor(new java.awt.Color(229, 231, 235));
                 cs.moveTo(40, y);
                 cs.lineTo(572, y);
                 cs.stroke();
 
                 // Total Amount Box
                 y -= 45;
-                cs.setNonStrokingColor(239, 246, 255);
+                cs.setNonStrokingColor(new java.awt.Color(239, 246, 255));
                 cs.addRect(320, y, 252, 35);
                 cs.fill();
 
                 cs.beginText();
                 cs.setFont(fontBold, 14);
-                cs.setNonStrokingColor(37, 99, 235);
+                cs.setNonStrokingColor(new java.awt.Color(37, 99, 235));
                 cs.newLineAtOffset(335, y + 10);
                 cs.showText("TOTAL AMOUNT:");
                 cs.newLineAtOffset(130, 0);
@@ -176,14 +176,14 @@ public class PdfService {
                 y -= 55;
                 cs.beginText();
                 cs.setFont(fontBold, 11);
-                cs.setNonStrokingColor(17, 24, 39);
+                cs.setNonStrokingColor(new java.awt.Color(17, 24, 39));
                 cs.newLineAtOffset(40, y);
                 cs.showText("Payment Instructions & Notes:");
                 cs.endText();
 
                 cs.beginText();
                 cs.setFont(fontRegular, 9);
-                cs.setNonStrokingColor(107, 114, 128);
+                cs.setNonStrokingColor(new java.awt.Color(107, 114, 128));
                 cs.newLineAtOffset(40, y - 16);
                 cs.showText("1. Payments can be made online via Razorpay through your SmartWater Resident Portal.");
                 cs.newLineAtOffset(0, -13);
@@ -197,9 +197,9 @@ public class PdfService {
                 // Footer
                 cs.beginText();
                 cs.setFont(fontRegular, 9);
-                cs.setNonStrokingColor(156, 163, 175);
+                cs.setNonStrokingColor(new java.awt.Color(156, 163, 175));
                 cs.newLineAtOffset(180, 40);
-                cs.showText("Generated automatically by SmartWater Monitoring & Billing Platform © 2026");
+                cs.showText("Generated automatically by SmartWater Monitoring & Billing Platform Â© 2026");
                 cs.endText();
             }
 
@@ -210,22 +210,27 @@ public class PdfService {
     }
 
     private void writeLabelValue(PDPageContentStream cs, PDType1Font fontBold, PDType1Font fontRegular, int x, int y, String label, String value) throws IOException {
+        value = (value == null) ? "N/A" : value;
+        label = (label == null) ? "" : label;
         cs.beginText();
         cs.setFont(fontBold, 10);
-        cs.setNonStrokingColor(107, 114, 128);
+        cs.setNonStrokingColor(new java.awt.Color(107, 114, 128));
         cs.newLineAtOffset(x, y);
         cs.showText(label);
         cs.setFont(fontRegular, 10);
-        cs.setNonStrokingColor(17, 24, 39);
+        cs.setNonStrokingColor(new java.awt.Color(17, 24, 39));
         cs.newLineAtOffset(90, 0);
         cs.showText(value);
         cs.endText();
     }
 
     private void writeTableRow(PDPageContentStream cs, PDType1Font font, int x, int y, String col1, String col2, String col3) throws IOException {
+        col1 = (col1 == null) ? "" : col1;
+        col2 = (col2 == null) ? "" : col2;
+        col3 = (col3 == null) ? "" : col3;
         cs.beginText();
         cs.setFont(font, 10);
-        cs.setNonStrokingColor(55, 65, 81);
+        cs.setNonStrokingColor(new java.awt.Color(55, 65, 81));
         cs.newLineAtOffset(x, y);
         cs.showText(col1);
         cs.newLineAtOffset(230, 0);
@@ -235,3 +240,4 @@ public class PdfService {
         cs.endText();
     }
 }
+

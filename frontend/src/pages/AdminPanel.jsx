@@ -221,7 +221,7 @@ function AdminPanel() {
               </Link>
               <MagicCard className="stat-card">
                 <h3>Total Usage (Liters)</h3>
-                <div className="stat-value">{adminStats.totalUsage}</div>
+                <div className="stat-value">{Number(adminStats.totalUsage || 0).toFixed(2)}</div>
               </MagicCard>
               <MagicCard className="stat-card">
                 <h3>Current Cycle</h3>

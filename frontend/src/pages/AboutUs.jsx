@@ -29,8 +29,8 @@ function AboutUs() {
           zIndex: 100,
           minHeight: '76px'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <BrandLogo style={{ borderBottom: 'none', padding: 0, margin: 0 }} logoSize={85} textSize="23px" subTextSize="10px" />
+          <div style={{ transform: 'scale(0.8)', transformOrigin: 'left center', display: 'flex', alignItems: 'center' }}>
+            <BrandLogo style={{ borderBottom: 'none', padding: 0, margin: 0 }} />
           </div>
           
           {/* Center Links (hidden on mobile) */}

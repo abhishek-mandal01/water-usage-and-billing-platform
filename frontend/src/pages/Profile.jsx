@@ -1,4 +1,4 @@
-﻿import { useTranslation } from '../components/LanguageSelector/useTranslation';
+import { useTranslation } from '../components/LanguageSelector/useTranslation';
 import { useState, useEffect } from 'react';
 import Sidebar from '../components/sidebar';
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
@@ -410,12 +410,12 @@ function Profile({ role: propRole }) {
                       </div>
 
                       <div>
-                        <label style={labelStyle}>{t("resident.emailAddress", "Email Address")} <span style={{ color: 'var(--text-tertiary)', fontWeight: 'normal' }}>({t("resident.readonly", "Read-only")})</span></label>
+                        <label style={labelStyle}>{t("resident.emailAddress", "Email Address")}</label>
                         <input
                           type="email"
                           value={profile.email}
                           readOnly
-                          style={{ ...inputStyle, backgroundColor: 'transparent', color: 'var(--text-secondary)' }} 
+                          style={{ ...inputStyle, backgroundColor: 'transparent', color: 'var(--text-tertiary)', opacity: 0.6, cursor: 'not-allowed', border: '1px solid var(--border-light)' }} 
                         />
                       </div>
 
@@ -430,12 +430,12 @@ function Profile({ role: propRole }) {
                       </div>
 
                       <div>
-                        <label style={labelStyle}>{t("resident.accountRole", "Account Role")} <span style={{ color: 'var(--text-tertiary)', fontWeight: 'normal' }}>({t("resident.readonly", "Read-only")})</span></label>
+                        <label style={labelStyle}>{t("resident.accountRole", "Account Role")}</label>
                         <input
                           type="text"
                           value={profile.role?.replace('_', ' ')}
                           readOnly
-                          style={{ ...inputStyle, backgroundColor: 'transparent', color: 'var(--text-secondary)' }} 
+                          style={{ ...inputStyle, backgroundColor: 'transparent', color: 'var(--text-tertiary)', opacity: 0.6, cursor: 'not-allowed', border: '1px solid var(--border-light)' }} 
                         />
                       </div>
 

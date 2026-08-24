@@ -1,4 +1,4 @@
-﻿import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
+import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
 import MainAdminSidebar from '../components/MainAdminSidebar';
 import Topbar from '../components/topbar';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
@@ -12,6 +12,7 @@ function MainAdminSupportPage() {const { t } = useTranslation();
   const [sortOption, setSortOption] = useState('newest');
 
   const filteredTickets = tickets.filter(t => {
+    if (t.status === 'CLOSED') return false;
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     return (t.title || '').toLowerCase().includes(q) || t.id.toString().includes(q) || (t.raisedByName || '').toLowerCase().includes(q);
@@ -53,7 +54,11 @@ function MainAdminSupportPage() {const { t } = useTranslation();
       if (res.ok) {
         fetchTickets();
         if (selectedTicket && selectedTicket.id === ticketId) {
-          setSelectedTicket({ ...selectedTicket, status: newStatus });
+          if (newStatus === 'CLOSED') {
+            setSelectedTicket(null);
+          } else {
+            setSelectedTicket({ ...selectedTicket, status: newStatus });
+          }
         }
       }
     } catch (err) {

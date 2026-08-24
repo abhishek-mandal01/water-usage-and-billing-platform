@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Smartphone, Monitor, Tablet, Download, X, Check, ShieldCheck, Sparkles } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 export default function PwaInstallModal() {
+  const location = useLocation();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('mobile'); // 'mobile' | 'tablet' | 'desktop'
@@ -55,6 +57,10 @@ export default function PwaInstallModal() {
     setIsOpen(false);
     localStorage.setItem('pwa_prompt_dismissed', 'true');
   };
+
+  if (location.pathname !== '/') {
+    return null;
+  }
 
   if (!isOpen && !deferredPrompt) return null;
 

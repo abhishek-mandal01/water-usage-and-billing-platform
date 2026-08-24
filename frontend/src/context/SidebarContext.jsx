@@ -1,4 +1,4 @@
-﻿/* eslint-disable react-refresh/only-export-components */
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 
 const SidebarContext = createContext();
@@ -32,8 +32,40 @@ export function SidebarProvider({ children }) {
     }
   }, [isCollapsed]);
 
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const fetchUnreadCount = () => {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        try {
+          const u = JSON.parse(userStr);
+          if (u && u.id) {
+            fetch(`http://localhost:8081/api/notifications/unreadCount/${u.id}`)
+              .then(res => {
+                if (res.ok) return res.json();
+                return 0;
+              })
+              .then(data => setUnreadCount(data || 0))
+              .catch(err => console.error("Error fetching unread count:", err));
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+
+    fetchUnreadCount();
+    window.addEventListener('storage', fetchUnreadCount);
+    window.addEventListener('user_profile_updated', fetchUnreadCount);
+    return () => {
+      window.removeEventListener('storage', fetchUnreadCount);
+      window.removeEventListener('user_profile_updated', fetchUnreadCount);
+    };
+  }, []);
+
   return (
-    <SidebarContext.Provider value={{ isOpen, isCollapsed, toggle, close, toggleCollapse }}>
+    <SidebarContext.Provider value={{ isOpen, isCollapsed, toggle, close, toggleCollapse, unreadCount, setUnreadCount }}>
       {children}
     </SidebarContext.Provider>
   );

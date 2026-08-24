@@ -44,7 +44,8 @@ function MeterConfig() {
         setMessage('Meter reading submitted! A bill has been automatically generated for the resident.');
         setReadingForm({ ...readingForm, readingVolume: '' });
       } else {
-        setMessage('Failed to submit reading. Check if household number is correct.');
+        const errorText = await res.text();
+        setMessage(errorText || 'Failed to submit reading.');
       }
     } catch (err) {
       console.error(err);

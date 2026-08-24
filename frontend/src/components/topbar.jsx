@@ -1,14 +1,15 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle';
 import LanguageSelector from './LanguageSelector';
 import { useTranslation } from './LanguageSelector/useTranslation';
+import { useSidebar } from '../context/SidebarContext';
 import { Bell } from 'lucide-react';
 
 function Topbar() {
   const { t } = useTranslation();
   const [user, setUser] = useState(null);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const { unreadCount } = useSidebar();
 
   useEffect(() => {
     const updateUser = () => {
@@ -16,17 +17,6 @@ function Topbar() {
       if (userStr) {
         const u = JSON.parse(userStr);
         setUser(u);
-        
-        // Fetch unread notifications safely
-        if (u && u.id) {
-          fetch(`http://localhost:8081/api/notifications/unreadCount/${u.id}`)
-            .then(res => {
-              if (res.ok) return res.json();
-              return 0;
-            })
-            .then(data => setUnreadCount(data || 0))
-            .catch(err => console.error(err));
-        }
       }
     };
 

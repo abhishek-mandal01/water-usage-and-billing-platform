@@ -147,6 +147,33 @@ function MyBills() {
   });
 
   const totalPages = Math.ceil(sortedBills.length / itemsPerPage);
+  const payBtnStyle = {
+    padding: '6px 12px',
+    backgroundColor: 'var(--color-primary-600)',
+    color: 'white',
+    borderRadius: '6px',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '13px',
+    fontWeight: '500',
+    transition: 'background-color 0.2s',
+  };
+
+  const viewBtnStyle = {
+    padding: '6px 12px',
+    backgroundColor: 'var(--bg-body)',
+    color: 'var(--text-primary)',
+    borderRadius: '6px',
+    border: '1px solid var(--border-default)',
+    cursor: 'pointer',
+    fontSize: '13px',
+    fontWeight: '500',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    transition: 'background-color 0.2s',
+  };
+
   const currentBills = sortedBills.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
