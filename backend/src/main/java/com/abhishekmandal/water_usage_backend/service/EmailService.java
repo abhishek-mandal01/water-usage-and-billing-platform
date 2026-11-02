@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.Async;
 @Service
 public class EmailService {
 
-    @Autowired
+    @Autowired(required = false)
     private JavaMailSender mailSender;
 
     @org.springframework.beans.factory.annotation.Value("${spring.mail.username:scamtern@gmail.com}")
@@ -45,6 +45,10 @@ public class EmailService {
 
     @Async
     public void sendWelcomeEmail(String toEmail, String name, String role) {
+        if (mailSender == null) {
+            System.err.println("MailSender not configured. Skipping welcome email to " + toEmail);
+            return;
+        }
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -70,6 +74,10 @@ public class EmailService {
 
     @Async
     public void sendBillGeneratedEmail(String toEmail, String name, String cycleStr, Double amount, String dueDate) {
+        if (mailSender == null) {
+            System.err.println("MailSender not configured. Skipping bill email to " + toEmail);
+            return;
+        }
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -96,6 +104,10 @@ public class EmailService {
     }
 
     public void sendInviteEmail(String toEmail, String inviteLink) {
+        if (mailSender == null) {
+            System.err.println("MailSender not configured. Cannot send invite email to " + toEmail);
+            return;
+        }
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -120,6 +132,10 @@ public class EmailService {
 
     @Async
     public void sendEmail(String toEmail, String subject, String body) {
+        if (mailSender == null) {
+            System.err.println("MailSender not configured. Skipping email to " + toEmail);
+            return;
+        }
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromEmail);
         message.setTo(toEmail);
