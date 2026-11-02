@@ -48,6 +48,7 @@ public class SecurityConfig {
                 // Public endpoints
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/invite/details/**").permitAll()
+                .requestMatchers("/api/health/**").permitAll()
                 // All other endpoints are open for now (service-layer ownership checks provide security)
                 // When JWT is implemented, lock these down by role
                 .anyRequest().permitAll()
