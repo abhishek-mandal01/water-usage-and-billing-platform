@@ -3,6 +3,8 @@ package com.abhishekmandal.water_usage_backend.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -22,6 +24,13 @@ public class SecurityConfig {
     }
 
     @Bean
+    public UserDetailsService userDetailsService() {
+        return username -> {
+            throw new UsernameNotFoundException("Default user details service disabled.");
+        };
+    }
+
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(List.of(
@@ -30,8 +39,9 @@ public class SecurityConfig {
             "https://*.vercel.app",
             "https://*.onrender.com"
         ));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -46,9 +56,9 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints
+                .requestMatchers("/", "/api/health/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/invite/details/**").permitAll()
-                .requestMatchers("/api/health/**").permitAll()
                 // All other endpoints are open for now (service-layer ownership checks provide security)
                 // When JWT is implemented, lock these down by role
                 .anyRequest().permitAll()
