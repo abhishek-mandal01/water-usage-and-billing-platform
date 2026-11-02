@@ -22,8 +22,7 @@ const LanguageDropdown = ({ isOpen, onClose }) => {
     });
   }, [query]);
 
-  useEffect(() => {// eslint-disable-next-line react-hooks/set-state-in-effect
-
+  useEffect(() => {
     setActiveIndex(0);
   }, [query]);
 

@@ -45,8 +45,7 @@ function MainAdminDashboard() {const { t } = useTranslation();
     }
   };
 
-  useEffect(() => {// eslint-disable-next-line react-hooks/set-state-in-effect
-
+  useEffect(() => {
     fetchPendingVerifications();
     fetchDashboardData();
   }, []);
@@ -55,8 +54,7 @@ function MainAdminDashboard() {const { t } = useTranslation();
     try {
       await fetch(`http://localhost:8081/api/verification/approve/${id}`, { method: 'POST' });
       alert('Community Admin Approved!');
-      setSelectedVerification(null);// eslint-disable-next-line react-hooks/set-state-in-effect
-
+      setSelectedVerification(null);
       fetchPendingVerifications();
     } catch (err) {
       console.error(err);
@@ -67,8 +65,7 @@ function MainAdminDashboard() {const { t } = useTranslation();
     try {
       await fetch(`http://localhost:8081/api/verification/decline/${id}`, { method: 'POST' });
       alert('Community Admin Verification Denied!');
-      setSelectedVerification(null);// eslint-disable-next-line react-hooks/set-state-in-effect
-
+      setSelectedVerification(null);
       fetchPendingVerifications();
     } catch (err) {
       console.error(err);

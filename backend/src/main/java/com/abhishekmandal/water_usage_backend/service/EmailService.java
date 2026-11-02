@@ -63,7 +63,6 @@ public class EmailService {
             helper.setText(getHtmlTemplate("Welcome Aboard!", content), true);
             
             mailSender.send(message);
-            System.out.println("Welcome email sent to " + toEmail);
         } catch (Exception e) {
             System.err.println("Failed to send welcome email to " + toEmail + ". Error: " + e.getMessage());
         }
@@ -91,7 +90,6 @@ public class EmailService {
             helper.setText(getHtmlTemplate("New Bill Generated", content), true);
             
             mailSender.send(message);
-            System.out.println("Bill email sent to " + toEmail);
         } catch (Exception e) {
             System.err.println("Failed to send bill email to " + toEmail + ". Error: " + e.getMessage());
         }
@@ -114,7 +112,6 @@ public class EmailService {
             helper.setText(getHtmlTemplate("Platform Invitation", content), true);
             
             mailSender.send(message);
-            System.out.println("Email sent successfully to " + toEmail);
         } catch (Exception e) {
             System.err.println("Failed to send email to " + toEmail + ". Error: " + e.getMessage());
             throw new RuntimeException("Email failed to send: " + e.getMessage());
@@ -131,7 +128,6 @@ public class EmailService {
         
         try {
             mailSender.send(message);
-            System.out.println("Alert email sent to " + toEmail);
         } catch (Exception e) {
             System.err.println("Failed to send alert email to " + toEmail + ". Error: " + e.getMessage());
         }

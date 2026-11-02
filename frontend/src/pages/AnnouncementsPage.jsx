@@ -1,4 +1,4 @@
-﻿import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
+import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
 import Sidebar from '../components/sidebar';
 import Topbar from '../components/topbar';
@@ -31,7 +31,6 @@ function AnnouncementsPage({ role = 'COMMUNITY_ADMIN' }) {const { t } = useTrans
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchAnnouncements();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

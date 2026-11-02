@@ -12,8 +12,7 @@ const Droplet = ({ mousePos, onSplash }) => {
   const visualsRef = useRef(null);
   const [isTouch, setIsTouch] = useState(false);
 
-  useEffect(() => {// eslint-disable-next-line react-hooks/set-state-in-effect
-
+  useEffect(() => {
     setIsTouch('ontouchstart' in window || navigator.maxTouchPoints > 0);
   }, []);
 

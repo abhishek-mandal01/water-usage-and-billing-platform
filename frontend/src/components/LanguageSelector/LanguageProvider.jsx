@@ -19,8 +19,7 @@ export const LanguageProvider = ({ children }) => {
         new window.google.translate.TranslateElement({
           pageLanguage: 'en',
           autoDisplay: false,
-        }, 'google_translate_element');// eslint-disable-next-line react-hooks/set-state-in-effect
-
+        }, 'google_translate_element');
         setIsGoogleLoaded(true);
       };
 
@@ -29,8 +28,7 @@ export const LanguageProvider = ({ children }) => {
       script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
       script.async = true;
       document.body.appendChild(script);
-    } else {// eslint-disable-next-line react-hooks/set-state-in-effect
-
+    } else {
       setIsGoogleLoaded(true);
     }
   }, []);

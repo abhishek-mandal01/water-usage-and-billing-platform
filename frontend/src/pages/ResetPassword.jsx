@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Lock, ArrowRight, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import AuthSidePanel from '../components/AuthSidePanel';
@@ -23,8 +23,7 @@ const ResetPassword = () => {
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (!token) {// eslint-disable-next-line react-hooks/set-state-in-effect
-
+    if (!token) {
       setError('Invalid or missing reset token.');
     }
   }, [token]);
@@ -33,20 +32,17 @@ const ResetPassword = () => {
     e.preventDefault();
     if (!password || !confirmPassword || !token) return;
     
-    if (password !== confirmPassword) {// eslint-disable-next-line react-hooks/set-state-in-effect
-
+    if (password !== confirmPassword) {
       setError('Passwords do not match.');
       return;
     }
     
-    if (password.length < 6) {// eslint-disable-next-line react-hooks/set-state-in-effect
-
+    if (password.length < 6) {
       setError('Password must be at least 6 characters long.');
       return;
     }
     
-    setLoading(true);// eslint-disable-next-line react-hooks/set-state-in-effect
-
+    setLoading(true);
     setError('');
     
     try {
@@ -62,13 +58,11 @@ const ResetPassword = () => {
           navigate('/login');
         }, 3000);
       } else {
-        const text = await res.text();// eslint-disable-next-line react-hooks/set-state-in-effect
-
+        const text = await res.text();
         setError(text || 'Failed to reset password. The link might be expired.');
       }
     } catch (err) {
-      console.error(err);// eslint-disable-next-line react-hooks/set-state-in-effect
-
+      console.error(err);
       setError('Network error. Please try again later.');
     } finally {
       setLoading(false);

@@ -30,7 +30,6 @@ public class AlertService {
     // Runs daily at 8 AM
     @Scheduled(cron = "0 0 8 * * ?")
     public void checkUsageAndGenerateAlerts() {
-        System.out.println("Running scheduled alert checks...");
         List<Household> households = householdRepository.findAll();
 
         for (Household hh : households) {

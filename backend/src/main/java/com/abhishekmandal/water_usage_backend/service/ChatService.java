@@ -59,10 +59,6 @@ public class ChatService {
 
             // Step 3: Build the system instruction with context
             String systemInstruction = buildSystemInstruction(role, userName, fetchedDatabaseContext, language);
-            
-            System.out.println("===== RAG DEBUG: GENERATED SYSTEM INSTRUCTION =====");
-            System.out.println(systemInstruction);
-            System.out.println("===================================================");
 
             // Step 4: Build and send Gemini API request
             String requestBody = buildGeminiRequest(userMessage, systemInstruction);

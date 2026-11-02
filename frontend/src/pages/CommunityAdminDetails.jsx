@@ -1,4 +1,4 @@
-﻿import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import MainAdminSidebar from '../components/MainAdminSidebar';
 import Topbar from '../components/topbar';
@@ -50,7 +50,6 @@ function CommunityAdminDetails() {const { t } = useTranslation();
   }, [id]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

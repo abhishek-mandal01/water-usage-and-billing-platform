@@ -1,4 +1,4 @@
-﻿import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
+import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
 import Topbar from '../components/topbar';
 import { MagicCardGrid, MagicCard } from '../components/MagicBento';
@@ -51,7 +51,6 @@ function CommunityAdminSupportPage() {const { t } = useTranslation();
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTickets();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

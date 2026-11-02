@@ -2410,7 +2410,7 @@ nav .btn-primary:hover {
     pointer-events: none;
     transition: opacity 0.3s ease !important;
     backdrop-filter: blur(4px) !important;
-    WebkitBackdropFilter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
   }
   .sidebar-backdrop.sidebar-backdrop--visible {
     opacity: 1 !important;

@@ -25,7 +25,6 @@ export default function PwaInstallModal() {
       setInstalled(true);
       setDeferredPrompt(null);
       setIsOpen(false);
-      console.log('[PWA] Smart Water app was installed successfully.');
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -45,7 +44,6 @@ export default function PwaInstallModal() {
     }
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    console.log(`[PWA] User response to install prompt: ${outcome}`);
     setDeferredPrompt(null);
     if (outcome === 'accepted') {
       setInstalled(true);

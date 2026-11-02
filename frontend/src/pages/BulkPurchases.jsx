@@ -36,7 +36,6 @@ function BulkPurchases() {const { t } = useTranslation();
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchPurchases();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

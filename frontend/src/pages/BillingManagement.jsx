@@ -42,7 +42,6 @@ function BillingManagement() {
   }, [adminId]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchCycles();
     fetchBills();
     // eslint-disable-next-line react-hooks/exhaustive-deps

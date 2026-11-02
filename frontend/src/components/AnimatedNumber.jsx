@@ -6,7 +6,6 @@ export default function AnimatedNumber({ value, duration = 1200, prefix = '', su
   useEffect(() => {
     const numericTarget = typeof value == 'number' ? value : parseFloat(String(value).replace(/,/g, '')) || 0;
     if (isNaN(numericTarget)) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDisplayValue(0);
       return;
     }
