@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
 import UserSidebar from '../components/sidebar';
 import Topbar from '../components/topbar';
@@ -28,7 +29,7 @@ function UsageHistory() {const { t } = useTranslation();
       const residentId = JSON.parse(localStorage.getItem('user'))?.id;
       if (!residentId) return;
       try {
-        const res = await fetch(`http://localhost:8081/api/usage/my/${residentId}`);
+        const res = await fetch(`${API_BASE_URL}/api/usage/my/${residentId}`);
         if (res.ok) {
           setLogs(await res.json());
         }

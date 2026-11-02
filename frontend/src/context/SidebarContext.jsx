@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 
@@ -41,7 +42,7 @@ export function SidebarProvider({ children }) {
         try {
           const u = JSON.parse(userStr);
           if (u && u.id) {
-            fetch(`http://localhost:8081/api/notifications/unreadCount/${u.id}`)
+            fetch(`${API_BASE_URL}/api/notifications/unreadCount/${u.id}`)
               .then(res => {
                 if (res.ok) return res.json();
                 return 0;

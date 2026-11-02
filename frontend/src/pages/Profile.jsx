@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';
 import { useState, useEffect } from 'react';
 import Sidebar from '../components/sidebar';
@@ -59,7 +60,7 @@ function Profile({ role: propRole }) {
     const user = userStr ? JSON.parse(userStr) : null;
 
     if (user) {
-      fetch(`http://localhost:8081/api/profile/${user.id}`)
+      fetch(`${API_BASE_URL}/api/profile/${user.id}`)
         .then((res) => {
           if (!res.ok) throw new Error('Failed to load profile');
           return res.json();
@@ -181,7 +182,7 @@ function Profile({ role: propRole }) {
           avatarUrl: editForm.avatarUrl || profile.avatarUrl || ''
         };
 
-        const response = await fetch(`http://localhost:8081/api/profile/${user.id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/profile/${user.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)

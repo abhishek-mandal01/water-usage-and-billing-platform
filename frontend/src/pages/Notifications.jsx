@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
 import Sidebar from '../components/sidebar';
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
@@ -23,7 +24,7 @@ function Notifications({ role: propRole }) {
     const fetchNotifications = async () => {
       if (!userId) return;
       try {
-        const res = await fetch(`http://localhost:8081/api/notifications/${userId}`);
+        const res = await fetch(`${API_BASE_URL}/api/notifications/${userId}`);
         if (res.ok) {
           setNotifications(await res.json());
         }
@@ -37,7 +38,7 @@ function Notifications({ role: propRole }) {
 
   const handleMarkAsRead = async (id) => {
     try {
-      await fetch(`http://localhost:8081/api/notifications/read/${id}`, { method: 'POST' });
+      await fetch(`${API_BASE_URL}/api/notifications/read/${id}`, { method: 'POST' });
       setNotifications(notifications.map((n) => n.id === id ? { ...n, read: true } : n));
     } catch (err) {
       console.error(err);
@@ -46,7 +47,7 @@ function Notifications({ role: propRole }) {
 
   const handleMarkAllAsRead = async () => {
     try {
-      await fetch(`http://localhost:8081/api/notifications/readAll/${userId}`, { method: 'POST' });
+      await fetch(`${API_BASE_URL}/api/notifications/readAll/${userId}`, { method: 'POST' });
       setNotifications(notifications.map((n) => ({ ...n, read: true })));
     } catch (err) {
       console.error(err);
@@ -55,14 +56,14 @@ function Notifications({ role: propRole }) {
 
   const handleDelete = async (id) => {
     try {
-      await fetch(`http://localhost:8081/api/notifications/${id}`, { method: 'DELETE' });
+      await fetch(`${API_BASE_URL}/api/notifications/${id}`, { method: 'DELETE' });
     } catch (err) { console.error(err); }
     setNotifications(notifications.filter(n => n.id !== id));
   };
 
   const handleDeleteAll = async () => {
     try {
-      await fetch(`http://localhost:8081/api/notifications/deleteAll/${userId}`, { method: 'DELETE' });
+      await fetch(`${API_BASE_URL}/api/notifications/deleteAll/${userId}`, { method: 'DELETE' });
     } catch (err) { console.error(err); }
     setNotifications([]);
     setCurrentPage(1);

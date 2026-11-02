@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 ﻿import { useState, useEffect } from 'react';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';
 import MainAdminSidebar from '../components/MainAdminSidebar';
@@ -28,7 +29,7 @@ function MainAdminTariffsPage() {
   useEffect(() => {
     const fetchApartments = async () => {
       try {
-        const res = await fetch('http://localhost:8081/api/config/apartments/all');
+        const res = await fetch(`${API_BASE_URL}/api/config/apartments/all`);
         if (res.ok) setApartments(await res.json());
       } catch (err) {
         console.error(err);

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
 import MainAdminSidebar from '../components/MainAdminSidebar';
 import Topbar from '../components/topbar';
@@ -31,7 +32,7 @@ function MainAdminSupportPage() {const { t } = useTranslation();
 
   const fetchTickets = async () => {
     try {
-      const res = await fetch('http://localhost:8081/api/tickets/all');
+      const res = await fetch(`${API_BASE_URL}/api/tickets/all`);
       if (res.ok) {
         setTickets(await res.json());
       }
@@ -48,7 +49,7 @@ function MainAdminSupportPage() {const { t } = useTranslation();
 
   const handleUpdateStatus = async (ticketId, newStatus) => {
     try {
-      const res = await fetch(`http://localhost:8081/api/tickets/${ticketId}/status?status=${newStatus}`, {
+      const res = await fetch(`${API_BASE_URL}/api/tickets/${ticketId}/status?status=${newStatus}`, {
         method: 'PUT'
       });
       if (res.ok) {

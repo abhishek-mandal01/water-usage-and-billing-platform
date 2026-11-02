@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
@@ -33,7 +34,7 @@ function AdminPanel() {
     const userStr = localStorage.getItem('user');
     const user = userStr ? JSON.parse(userStr) : { id: 1 };
 
-    fetch(`http://localhost:8081/api/verification/status/${user.id}`)
+    fetch(`${API_BASE_URL}/api/verification/status/${user.id}`)
       .then(res => {
         if (!res.ok) throw new Error('Not found');
         return res.json();
@@ -43,7 +44,7 @@ function AdminPanel() {
         setVerificationStatus(status);
         
         if (status === 'APPROVED') {
-          fetch(`http://localhost:8081/api/dashboard/admin/${user.id}`)
+          fetch(`${API_BASE_URL}/api/dashboard/admin/${user.id}`)
             .then(res => res.json())
             .then(statsData => setAdminStats(statsData))
             .catch(err => console.error(err));
@@ -65,7 +66,7 @@ function AdminPanel() {
     const payload = { ...vForm, userId: user.id };
 
     try {
-      const response = await fetch('http://localhost:8081/api/verification/submit', {
+      const response = await fetch(`${API_BASE_URL}/api/verification/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -85,7 +86,7 @@ function AdminPanel() {
     const payload = { communityAdminId: user.id };
     
     try {
-      const response = await fetch('http://localhost:8081/api/invite/generate', {
+      const response = await fetch(`${API_BASE_URL}/api/invite/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -104,7 +105,7 @@ function AdminPanel() {
     if (!targetEmail) return;
     setEmailStatus('Sending...');
     try {
-      const response = await fetch('http://localhost:8081/api/invite/send', {
+      const response = await fetch(`${API_BASE_URL}/api/invite/send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: targetEmail, inviteLink })

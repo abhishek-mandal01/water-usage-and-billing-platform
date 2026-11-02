@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 ﻿import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
 import Sidebar from '../components/sidebar';
 import Topbar from '../components/topbar';
@@ -18,7 +19,7 @@ function ResidentSupportPage() {const { t } = useTranslation();
   const fetchTickets = async () => {
     if (!user || !user.id) return;
     try {
-      const res = await fetch(`http://localhost:8081/api/tickets/my/${user.id}`);
+      const res = await fetch(`${API_BASE_URL}/api/tickets/my/${user.id}`);
       if (res.ok) {
         setTickets(await res.json());
       }
@@ -55,7 +56,7 @@ function ResidentSupportPage() {const { t } = useTranslation();
     e.preventDefault();
     setStatusMsg('Submitting ticket...');
     try {
-      const res = await fetch('http://localhost:8081/api/tickets', {
+      const res = await fetch(`${API_BASE_URL}/api/tickets`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

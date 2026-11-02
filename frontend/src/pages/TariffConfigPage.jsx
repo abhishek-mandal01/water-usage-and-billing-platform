@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 ﻿import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
 import Topbar from '../components/topbar';
@@ -24,7 +25,7 @@ function TariffConfigPage() {const { t } = useTranslation();
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const res = await fetch(`http://localhost:8081/api/config/apartment-config?adminId=${adminId}`);
+        const res = await fetch(`${API_BASE_URL}/api/config/apartment-config?adminId=${adminId}`);
         if (res.ok) {
           const data = await res.json();
           setApartmentConfig({
@@ -59,7 +60,7 @@ function TariffConfigPage() {const { t } = useTranslation();
         gracePeriodDays: apartmentConfig.gracePeriodDays.toString()
       });
 
-      const res = await fetch(`http://localhost:8081/api/config/apartment-config?${params.toString()}`, {
+      const res = await fetch(`${API_BASE_URL}/api/config/apartment-config?${params.toString()}`, {
         method: 'POST'
       });
 

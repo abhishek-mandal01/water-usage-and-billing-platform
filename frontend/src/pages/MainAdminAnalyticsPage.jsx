@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';import MainAdminSidebar from '../components/MainAdminSidebar';
 import Topbar from '../components/topbar';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
@@ -19,7 +20,7 @@ function MainAdminAnalyticsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:8081/api/analytics/main-admin')
+    fetch(`${API_BASE_URL}/api/analytics/main-admin`)
       .then(res => res.json())
       .then(json => {
         setData(json);

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';import MainAdminSidebar from '../components/MainAdminSidebar';
 import Topbar from '../components/topbar';
 import { AreaChart, Area, BarChart, Bar, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
@@ -19,7 +20,7 @@ function MainAdminFinancialsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:8081/api/analytics/financials/main-admin')
+    fetch(`${API_BASE_URL}/api/analytics/financials/main-admin`)
       .then(res => res.json())
       .then(json => {
         setData(json);
@@ -32,7 +33,7 @@ function MainAdminFinancialsPage() {
   }, []);
 
   const handleDownload = () => {
-    window.open('http://localhost:8081/api/analytics/financials/main-admin/download', '_blank');
+    window.open(`${API_BASE_URL}/api/analytics/financials/main-admin/download`, '_blank');
   };
 
   const revenueStatus = [

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useState, useRef, useEffect } from 'react';
 import Sidebar from '../components/sidebar';
 import Topbar from '../components/topbar';
@@ -50,7 +51,7 @@ function ResidentReportsPage() {
     if (!user?.id) return;
     const fetchReport = async () => {
       try {
-        const res = await fetch(`http://localhost:8081/api/reports/resident/${user.id}?dateRange=${dateRange}`);
+        const res = await fetch(`${API_BASE_URL}/api/reports/resident/${user.id}?dateRange=${dateRange}`);
         if (!res.ok) throw new Error('Failed to fetch resident report');
         const data = await res.json();
           if (data) {

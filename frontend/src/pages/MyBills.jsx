@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';
 import { useState, useEffect, useRef } from 'react';
 import UserSidebar from '../components/sidebar';
@@ -34,7 +35,7 @@ function MyBills() {
         return;
       }
       try {
-        const res = await fetch(`http://localhost:8081/api/billing/my/${residentId}`);
+        const res = await fetch(`${API_BASE_URL}/api/billing/my/${residentId}`);
         if (res.ok) {
           setBills(await res.json());
         }
@@ -50,7 +51,7 @@ function MyBills() {
   const fetchBillsRef = async () => {
     if (!residentId) return;
     try {
-      const res = await fetch(`http://localhost:8081/api/billing/my/${residentId}`);
+      const res = await fetch(`${API_BASE_URL}/api/billing/my/${residentId}`);
       if (res.ok) setBills(await res.json());
     } catch {
 
@@ -61,7 +62,7 @@ function MyBills() {
     setLoading(true);
     try {
       // 1. Create order on backend
-      const orderRes = await fetch(`http://localhost:8081/api/payments/create-order/${billId}`, {
+      const orderRes = await fetch(`${API_BASE_URL}/api/payments/create-order/${billId}`, {
         method: 'POST'
       });
 
@@ -77,7 +78,7 @@ function MyBills() {
         order_id: orderData.id,
         handler: async function (response) {
           // 3. Verify Payment
-          const verifyRes = await fetch('http://localhost:8081/api/payments/verify', {
+          const verifyRes = await fetch(`${API_BASE_URL}/api/payments/verify`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -122,7 +123,7 @@ function MyBills() {
 
 
   const handleDownloadPdf = () => {
-    window.open(`http://localhost:8081/api/billing/pdf/${selectedBill.id}`, '_blank');
+    window.open(`${API_BASE_URL}/api/billing/pdf/${selectedBill.id}`, '_blank');
   };
 
   const totalDue = bills.filter((b) => b.status === 'UNPAID').reduce((sum, b) => sum + b.amount, 0);

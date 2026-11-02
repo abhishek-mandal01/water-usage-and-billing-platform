@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
 import Topbar from '../components/topbar';
@@ -38,7 +39,7 @@ function CommunityAdminSupportPage() {const { t } = useTranslation();
 
   const fetchTickets = async () => {
     try {
-      const res = await fetch(`http://localhost:8081/api/tickets/assigned/${adminId}`);
+      const res = await fetch(`${API_BASE_URL}/api/tickets/assigned/${adminId}`);
       if (res.ok) {
         const data = await res.json();
         setTickets(data);
@@ -57,7 +58,7 @@ function CommunityAdminSupportPage() {const { t } = useTranslation();
 
   const handleUpdateStatus = async (ticketId, newStatus) => {
     try {
-      const res = await fetch(`http://localhost:8081/api/tickets/${ticketId}/status?status=${newStatus}`, {
+      const res = await fetch(`${API_BASE_URL}/api/tickets/${ticketId}/status?status=${newStatus}`, {
         method: 'PUT'
       });
       if (res.ok) {
@@ -80,7 +81,7 @@ function CommunityAdminSupportPage() {const { t } = useTranslation();
     if (!selectedTicket) return;
     try {
       const params = new URLSearchParams({ reason: forwardReason });
-      const res = await fetch(`http://localhost:8081/api/tickets/${selectedTicket.id}/forward?${params.toString()}`, {
+      const res = await fetch(`${API_BASE_URL}/api/tickets/${selectedTicket.id}/forward?${params.toString()}`, {
         method: 'PUT'
       });
 
@@ -100,7 +101,7 @@ function CommunityAdminSupportPage() {const { t } = useTranslation();
   const handleRaiseTicket = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:8081/api/tickets', {
+      const res = await fetch(`${API_BASE_URL}/api/tickets`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

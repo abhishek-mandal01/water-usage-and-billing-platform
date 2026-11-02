@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
 import Sidebar from '../components/sidebar';
@@ -17,8 +18,8 @@ function AnnouncementsPage({ role = 'COMMUNITY_ADMIN' }) {const { t } = useTrans
   const fetchAnnouncements = async () => {
     try {
       const url = role === 'COMMUNITY_ADMIN' ?
-      `http://localhost:8081/api/announcements/community/${adminId}` :
-      `http://localhost:8081/api/announcements/all`;
+      `${API_BASE_URL}/api/announcements/community/${adminId}` :
+      `${API_BASE_URL}/api/announcements/all`;
       const res = await fetch(url);
       if (res.ok) {
         setAnnouncements(await res.json());
@@ -39,7 +40,7 @@ function AnnouncementsPage({ role = 'COMMUNITY_ADMIN' }) {const { t } = useTrans
     e.preventDefault();
     setMsg('Publishing announcement...');
     try {
-      const res = await fetch('http://localhost:8081/api/announcements', {
+      const res = await fetch(`${API_BASE_URL}/api/announcements`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -67,7 +68,7 @@ function AnnouncementsPage({ role = 'COMMUNITY_ADMIN' }) {const { t } = useTrans
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this announcement?')) return;
     try {
-      const res = await fetch(`http://localhost:8081/api/announcements/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/announcements/${id}`, {
         method: 'DELETE'
       });
       if (res.ok) {

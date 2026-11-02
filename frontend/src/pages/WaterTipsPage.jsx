@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useState, useEffect } from 'react';
 import Sidebar from '../components/sidebar';
 import Topbar from '../components/topbar';
@@ -15,7 +16,7 @@ function WaterTipsPage() {
     const user = userStr ? JSON.parse(userStr) : null;
     const userId = user?.id || 1;
     
-    fetch(`http://localhost:8081/api/dashboard/${userId}`)
+    fetch(`${API_BASE_URL}/api/dashboard/${userId}`)
       .then(r => r.json())
       .then(dData => {
         if (dData) setData(dData);

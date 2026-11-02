@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import MainAdminSidebar from '../components/MainAdminSidebar';
@@ -36,8 +37,8 @@ function CommunityAdminDetails() {const { t } = useTranslation();
     setLoading(true);
     try {
       const [adminRes, residentRes] = await Promise.all([
-      fetch(`http://localhost:8081/api/users/community-admin/${id}`),
-      fetch(`http://localhost:8081/api/users/community-admin/${id}/residents`)]
+      fetch(`${API_BASE_URL}/api/users/community-admin/${id}`),
+      fetch(`${API_BASE_URL}/api/users/community-admin/${id}/residents`)]
       );
 
       if (adminRes.ok) setAdmin(await adminRes.json());
@@ -57,7 +58,7 @@ function CommunityAdminDetails() {const { t } = useTranslation();
   const handleDeleteResident = async (residentId) => {
     if (!window.confirm("Are you sure you want to remove this resident? All their data will be lost.")) return;
     try {
-      const res = await fetch(`http://localhost:8081/api/users/resident/${residentId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/users/resident/${residentId}`, {
         method: 'DELETE'
       });
       if (res.ok) {
@@ -76,7 +77,7 @@ function CommunityAdminDetails() {const { t } = useTranslation();
   const handleDeleteAdmin = async () => {
     if (!window.confirm("Are you sure you want to completely remove this Community Admin? This will permanently delete the admin, their assigned apartment, ALL associated households, and ALL their residents. This action cannot be undone.")) return;
     try {
-      const res = await fetch(`http://localhost:8081/api/users/community-admin/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/users/community-admin/${id}`, {
         method: 'DELETE'
       });
       if (res.ok) {
@@ -93,7 +94,7 @@ function CommunityAdminDetails() {const { t } = useTranslation();
 
   const handleVerificationAction = async (action) => {
     try {
-      const res = await fetch(`http://localhost:8081/api/verification/${action}/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/verification/${action}/${id}`, {
         method: 'POST'
       });
       if (res.ok) {

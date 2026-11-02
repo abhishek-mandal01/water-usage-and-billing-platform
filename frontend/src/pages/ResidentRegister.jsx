@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 ﻿import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Eye, EyeOff, UserPlus, ArrowRight, UserCheck,  } from 'lucide-react';
@@ -22,7 +23,7 @@ const ResidentRegister = () => {
 
   useEffect(() => {
     if (token) {
-      fetch(`http://localhost:8081/api/invite/details/${token}`)
+      fetch(`${API_BASE_URL}/api/invite/details/${token}`)
         .then(async (res) => {
           if (!res.ok) {
             const text = await res.text();
@@ -46,21 +47,39 @@ const ResidentRegister = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8081/api/auth/invite-register', {
+      const payload = { ...formData };
+      if (!payload.dateOfBirth) {
+        delete payload.dateOfBirth;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/auth/invite-register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
 
       if (response.ok) {
         alert('Resident registration successful! Please login to access your dashboard.');
         navigate('/login');
       } else {
-        const text = await response.text();
-        setError(text || 'Registration failed. The invite link might be invalid or already used.');
+        let errorMsg = 'Registration failed. The invite link might be invalid or already used.';
+        try {
+          const contentType = response.headers.get('content-type') || '';
+          if (contentType.includes('application/json')) {
+            const errJson = await response.json();
+            errorMsg = errJson.message || errJson.error || errorMsg;
+          } else {
+            const text = await response.text();
+            if (text && text.trim()) errorMsg = text;
+          }
+        } catch {
+          // fallback
+        }
+        setError(errorMsg);
       }
-    } catch {
-      setError('Server error. Ensure the backend is running.');
+    } catch (err) {
+      console.error('Resident registration error:', err);
+      setError('Unable to reach server. Please ensure the backend is running and reachable.');
     }
     setLoading(false);
   };

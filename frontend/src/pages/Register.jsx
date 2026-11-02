@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Building2 } from 'lucide-react';
@@ -26,20 +27,41 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8081/api/auth/register', {
+      const payload = { ...formData };
+      if (!payload.dateOfBirth) {
+        delete payload.dateOfBirth; // Avoid Jackson LocalDate parsing error on empty string
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
 
       if (response.ok) {
         alert('Registration successful! Please login.');
         navigate('/login');
       } else {
-        setError('Registration failed. Email might already be in use.');
+        let errorMsg = 'Registration failed. Please check the form and try again.';
+        try {
+          const contentType = response.headers.get('content-type') || '';
+          if (contentType.includes('application/json')) {
+            const errJson = await response.json();
+            errorMsg = errJson.message || errJson.error || errorMsg;
+          } else {
+            const errText = await response.text();
+            if (errText && errText.trim()) {
+              errorMsg = errText;
+            }
+          }
+        } catch {
+          // fallback
+        }
+        setError(errorMsg);
       }
-    } catch {
-      setError('Server error. Ensure the backend is running.');
+    } catch (err) {
+      console.error('Registration error:', err);
+      setError('Unable to reach server. Please ensure the backend is running and reachable.');
     }
     setLoading(false);
   };

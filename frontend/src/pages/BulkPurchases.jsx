@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
 import Topbar from '../components/topbar';
@@ -25,7 +26,7 @@ function BulkPurchases() {const { t } = useTranslation();
   const fetchPurchases = async () => {
     if (!adminId) return;
     try {
-      const res = await fetch(`http://localhost:8081/api/bulk-purchases/community/${adminId}`);
+      const res = await fetch(`${API_BASE_URL}/api/bulk-purchases/community/${adminId}`);
       if (res.ok) {
         setPurchases(await res.json());
       }
@@ -55,7 +56,7 @@ function BulkPurchases() {const { t } = useTranslation();
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:8081/api/bulk-purchases', {
+      const res = await fetch(`${API_BASE_URL}/api/bulk-purchases`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, adminId })

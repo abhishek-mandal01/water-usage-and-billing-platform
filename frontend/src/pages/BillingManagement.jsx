@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
 import Topbar from '../components/topbar';
@@ -24,7 +25,7 @@ function BillingManagement() {
   const fetchCycles = useCallback(async () => {
     if (!adminId) return;
     try {
-      const res = await fetch(`http://localhost:8081/api/billing-cycles/community/${adminId}`);
+      const res = await fetch(`${API_BASE_URL}/api/billing-cycles/community/${adminId}`);
       if (res.ok) setCycles(await res.json());
     } catch (e) {
       console.error(e);
@@ -34,7 +35,7 @@ function BillingManagement() {
   const fetchBills = useCallback(async () => {
     if (!adminId) return;
     try {
-      const res = await fetch(`http://localhost:8081/api/billing/community/${adminId}`);
+      const res = await fetch(`${API_BASE_URL}/api/billing/community/${adminId}`);
       if (res.ok) setBills(await res.json());
     } catch (e) {
       console.error(e);
@@ -52,7 +53,7 @@ function BillingManagement() {
     if (!adminId) return;
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:8081/api/billing-cycles/create`, {
+      const res = await fetch(`${API_BASE_URL}/api/billing-cycles/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ adminId, startDate, endDate })
@@ -78,7 +79,7 @@ function BillingManagement() {
 
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:8081/api/billing-cycles/finalize/${cycleId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/billing-cycles/finalize/${cycleId}`, {
         method: 'POST'
       });
       if (res.ok) {
@@ -98,7 +99,7 @@ function BillingManagement() {
 
   const handleDownloadPdf = () => {
     if (!selectedBill) return;
-    window.open(`http://localhost:8081/api/billing/pdf/${selectedBill.id}`, '_blank');
+    window.open(`${API_BASE_URL}/api/billing/pdf/${selectedBill.id}`, '_blank');
   };
 
   const filteredBills = bills.filter(bill => {

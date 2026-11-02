@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
@@ -20,7 +21,7 @@ function MeterConfig() {
   const fetchData = useCallback(async () => {
     if (!adminId) return;
     try {
-      const hhRes = await fetch(`http://localhost:8081/api/config/households?adminId=${adminId}`);
+      const hhRes = await fetch(`${API_BASE_URL}/api/config/households?adminId=${adminId}`);
       if (hhRes.ok) setHouseholds(await hhRes.json());
     } catch (err) {
       console.error(err);
@@ -35,7 +36,7 @@ function MeterConfig() {
     e.preventDefault();
     setReadingLoading(true);
     try {
-      const res = await fetch(`http://localhost:8081/api/usage`, {
+      const res = await fetch(`${API_BASE_URL}/api/usage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(readingForm)
@@ -62,7 +63,7 @@ function MeterConfig() {
     formData.append('file', csvFile);
 
     try {
-      const res = await fetch(`http://localhost:8081/api/usage/upload?adminId=${adminId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/usage/upload?adminId=${adminId}`, {
         method: 'POST',
         body: formData
       });

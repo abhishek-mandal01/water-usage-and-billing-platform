@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainAdminSidebar from '../components/MainAdminSidebar';
@@ -23,7 +24,7 @@ function MainAdminDashboard() {const { t } = useTranslation();
 
   const fetchPendingVerifications = async () => {
     try {
-      const res = await fetch('http://localhost:8081/api/verification/pending');
+      const res = await fetch(`${API_BASE_URL}/api/verification/pending`);
       const data = await res.json();
       setPendingVerifications(data);
     } catch (err) {
@@ -33,7 +34,7 @@ function MainAdminDashboard() {const { t } = useTranslation();
 
   const fetchDashboardData = async () => {
     try {
-      const res = await fetch('http://localhost:8081/api/dashboard/main-admin');
+      const res = await fetch(`${API_BASE_URL}/api/dashboard/main-admin`);
       if (res.ok) {
         const data = await res.json();
         setDashboardData(data);
@@ -52,7 +53,7 @@ function MainAdminDashboard() {const { t } = useTranslation();
 
   const handleApprove = async (id) => {
     try {
-      await fetch(`http://localhost:8081/api/verification/approve/${id}`, { method: 'POST' });
+      await fetch(`${API_BASE_URL}/api/verification/approve/${id}`, { method: 'POST' });
       alert('Community Admin Approved!');
       setSelectedVerification(null);
       fetchPendingVerifications();
@@ -63,7 +64,7 @@ function MainAdminDashboard() {const { t } = useTranslation();
 
   const handleDecline = async (id) => {
     try {
-      await fetch(`http://localhost:8081/api/verification/decline/${id}`, { method: 'POST' });
+      await fetch(`${API_BASE_URL}/api/verification/decline/${id}`, { method: 'POST' });
       alert('Community Admin Verification Denied!');
       setSelectedVerification(null);
       fetchPendingVerifications();

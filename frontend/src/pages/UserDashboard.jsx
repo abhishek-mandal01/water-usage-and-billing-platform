@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useState, useEffect } from 'react';
 import Sidebar from '../components/sidebar';
 import Topbar from '../components/topbar';
@@ -33,8 +34,8 @@ function UserDashboard() {
     const userId = parsedUser.id;
     
     Promise.all([
-      fetch(`http://localhost:8081/api/dashboard/${userId}`).then(r => r.ok ? r.json() : null).catch(() => null),
-      fetch(`http://localhost:8081/api/dashboard/peer-benchmarking/${userId}`).then(r => r.ok ? r.json() : null).catch(() => null)
+      fetch(`${API_BASE_URL}/api/dashboard/${userId}`).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(`${API_BASE_URL}/api/dashboard/peer-benchmarking/${userId}`).then(r => r.ok ? r.json() : null).catch(() => null)
     ]).then(([dData, pData]) => {
       if (dData) setDashboardData(dData);
       if (pData) setPeerData(pData);

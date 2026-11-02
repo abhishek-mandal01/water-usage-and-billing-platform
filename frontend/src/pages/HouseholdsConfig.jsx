@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useState, useEffect, useCallback } from 'react';
 import CommunityAdminSidebar from '../components/CommunityAdminSidebar';
 import Topbar from '../components/topbar';
@@ -18,7 +19,7 @@ function HouseholdsDirectory() {
   const fetchHouseholds = useCallback(async () => {
     if (!adminId) return;
     try {
-      const hhRes = await fetch(`http://localhost:8081/api/config/households?adminId=${adminId}`);
+      const hhRes = await fetch(`${API_BASE_URL}/api/config/households?adminId=${adminId}`);
       if (hhRes.ok) setHouseholds(await hhRes.json());
     } catch (e) {
       console.error(e);
@@ -36,8 +37,8 @@ function HouseholdsDirectory() {
     if (hh.resident) {
       try {
         const [ticketsRes, usageRes] = await Promise.all([
-          fetch(`http://localhost:8081/api/tickets/my/${hh.resident.id}`),
-          fetch(`http://localhost:8081/api/usage/my/${hh.resident.id}`)
+          fetch(`${API_BASE_URL}/api/tickets/my/${hh.resident.id}`),
+          fetch(`${API_BASE_URL}/api/usage/my/${hh.resident.id}`)
         ]);
         
         if (ticketsRes.ok) setResidentTickets(await ticketsRes.json());
@@ -53,7 +54,7 @@ function HouseholdsDirectory() {
       return;
     }
     try {
-      const res = await fetch(`http://localhost:8081/api/users/resident/${residentId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/users/resident/${residentId}`, {
         method: 'DELETE'
       });
       if (res.ok) {
@@ -74,7 +75,7 @@ function HouseholdsDirectory() {
       return;
     }
     try {
-      const res = await fetch(`http://localhost:8081/api/config/households/${householdId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/config/households/${householdId}`, {
         method: 'DELETE'
       });
       if (res.ok) {
@@ -94,7 +95,7 @@ function HouseholdsDirectory() {
     e.preventDefault();
     if (!assignMeterForm) return;
     try {
-      const res = await fetch(`http://localhost:8081/api/config/meters`, {
+      const res = await fetch(`${API_BASE_URL}/api/config/meters`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ householdId: selectedHousehold.id, serialNumber: assignMeterForm, installationDate: new Date().toISOString().split('T')[0] })

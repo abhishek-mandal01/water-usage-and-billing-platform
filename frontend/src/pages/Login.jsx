@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';
@@ -39,7 +40,7 @@ const Login = () => {
         password: formData.password
       };
 
-      const response = await fetch('http://localhost:8081/api/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -64,10 +65,26 @@ const Login = () => {
           navigate('/dashboard');
         }
       } else {
-        setError('Invalid credentials. Please check your email and password.');
+        let errorMsg = 'Invalid email or password.';
+        try {
+          const contentType = response.headers.get('content-type') || '';
+          if (contentType.includes('application/json')) {
+            const errJson = await response.json();
+            errorMsg = errJson.message || errJson.error || errorMsg;
+          } else {
+            const errText = await response.text();
+            if (errText && errText.trim()) {
+              errorMsg = errText;
+            }
+          }
+        } catch {
+          // fallback
+        }
+        setError(errorMsg);
       }
-    } catch {
-      setError('Server error. Ensure the backend is running.');
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('Unable to reach server. Please ensure the backend is running and reachable.');
     }
     setLoading(false);
   };

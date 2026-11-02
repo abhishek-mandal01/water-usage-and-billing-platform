@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import BrandLogo from './BrandLogo';
@@ -32,7 +33,7 @@ function CommunityAdminSidebar() {
 
   useEffect(() => {
     if (userId) {
-      fetch(`http://localhost:8081/api/notifications/unreadCount/${userId}`)
+      fetch(`${API_BASE_URL}/api/notifications/unreadCount/${userId}`)
         .then(res => res.json())
         .then(data => setUnreadCount(data))
         .catch(err => console.error("Error fetching unread count:", err));

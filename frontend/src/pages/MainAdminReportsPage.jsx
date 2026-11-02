@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useState, useEffect } from 'react';
 import { useTranslation } from '../components/LanguageSelector/useTranslation';
 import MainAdminSidebar from '../components/MainAdminSidebar';
@@ -14,7 +15,7 @@ function MainAdminReportsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:8081/api/analytics/reports/main-admin')
+    fetch(`${API_BASE_URL}/api/analytics/reports/main-admin`)
       .then(res => res.json())
       .then(json => {
         if (json) {
@@ -45,7 +46,7 @@ function MainAdminReportsPage() {
   };
 
   const handleExportPDF = () => {
-    window.open('http://localhost:8081/api/analytics/reports/main-admin/download', '_blank');
+    window.open(`${API_BASE_URL}/api/analytics/reports/main-admin/download`, '_blank');
   };
 
   const reportsList = data?.reports || [];

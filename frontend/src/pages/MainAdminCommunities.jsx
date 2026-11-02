@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainAdminSidebar from '../components/MainAdminSidebar';
@@ -16,7 +17,7 @@ function MainAdminCommunities() {
     const fetchApartments = async () => {
       setLoading(true);
       try {
-        const res = await fetch('http://localhost:8081/api/config/apartments/all');
+        const res = await fetch(`${API_BASE_URL}/api/config/apartments/all`);
         if (res.ok) setApartments(await res.json());
       } catch (err) {
         console.error(err);

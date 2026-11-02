@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from './LanguageSelector/useTranslation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -278,7 +279,7 @@ const SmartBotChat = () => {
         userId = JSON.parse(userStr).id;
       }
 
-      const response = await fetch('http://localhost:8081/api/chat', {
+      const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
